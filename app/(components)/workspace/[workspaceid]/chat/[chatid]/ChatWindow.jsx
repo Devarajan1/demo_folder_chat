@@ -31,6 +31,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "../../../../../../components/ui/select"
+import { getCurrentUser } from '../../../../../../lib/user'
 
 
 const ChatWindow = () => {
@@ -62,6 +63,7 @@ const ChatWindow = () => {
     const [docSetOpen, setDocSetOpen] = useState(false);
     const [workSpaceValue, setWorkSpaceValue] = useState(null)
     const [userWorkSpaces, setUserWorkSpaces] = useState([]);
+    const [currentUser, setCurrentUser] = useState({})
     const botResponse = useRef('');
     const router = useRouter();
     const { workspaceid, chatid } = useParams()
@@ -439,8 +441,15 @@ const ChatWindow = () => {
     
     };
 
+    async function fetchCurrentUser(){
+        const user = await getCurrentUser();
+        
+        setCurrentUser(user)
+      };
+
     async function getWorkSpace(){
-        const res = await fetch('/api/workspace/admin/list-workspace');
+        const url = currentUser.role === "admin" ? '/api/workspace/admin/list-workspace' : '/api/workspace/list-workspace-public'
+        const res = await fetch(url);
         if(res.ok){
             const json = await res.json();
             setUserWorkSpaces(json.data)

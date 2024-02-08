@@ -37,7 +37,8 @@ const SideBar = () => {
     
 
     async function getWorkSpace(){
-        const res = await fetch('/api/workspace/admin/list-workspace');
+        const url = currentUser.role === "admin" ? '/api/workspace/admin/list-workspace' : '/api/workspace/list-workspace-public'
+        const res = await fetch(url);
         if(res.ok){
             const json = await res.json()
             setWorkSpaces(json.data)
@@ -116,6 +117,7 @@ const SideBar = () => {
                     <div className='flex items-center gap-2 hover:cursor-pointer hover:bg-[#d9dada] w-full p-2 rounded-md' onClick={async () => {
                     const res = await logout();
                     if (res.ok) {
+                        setFolderId(null)
                         router.push('/auth/login')
                     }
                 }}>

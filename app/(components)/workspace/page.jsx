@@ -1,13 +1,16 @@
 'use client'
 import { useRouter } from 'next/navigation';
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
+import { getCurrentUser } from '../../../lib/user';
 const WorkSpacePage = () => {
+  const [currentUser, setCurrentUser] = useState({})
 
   const router = useRouter();
 
   async function getWork(){
     try {
-      const res = await fetch('/api/workspace/admin/list-workspace');
+      const url = currentUser.role === "admin" ? '/api/workspace/admin/list-workspace' : '/api/workspace/list-workspace-public'
+        const res = await fetch(url);
       const json = await res.json()
       
       if(json?.data?.length > 0){
@@ -20,7 +23,14 @@ const WorkSpacePage = () => {
     }
   }
 
+  async function fetchCurrentUser(){
+    const user = await getCurrentUser();
+    
+    setCurrentUser(user)
+  };
+
   useEffect(()=> {
+    fetchCurrentUser()
     getWork()
   }, [])
   return (
