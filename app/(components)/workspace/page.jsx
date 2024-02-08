@@ -7,7 +7,7 @@ const WorkSpacePage = () => {
 
   async function getWork(){
     try {
-      const res = await fetch('/api/workspace/list-workspace');
+      const res = await fetch('/api/workspace/admin/list-workspace');
       const json = await res.json()
       
       if(json?.data?.length > 0){

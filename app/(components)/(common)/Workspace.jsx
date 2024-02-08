@@ -1,14 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "../../../components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../../../components/ui/dialog";
 import { useParams  } from 'next/navigation';
 import { useAtom } from 'jotai';
 import { Input } from "../../../components/ui/input";
@@ -32,22 +24,23 @@ const Workspace = ({ openMenu, setOpenMenu, showBtn }) => {
 
 
     async function createWorkspace() {
+        
         if (userInput.name === '') {
             setInputError('Write some valid workspace name');
             return null
         }
-
         try {
-            const res = await fetch('/api/workspace/create-workspace', {
+            const res = await fetch('/api/workspace/admin/create-workspace', {
                 method: 'POST',
                 credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    "name": userInput.name,
+                    "name": userInput,
                     "created_by": currentUser?.id,
                     "is_active": true,
+                    "domain":"NA"
                 })
             });
             if (res.ok) {
@@ -69,6 +62,8 @@ const Workspace = ({ openMenu, setOpenMenu, showBtn }) => {
             console.log(error)
         }
     };
+
+
     async function fetchCurrentUser() {
         const user = await getCurrentUser();
         setCurrentUser(user)
@@ -88,9 +83,9 @@ const Workspace = ({ openMenu, setOpenMenu, showBtn }) => {
 
         }}>
             {showBtn && <DialogTrigger className='w-full'>
-                <div className='w-full bg-[#14B8A6] hover:bg-[#14B8A6] opacity-75 hover:opacity-100 shadow-lg text-white rounded-md p-1'>
+            <Button className='py-0 h-8 w-full bg-[#14B8A6] hover:bg-[#14B8A6] hover:opacity-75'>
                     Add Workspace
-                </div>
+                </Button>
             </DialogTrigger>}
 
             <DialogContent>

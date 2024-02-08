@@ -440,7 +440,7 @@ const ChatWindow = () => {
     };
 
     async function getWorkSpace(){
-        const res = await fetch('/api/workspace/list-workspace');
+        const res = await fetch('/api/workspace/admin/list-workspace');
         if(res.ok){
             const json = await res.json();
             setUserWorkSpaces(json.data)
@@ -486,7 +486,6 @@ const ChatWindow = () => {
 
     return (
         <div className='w-full flex flex-col rounded-[6px] gap-5 items-center no-scrollbar box-border h-screen pb-2 text-center'>
-            
             <div className='w-full flex justify-between px-4 py-2 h-fit '>
                 <div className='flex gap-2 justify-center items-center hover:cursor-pointer'>
                     {folder?.length === 0 ? <Image src={Logo} alt='folder.chat' /> :

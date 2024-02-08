@@ -10,9 +10,10 @@ function Invite() {
     const [users, setUsers] = useState([]);
     const [loader, setLoader] = useState(false);
     const [userEmail, setUserEmail] = useState('');
-    const [selectedUser, setSelectedUser] = useState([])
-
-    async function getUsers() {
+    const [selectedUser, setSelectedUser] = useState([]);
+    const [existingUser, setExistingUser] = useState([]);
+    
+    async function getAllWorkspaceUsers() {
         try {
             const res = await getAllUsers();
             if(res?.length > 0){
@@ -29,7 +30,8 @@ function Invite() {
         setSelectedUser(selectedUser.filter(user => user?.email !== userObj?.email));
         setUsers((prev => [...prev, userObj]));
         
-    }
+    };
+
     function handleAddUser(userObj){
         let isExist = selectedUser.filter(user => user.email === userObj?.email);
         if(isExist.length === 0){
@@ -38,9 +40,10 @@ function Invite() {
             setUsers(users.filter(user => user.email !== userObj?.email))
             setUserEmail('')
         }
-    }
+    };
+    
     useEffect(() => {
-        getUsers();
+        getAllWorkspaceUsers();
     }, []);
 
     return (

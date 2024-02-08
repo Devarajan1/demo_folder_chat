@@ -37,7 +37,7 @@ const SideBar = () => {
     
 
     async function getWorkSpace(){
-        const res = await fetch('/api/workspace/list-workspace');
+        const res = await fetch('/api/workspace/admin/list-workspace');
         if(res.ok){
             const json = await res.json()
             setWorkSpaces(json.data)
@@ -75,7 +75,8 @@ const SideBar = () => {
     return (
         <div className='w-full bg-[#EFF5F5] flex flex-col py-[19px] px-[18px] gap-4 font-Inter relative min-h-screen'>
 
-            {currentUser?.email && <div className='flex flex-col gap-2 w-full p-2'>
+            {currentUser?.email && 
+            <div className='flex flex-col gap-2 w-full p-2'>
                 {/* <div className='flex flex-col gap-2 w-full'>
 
                     {sidebarOptions.map(option => {
@@ -126,7 +127,7 @@ const SideBar = () => {
                 </Accordion>
                 
             </div>}
-            
+
             <Account/>
             {!showAdvance ?
                 workSpaces.length > 0 && <Link href={`/workspace/${workspaceid}/advance`} className='w-full flex justify-between items-center bg-[#DEEAEA] p-3 rounded-md hover:cursor-pointer' onClick={() => { setShowAdvance(!showAdvance) }}>
