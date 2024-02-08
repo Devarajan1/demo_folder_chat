@@ -14,6 +14,7 @@ import { Button } from '../../../../../../components/ui/button';
 import { cn } from '../../../../../../lib/utils';
 import { Dialog, DialogTrigger, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../../../../../../components/ui/dialog'
 import { useParams } from 'next/navigation'
+import { getCurrentUser } from '../../../../../../lib/user';
 
 const Upload = () => {
 
@@ -26,7 +27,7 @@ const Upload = () => {
   const [documentSet, setDocumentSet] = useState([]);
   // const [documentSet, setDocumentSet] = useAtom(documentSetAtom);
   const [dialogLoader, setDialogLoader] = useState(false);
-
+  const [currentUser, setCurrentUser] = useState({})
   const [currentDOC, setCurrentDoc] = useState([]);
   const [userConnectors, setUserConnectors] = useAtom(userConnectorsAtom);
   const [existConnector, setExistConnector] = useState([]);
@@ -38,7 +39,7 @@ const Upload = () => {
     description: ''
   })
   const { toast } = useToast();
-
+   
 
   const { workspaceid, chatid } = useParams()
 
@@ -66,25 +67,12 @@ const Upload = () => {
         title: "Write a valid name for files identification!"
       });
     }
-    // if (context.contextName.split('-').length > 1) {
-    //   return toast({
-    //     variant: 'destructive',
-    //     title: `Remove '-' from Context Name`
-    //   });
-    // }
-
-    // if (doc_set_name.length > 0) {
-    //   return toast({
-    //     variant: 'destructive',
-    //     title: "Context Name Already Exist !"
-    //   });
-    // }
     setUploading(true)
     try {
       const formData = new FormData();
       let isZip = false
       files?.forEach((file) => {
-        //console.log(file.type === "application/zip")
+        
         if (file.type === "application/zip") {
           setUploading(false)
           isZip = true
@@ -100,8 +88,9 @@ const Upload = () => {
 
         return null
       }
-
-      const data = await fetch(`/api/manage/admin/connector/file/upload`, {
+      const apiURL = currentUser?.role === 'admin' ? `/api/manage/admin/connector/file/upload` : `/api/manage/connector/file/upload-v2`
+      const data = await fetch(apiURL, {
+        credentials:'include',
         method: "POST",
         body: formData
       });
@@ -125,7 +114,9 @@ const Upload = () => {
 
   async function connectorRequest(path) {
     try {
-      const data = await fetch(`/api/manage/admin/connector`, {
+      const apiURL = currentUser?.role === 'admin' ? `/api/manage/admin/connector` : `/api/manage/connector-v2`
+      const data = await fetch(apiURL, {
+        credentials:'include',
         method: 'POST',
         headers: {
           "Content-Type": "application/json"
@@ -167,7 +158,9 @@ const Upload = () => {
 
   async function getCredentials(connectID) {
     try {
+      const apiURL = currentUser?.role === 'admin' ? `/api/manage/credential` : `/api/manage/credential-v2`
       const data = await fetch(`/api/manage/credential`, {
+        credentials:'include',
         method: 'POST',
         headers: {
           "Content-Type": "application/json",
@@ -193,7 +186,9 @@ const Upload = () => {
 
   async function sendURL(connectID, credID) {
     try {
+      const apiURL = currentUser?.role === 'admin' ? `/api/manage/connector/${connectID}/credential/${credID}` : `/api/manage/connector-v2/${connectID}/credential/${credID}`
       const data = await fetch(`/api/manage/connector/${connectID}/credential/${credID}`, {
+        credentials:'include',
         method: 'PUT',
         headers: {
           "Content-Type": "application/json",
@@ -225,7 +220,9 @@ const Upload = () => {
 
   async function runOnce(conID, credID) {
     try {
-      const data = await fetch(`/api/manage/admin/connector/run-once`, {
+      const apiURL = currentUser?.role === 'admin' ? `/api/manage/admin/connector/run-once` : `/api/manage/connector/run-once-v2`
+      const data = await fetch(apiURL, {
+        credentials:'include',
         method: 'POST',
         headers: {
           "Content-Type": "application/json",
@@ -251,8 +248,8 @@ const Upload = () => {
   };
 
   async function setDocumentSetInServer(ccID, set_name) {
-
-    const data = await fetch(`/api/manage/admin/connector/indexing-status`);
+    
+    const data = await fetch(currentUser?.role === 'admin' ? `/api/manage/admin/connector/indexing-status` : `/api/manage/connector/indexing-status-v2`);
     const json = await data.json();
 
     const docSetid = []
@@ -268,8 +265,8 @@ const Upload = () => {
     }
 
     try {
-
-      const res = await fetch(`/api/manage/admin/document-set`, {
+      const apiURL = currentUser?.role === 'admin' ? `/api/manage/admin/document-set` : `/api/manage/document-set-v2`
+      const res = await fetch(apiURL, {
         method: 'POST',
         headers: {
           "Content-Type": "application/json",
@@ -310,8 +307,8 @@ const Upload = () => {
   }
 
   async function updateDocumentSetInServer(db_id, ccID, con) {
-
-    const data = await fetch(`/api/manage/admin/connector/indexing-status`);
+    
+    const data = await fetch(currentUser?.role === 'admin' ? `/api/manage/admin/connector/indexing-status` : `/api/manage/connector/indexing-status-v2`);
     const json = await data.json();
 
     const docSetid = documentSet[0].cc_pair_descriptors.map(item => item.id)
@@ -323,7 +320,8 @@ const Upload = () => {
     
 
     try {
-      const res = await fetch(`/api/manage/admin/document-set`, {
+      const apiURL = currentUser?.role === 'admin' ? `/api/manage/admin/document-set` : `/api/manage/document-set-v2`
+      const res = await fetch(apiURL, {
         method: 'PATCH',
         headers: {
           "Content-Type": "application/json",
@@ -357,7 +355,8 @@ const Upload = () => {
     
     setDialogLoader(true)
     try {
-      const res = await fetch(`/api/manage/admin/document-set`, {
+      const apiURL = currentUser?.role === 'admin' ? `/api/manage/admin/document-set` : `/api/manage/document-set-v2`
+      const res = await fetch(apiURL, {
         method: 'POST',
         headers: {
           "Content-Type": "application/json",
@@ -399,7 +398,8 @@ const Upload = () => {
 
   async function updateDocumentSetInServer2(db_id, ccID, c_name) {
     try {
-      const res = await fetch(`/api/manage/admin/document-set`, {
+      const apiURL = currentUser?.role === 'admin' ? `/api/manage/admin/document-set` : `/api/manage/document-set-v2`
+      const res = await fetch(apiURL, {
         method: 'PATCH',
         headers: {
           "Content-Type": "application/json",
@@ -477,13 +477,11 @@ const Upload = () => {
 
   };
 
+  async function fetchCurrentUser(){
+    const user = await getCurrentUser();
+    setCurrentUser(user)
+  };
 
-
-  async function indexingAll() {
-    const data = await fetch(`/api/manage/admin/connector/indexing-status`);
-    const json = await data.json();
-    console.log(json)
-  }
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   useEffect(() => {
@@ -498,6 +496,7 @@ const Upload = () => {
   }, [folder]);
 
   useEffect(() => {
+    fetchCurrentUser()
     if (folderId) {
       getDocSetDetails(folderId);
 

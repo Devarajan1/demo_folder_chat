@@ -47,8 +47,9 @@ const SideBar = () => {
         }
     }
     async function getFolders(){
-        await fetchCurrentUser()
-        const res = await fetch(`/api/workspace/list-folder?workspace_id=${workspaceid}`);
+        await fetchCurrentUser();
+        
+        const res = await fetch(currentUser.role === 'admin' ? `/api/workspace/admin/list-folder?workspace_id=${workspaceid}` : `/api/workspace/list-folder?workspace_id=${workspaceid}`);
         if(res.ok){
             const json = await res.json()
             

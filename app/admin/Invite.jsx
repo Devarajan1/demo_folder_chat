@@ -145,12 +145,12 @@ function Invite() {
         }
     };
 
-    const getEmailById = (userId) => {   
-        console.log(userId)  
-        
-        const user = users.find(user => user.id === userId); 
-        console.log(user)    
-        return user ? user.email : 'Email not found';   
+    const getEmailById = (userId) => {
+        console.log(userId)
+
+        const user = users.find(user => user.id === userId);
+        console.log(user)
+        return user ? user.email : 'Email not found';
     };
 
     useEffect(() => {
@@ -161,47 +161,45 @@ function Invite() {
     }, []);
 
     return (
-        <div className='font-Inter p-2 min-h-[50vh] space-y-1 relative'>
-            <Label
-                htmlFor='user-email'
-                className='font-[600] text-sm leading-5'>
-                Search User
-            </Label>
-            <div className='w-full flex flex-row flex-wrap gap-0 border rounded-md  items-center p-1'>
-                <Input
-                    id='user-email'
-                    type='text'
-                    value={userEmail}
-                    placeholder='write user email here'
-                    onChange={(e) => setUserEmail(e.target.value)}
-                    className='border-none  max-w-full h-full w-[100%] focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
-                />
-                {selectedUser.length > 0 &&
-                    selectedUser?.map(user => <p key={user?.id} className='py-1 px-2 border rounded-md hover:cursor-pointer text-sm leading-5 font-[400] flex justify-between items-center gap-1 bg-slate-100 mx-1'>{user?.email} <X size={10} className='' onClick={() => handleRemoveUser(user)} /></p>)
-                }
-            </div>
-            {/* {selectedUser.length > 0 && <div className='w-full gap-1 p-1 border flex flex-wrap rounded-md max-h-[30vh] overflow-y-scroll no-scrollbar '>
-                {selectedUser?.map(user => <p key={user?.id} className='py-1 px-2 border rounded-md hover:cursor-pointer text-sm leading-5 font-[400] relative bg-slate-100'>{user?.email} <XCircle size={10} className='absolute top-0 right-0' onClick={()=> handleRemoveUser(user)}/></p>)}
-            </div>} */}
-
-
-            {(users?.length > 0) ?
-                <div className='w-full border rounded-md max-h-[25vh] overflow-y-scroll no-scrollbar'>
-                    {users?.map(user => user?.email.includes(userEmail) && <p key={user?.id} className='p-2 hover:cursor-pointer hover:bg-slate-100 border-b text-sm leading-5 font-[400]' onClick={(() => handleAddUser(user))}>{user?.email}</p>)}
-                </div> :
-                loader && <div className='w-full h-32 flex justify-center items-center'>
-                    <p className='animate-pulse font-[500] text-sm leading-8'>Loading...</p>
+        <div className='font-Inter p-2 min-h-[50vh] space-y-1 flex flex-col justify-between'>
+            <div className='relative'>
+                <Label
+                    htmlFor='user-email'
+                    className='font-[600] text-sm leading-5'>
+                    Search User
+                </Label>
+                <div className='w-full flex flex-row flex-wrap gap-0 border rounded-md  items-center p-1'>
+                    <Input
+                        id='user-email'
+                        type='text'
+                        value={userEmail}
+                        placeholder='write user email here'
+                        onChange={(e) => setUserEmail(e.target.value)}
+                        className='border-none  max-w-full h-full w-[100%] focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
+                    />
+                    {selectedUser.length > 0 &&
+                        selectedUser?.map(user => <p key={user?.id} className='py-1 px-2 border rounded-md hover:cursor-pointer text-sm leading-5 font-[400] flex justify-between items-center gap-1 bg-slate-100 mx-1'>{user?.email} <X size={10} className='' onClick={() => handleRemoveUser(user)} /></p>)
+                    }
                 </div>
-            }
-            <div>
-                {existingUser?.map(user => <div key={user?.id} className='p-2 hover:cursor-pointer  border-b text-sm leading-5 font-[400] flex justify-between items-center'>
 
-                    <p>{getEmailById(user?.user_id)}</p>
-                    <p className='max-w-fit p-2 rounded-full bg-red-100 hover:bg-red-200 text-red-500 font-[600]' onClick={() => removerUserFromWorkspace(user?.id)}>Remove</p>
+                {(users?.length > 0) ?
+                    <div className='w-full border rounded-md max-h-[25vh] overflow-y-scroll no-scrollbar'>
+                        {users?.map(user => user?.email.includes(userEmail) && <p key={user?.id} className='p-2 hover:cursor-pointer hover:bg-slate-100 border-b text-sm leading-5 font-[400]' onClick={(() => handleAddUser(user))}>{user?.email}</p>)}
+                    </div> :
+                    loader && <div className='w-full h-32 flex justify-center items-center'>
+                        <p className='animate-pulse font-[500] text-sm leading-8'>Loading...</p>
+                    </div>
+                }
+                <div className='absolute'>
+                    {existingUser?.map(user => <div key={user?.id} className='p-2 hover:cursor-pointer  border-b text-sm leading-5 font-[400] flex justify-between items-center'>
 
-                </div>)}
+                        <p>{getEmailById(user?.user_id)}</p>
+                        <p className='max-w-fit p-2 rounded-full bg-red-100 hover:bg-red-200 text-red-500 font-[600]' onClick={() => removerUserFromWorkspace(user?.id)}>Remove</p>
+
+                    </div>)}
+                </div>
             </div>
-            <Button disabled={selectedUser.length === 0} className='bottom-0 absolute right-[40%]' onClick={() => inviteWorkspaceUser(selectedUser)}>Invite User</Button>
+            <Button disabled={selectedUser.length === 0} className='w-[25%] m-auto' onClick={() => inviteWorkspaceUser(selectedUser)}>Invite User</Button>
         </div>
     )
 }
