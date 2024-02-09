@@ -11,7 +11,7 @@ import { deleteAdminCredentails, fetchAllCredentials, fetchCredentialID, generat
 import { Dialog, DialogTrigger, DialogContent } from '../../../../../../components/ui/dialog';
 import EditIndex from '../(component)/EditIndex';
 import { useAtom } from 'jotai';
-import { userConnectorsAtom } from '../../../../../store';
+import { userConnectorsAtom, currentSessionUserAtom } from '../../../../../store';
 import { Loader2 } from 'lucide-react';
 import {
     Table,
@@ -92,7 +92,7 @@ const GitPrs = () => {
             if(isRepoExist.length > 0){
                 return toast({
                     variant:'destructive',
-                    description:'Connector Already Exist.'
+                    description:'Connector already exist.'
                 })
             }
             const full_name = `${owner_name}/${repo_name}`
@@ -190,7 +190,7 @@ const GitPrs = () => {
     async function addRepo() {
         if (!tokenStatus) return toast({
             variant: 'destructive',
-            title: 'Please Provide a token for validation.'
+            title: 'Please provide a token for validation.'
         })
         if (repoName === '' || repoOwner === '') {
             return toast({
@@ -204,7 +204,7 @@ const GitPrs = () => {
         } catch (error) {
             toast({
                 variant: 'destructive',
-                title: 'Repo Not Found'
+                title: 'Repo not found'
             })
 
         }
@@ -217,13 +217,13 @@ const GitPrs = () => {
             setTokenValue('');
             return toast({
                 variant:"default",
-                description:'Credentials Deleted !'
+                description:'Credentials deleted !'
             })
         } catch (error) {
             console.log(error)
             return toast({
                 variant:"destructive",
-                description:'Must Delete All Github Connector Before Delete Credentials'
+                description:'Must delete all github connector before delete credentials'
             })
         }
     };

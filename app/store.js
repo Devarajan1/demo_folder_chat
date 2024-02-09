@@ -2,7 +2,7 @@ import { atom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
 
 export const darkModeAtom = atomWithStorage('darkMode', false)
-export const sessionAtom = atom(null);
+export const currentSessionUserAtom = atom(null);
 export const isPostSignUpCompleteAtom = atom(false);
 export const isPostNameCompleteAtom = atom(false);
 export const isPostUserCompleteAtom = atom(false);
@@ -18,7 +18,8 @@ export const chatTitleAtom = atom('')
 export const allIndexingConnectorAtom = atom(null);
 export const documentSetAtom = atom([]);
 export const tempAtom = atom(false);
-export const workAddedAtom = atom(false)
+export const workAddedAtom = atom(false);
+export const workSpacesAtom = atom(null)
 export const selectOptionAtom = atom([
     {
         name:'option_1',

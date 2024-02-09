@@ -1,12 +1,13 @@
-import { Key, Users } from 'lucide-react'
+'use client'
+import { Key, Users, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import React from 'react'
-import { Dialog, DialogContent, DialogTrigger } from '../../components/ui/dialog'
-import Invite from './Invite'
 
 function AdminSideBar() {
-
-  const options = [{
+  const router = useRouter()
+  const options = [
+  {
     id: "users",
     title: "Users",
     href: '/admin/users',
@@ -14,7 +15,7 @@ function AdminSideBar() {
   },
   {
     id: "openai",
-    title: "OpenAi",
+    title: "OpenAI",
     href: '/admin/openai',
     icon: Key
   }
@@ -30,21 +31,10 @@ function AdminSideBar() {
         )
       })}
 
-
-      <Dialog>
-        <DialogTrigger asChild >
-          <div className='flex items-center gap-2 hover:cursor-pointer p-4 hover:bg-gray-100 rounded-sm text-[16px] leading-5 font-[500]'>
-            <Users size={'20'} />
-            Invite User
-          </div>
-        </DialogTrigger>
-        <DialogContent>
-          <Invite />
-        </DialogContent>
-      </Dialog>
-
-
-
+      <div className='flex items-center gap-2 hover:cursor-pointer p-4 hover:bg-gray-100 rounded-sm text-[16px] leading-5 font-[500]' onClick={() => window.history.back()}>
+        <ArrowLeft size={'20'} />
+        Go Back
+      </div>
     </div>
   )
 }

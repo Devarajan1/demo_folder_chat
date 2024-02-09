@@ -11,14 +11,14 @@ import {
 } from "../../../../../../components/ui/tooltip"
 import { fetchConnectorStatus } from '../../../../../../lib/helpers';
 import { useToast } from '../../../../../../components/ui/use-toast';
-import { sessionAtom, userConnectorsAtom, folderIdAtom, tempAtom } from '../../../../../store';
+import { currentSessionUserAtom, userConnectorsAtom, folderIdAtom, tempAtom } from '../../../../../store';
 import { useAtom } from 'jotai';
 
 
 const EditIndex = ({ cc_pair_id, setOpen }) => {
 
     const { toast } = useToast();
-    const [session, setSession] = useAtom(sessionAtom)
+    const [session, setSession] = useAtom(currentSessionUserAtom)
     const [connectorDetails, setConnectorDetails] = useState(null);
     const [loading, setLoading] = useState(false);
     const [userConnectorId, setUserConnectorId] = useState([]);

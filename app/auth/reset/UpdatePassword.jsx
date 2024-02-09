@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import eye_icon from '../../../public/assets/eye_icon.svg'
 import { useAtom } from 'jotai';
-import { darkModeAtom, sessionAtom } from '../../store';
+import { darkModeAtom, currentSessionUserAtom } from '../../store';
 import { Header } from '../../(components)/(common)';
 
 
@@ -18,7 +18,7 @@ const UpdatePassword = () => {
     const [password, setPassword] = useState('');
     const [c_password, setCPassword] = useState('');
     const [darkMode, setDarkMode] = useAtom(darkModeAtom);
-    const [session, setSession] = useAtom(sessionAtom);
+    const [session, setSession] = useAtom(currentSessionUserAtom);
     const router = useRouter();
     const [inputError, setInputError] = useState(false);
     

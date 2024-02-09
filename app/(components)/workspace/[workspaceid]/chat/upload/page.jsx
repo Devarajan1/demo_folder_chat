@@ -6,7 +6,7 @@ import { Label } from '../../../../../../components/ui/label';
 import { Input } from '../../../../../../components/ui/input';
 import Image from 'next/image';
 import { useDropzone } from 'react-dropzone';
-import { folderAtom, folderIdAtom, userConnectorsAtom, documentSetAtom } from '../../../../../store';
+import { folderAtom, folderIdAtom, userConnectorsAtom, currentSessionUserAtom } from '../../../../../store';
 import { useToast } from '../../../../../../components/ui/use-toast';
 import { useRouter } from 'next/navigation';
 import { Loader, Loader2, X } from 'lucide-react';
@@ -27,7 +27,7 @@ const Upload = () => {
   const [documentSet, setDocumentSet] = useState([]);
   // const [documentSet, setDocumentSet] = useAtom(documentSetAtom);
   const [dialogLoader, setDialogLoader] = useState(false);
-  const [currentUser, setCurrentUser] = useState({})
+  const [currentUser, setCurrentUser] = useAtom(currentSessionUserAtom);
   const [currentDOC, setCurrentDoc] = useState([]);
   const [userConnectors, setUserConnectors] = useAtom(userConnectorsAtom);
   const [existConnector, setExistConnector] = useState([]);
@@ -159,12 +159,11 @@ const Upload = () => {
   async function getCredentials(connectID) {
     try {
       const apiURL = currentUser?.role === 'admin' ? `/api/manage/credential` : `/api/manage/credential-v2`
-      const data = await fetch(`/api/manage/credential`, {
+      const data = await fetch(apiURL, {
         credentials:'include',
         method: 'POST',
         headers: {
           "Content-Type": "application/json",
-
         },
         body: JSON.stringify({
           "credential_json": {},
@@ -477,10 +476,10 @@ const Upload = () => {
 
   };
 
-  async function fetchCurrentUser(){
-    const user = await getCurrentUser();
-    setCurrentUser(user)
-  };
+  // async function fetchCurrentUser(){
+  //   const user = await getCurrentUser();
+  //   setCurrentUser(user)
+  // };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
@@ -496,7 +495,7 @@ const Upload = () => {
   }, [folder]);
 
   useEffect(() => {
-    fetchCurrentUser()
+    // fetchCurrentUser()
     if (folderId) {
       getDocSetDetails(folderId);
 
@@ -549,7 +548,7 @@ const Upload = () => {
 
               <div>
                 <Label className='text-start' htmlFor='context'>Name of Context</Label>
-                <Input type='text' placeholder='Name Should Be Unique' id='context' value={context.contextName} onChange={(e) => setContext({ ...context, 'contextName': e.target.value })} />
+                <Input type='text' placeholder='Name should be unique' id='context' value={context.contextName} onChange={(e) => setContext({ ...context, 'contextName': e.target.value })} />
               </div>
               <div>
                 <Label className='text-start' htmlFor='context'>File Name</Label>
@@ -557,7 +556,7 @@ const Upload = () => {
               </div>
               <div>
                 <Label className='text-start' htmlFor='context'>Description</Label>
-                <Input type='text' placeholder='write a short description' id='context' value={context?.description} onChange={(e) => setContext({ ...context, description: e.target.value })} />
+                <Input type='text' placeholder='Write a short description' id='context' value={context?.description} onChange={(e) => setContext({ ...context, description: e.target.value })} />
               </div>
             </div> :
             <div className='w-full text-start space-y-2 mb-2'>

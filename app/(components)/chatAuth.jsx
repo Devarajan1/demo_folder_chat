@@ -6,9 +6,7 @@ import {
 import { redirect } from "next/navigation";
 
 export default async function ChatAuth({ children }) {
-    const darkMode = true
 
-    
     let authTypeMetadata = null;
     let currentUser = null;
 

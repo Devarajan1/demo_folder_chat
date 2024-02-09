@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../../components/ui/accordion";
 import threeDot from '../../../public/assets/more-horizontal.svg'
 import { useAtom } from 'jotai';
-import { isPostSignUpCompleteAtom, isPostUserCompleteAtom, folderIdAtom } from '../../store';
+import { isPostSignUpCompleteAtom, isPostUserCompleteAtom, folderIdAtom, currentSessionUserAtom } from '../../store';
 import { useRouter } from 'next/navigation';
 import { sidebarOptions } from '../../../config/constants';
 import { Dialog, DialogTrigger, DialogContent } from '../../../components/ui/dialog';
@@ -37,21 +37,20 @@ const Account = () => {
     const [openWork, setOpenWork] = useState(false)
     const [item, setItem] = useState('profile')
     const [folderId, setFolderId] = useAtom(folderIdAtom);
-    const [workSpace, setWorkSpace] = useState(null);
-    const [currentUser, setCurrentUser] = useState({});
+    const [currentUser, setCurrentUser] = useAtom(currentSessionUserAtom);
     const [value, setValue] = useState('')
     const router = useRouter();
     const { workspaceid } = useParams()
     const [workspaces, setWorkSpaces] = useState([])
 
-    async function fetchCurrentUser() {
-        const user = await getCurrentUser();
-        setCurrentUser(user)
-    };
+    // async function fetchCurrentUser() {
+    //     const user = await getCurrentUser();
+    //     setCurrentUser(user)
+    // };
 
     
     async function getWorkSpace() {
-        const url = currentUser.role === "admin" ? '/api/workspace/admin/list-workspace' : '/api/workspace/list-workspace-public'
+        const url = currentUser?.role === "admin" ? '/api/workspace/admin/list-workspace' : '/api/workspace/list-workspace-public'
         const res = await fetch(url);
         const json = await res.json()
 
@@ -70,7 +69,7 @@ const Account = () => {
     }
 
     useEffect(() => {
-        fetchCurrentUser();
+        // fetchCurrentUser();
         getWorkSpace()
         
     }, [workspaceid]);
@@ -96,7 +95,7 @@ const Account = () => {
         {currentUser?.role === 'admin' && (
           <Dialog>
             <DialogTrigger asChild>
-              <UserPlus className='hover:cursor-pointer'/>
+              <UserPlus className='hover:cursor-pointer float-right border p-[0.070rem] w-[15%] rounded-sm hover:bg-slate-200'/>
             </DialogTrigger>
             <DialogContent>
               <Invite />

@@ -17,12 +17,19 @@ const AdvanceMenu = () => {
             
             <div className='w-full flex flex-col p-1 border-t border-b'>
             <h1 className='text-start font-[700] text-sm leading-5 p-2'>Connector Settings</h1>
-                {advanceOption.map(setting => {
+                {advanceOption.map(option => {
                     return (
-                        <Link href={`/workspace/${workspaceid}/advance/${setting.id}`} key={setting.id} className={`inline-flex p-2 items-center text-sm leading-5 rounded-md hover:cursor-pointer gap-2 hover:bg-[#FFFFFF33]`}>
-                            <Image src={setting.icon} alt={setting.id} />
-                            <span className='font-[500]'>{setting.title}</span>
+                        option?.status === 'active' ? 
+                        <Link href={`/workspace/${workspaceid}/advance/${option?.id}`} key={option?.id} className={`inline-flex p-2 items-center text-sm leading-5 rounded-md gap-2  ${option?.status === 'inactive' ? 'opacity-70' : 'hover:bg-[#FFFFFF33] hover:cursor-pointer'}`}>
+                            <Image src={option?.icon} alt={option?.id} />
+                            <span className='font-[500] leading-5'>{option?.title}</span>
                         </Link>
+                        :
+                        <div key={option?.id} className={`inline-flex p-2 items-center text-sm leading-5 rounded-md gap-2  ${option?.status === 'inactive' ? 'opacity-70 hover:cursor-auto' : 'hover:bg-[#FFFFFF33] hover:cursor-pointer'}`}>
+                            <Image src={option?.icon} alt={option?.id} />
+                            <span className='font-[500] leading-5'>{option?.title}</span>
+                        </div>
+                    
                     )
                 })}
                 {/* <h1 className='text-start font-[700] text-sm leading-5 p-2'>Keys</h1>
@@ -35,7 +42,7 @@ const AdvanceMenu = () => {
 
             <Link href={`/workspace/${workspaceid}/advance`} className='flex gap-2 hover:cursor-pointer items-center justify-between p-3 rounded-md'>
                 <span className='font-[700] text-sm leading-5'>Search</span>
-                <Image src={filter} alt={'open'} className='w-4 h-4' />
+                {/* <Image src={filter} alt={'open'} className='w-4 h-4' /> */}
             </Link>
 
         </>

@@ -3,7 +3,7 @@ import React from 'react'
 import { DialogContent } from '../../../components/ui/dialog';
 import { Mail, MessageSquare, Plus, PlusCircle, UserPlus, Users} from "lucide-react"
 import { useAtom } from 'jotai';
-import { sessionAtom } from '../../store';
+import { currentSessionUserAtom } from '../../store';
 import Image from 'next/image';
 import { DropdownMenuSeparator } from "../../../components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "../../../components/ui/popover"
@@ -15,7 +15,7 @@ import { useToast } from '../../../components/ui/use-toast';
 
 const Setting = ({ item, setItem }) => {
     
-    const [session, setSession] = useAtom(sessionAtom);
+    const [session, setSession] = useAtom(currentSessionUserAtom);
     const { toast } = useToast()
     
 

@@ -9,14 +9,16 @@ import { Button } from "../../../components/ui/button";
 import { folderIdAtom, workAddedAtom } from '../../store';
 import { useRouter } from 'next/navigation';
 import { getCurrentUser } from '../../../lib/user';
+import { currentSessionUserAtom } from '../../store';
+
 
 const Workspace = ({ openMenu, setOpenMenu, showBtn }) => {
     
     const [inputError, setInputError] = useState(false);
     const [workAdded, setWorkAdded] = useAtom(workAddedAtom)
-    const [currentUser, setCurrentUser] = useState({});
-    const [folderId, setFolderId] = useAtom(folderIdAtom)
-    const { workspaceid } = useParams()
+    const [currentUser, setCurrentUser] = useAtom(currentSessionUserAtom);
+    const [folderId, setFolderId] = useAtom(folderIdAtom);
+    const { workspaceid } = useParams();
 
     const router = useRouter()
 
@@ -64,13 +66,13 @@ const Workspace = ({ openMenu, setOpenMenu, showBtn }) => {
     };
 
 
-    async function fetchCurrentUser() {
-        const user = await getCurrentUser();
-        setCurrentUser(user)
-    };
+    // async function fetchCurrentUser() {
+    //     const user = await getCurrentUser();
+    //     setCurrentUser(user)
+    // };
 
     useEffect(() => {
-        fetchCurrentUser();
+        // fetchCurrentUser();
     }, []);
 
 

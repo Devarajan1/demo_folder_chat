@@ -23,7 +23,7 @@ import {
 import { cn } from '../../../../../../lib/utils';
 import EditIndex from '../(component)/EditIndex';
 import { useAtom } from 'jotai';
-import { sessionAtom, userConnectorsAtom, tempAtom } from '../../../../../store';
+import { currentSessionUserAtom, userConnectorsAtom, tempAtom } from '../../../../../store';
 
   
 
@@ -33,7 +33,7 @@ const Indexing = () => {
     const [loading, setLoading] = useState(true)
     const [ccPairId, setCcPairId] = useState(null);
     const [open, setOpen] = useState(ccPairId !== null);
-    const [session, setSession] = useAtom(sessionAtom);
+    const [session, setSession] = useAtom(currentSessionUserAtom);
     const [allConnectors, setAllConnectors] = useAtom(userConnectorsAtom);
    
 

@@ -7,7 +7,7 @@ import Google from "../../../public/assets/google.svg";
 import Image from "next/image";
 import eye_icon from '../../../public/assets/eye_icon.svg';
 import { useAtom } from 'jotai';
-import { darkModeAtom, sessionAtom } from '../../store';
+import { darkModeAtom, currentSessionUserAtom } from '../../store';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { signup } from '../../api/auth';
@@ -26,7 +26,7 @@ const Signup = ( { isSignup, shouldVerify } ) => {
   const [inputError, setInputError] = useState(false)
 
   const [darkMode, setDarkMode] = useAtom(darkModeAtom);
-  const [session, setSession] = useAtom(sessionAtom)
+  const [session, setSession] = useAtom(currentSessionUserAtom)
   const [emailSent, setEmailSent] = useState(false);
   const [loading, setLoading] = useState(true)
   const router = useRouter();

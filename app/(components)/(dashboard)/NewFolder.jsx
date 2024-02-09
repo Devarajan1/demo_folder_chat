@@ -22,7 +22,7 @@ import { Button } from "../../../components/ui/button";
 import plus from '../../../public/assets/plus - light.svg'
 import Image from 'next/image';
 import { useAtom } from 'jotai';
-import { folderIdAtom } from '../../store';
+import { folderIdAtom, currentSessionUserAtom } from '../../store';
 import { Folder } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation'
@@ -33,7 +33,7 @@ const NewFolder = ( { setFolderAdded, openMenu, setOpenMenu }) => {
     const [folderId, setFolderId] = useAtom(folderIdAtom);
     const [open, setOpen] = useState(openMenu);
     const [inputError, setInputError] = useState(false);
-    const [currentUser, setCurrentUser] = useState({})
+    const [currentUser, setCurrentUser] = useAtom(currentSessionUserAtom);
     const { workspaceid } = useParams()
 
     const router = useRouter()
@@ -88,13 +88,13 @@ const NewFolder = ( { setFolderAdded, openMenu, setOpenMenu }) => {
         }
     };
 
-    async function fetchCurrentUser(){
-        const user = await getCurrentUser();
-        setCurrentUser(user)
-      };
+    // async function fetchCurrentUser(){
+    //     const user = await getCurrentUser();
+    //     setCurrentUser(user)
+    //   };
   
       useEffect(() => {
-          fetchCurrentUser();
+        //   fetchCurrentUser();
       }, []);
    
 

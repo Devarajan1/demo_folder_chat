@@ -3,9 +3,9 @@ import React, { useEffect, useState } from 'react'
 import Image from 'next/image';
 import { Account, NewFolder, FolderCard } from '../(dashboard)'
 import { useAtom } from 'jotai';
-import { folderAtom, showAdvanceAtom, folderIdAtom, sessionAtom, folderAddedAtom, workAddedAtom } from '../../store';
+import { folderAtom, showAdvanceAtom, folderIdAtom, currentSessionUserAtom, folderAddedAtom, workAddedAtom, workSpacesAtom } from '../../store';
 import rightArrow from '../../../public/assets/secondary icon.svg';
-import { LogOut } from 'lucide-react';
+import { LogOut, Settings } from 'lucide-react';
 import { AdvanceMenu } from './index'
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -18,38 +18,35 @@ const SideBar = () => {
     const [showAdvance, setShowAdvance] = useAtom(showAdvanceAtom);
     const [open, setOpen] = useState(false);
     const [item, setItem] = useState('profile')
-    const [session, setSession] = useAtom(sessionAtom);
+    const [currentUser, setCurrentUser] = useAtom(currentSessionUserAtom);
     const [folderAdded, setFolderAdded] = useAtom(folderAddedAtom);
     const [folderId, setFolderId] = useAtom(folderIdAtom);
-    const [workSpaces, setWorkSpaces] = useState([])
+    // const [workSpaces, setUserWorkSpaces] = useState([])
     const [workSpaceAdded, setWorkSpaceAdded] = useAtom(workAddedAtom);
-    const [currentUser, setCurrentUser] = useState({})
+    const [workSpaces, setUserWorkSpaces] = useAtom(workSpacesAtom);
     const router = useRouter()
     const { workspaceid } = useParams()
 
-
-
-    async function fetchCurrentUser(){
-        const user = await getCurrentUser();
-        
-        setCurrentUser(user)
-      };
+    // async function fetchCurrentUser(){
+    //     const user = await getCurrentUser();
+    //     setCurrentUser(user)
+    //   };
     
 
     async function getWorkSpace(){
-        const url = currentUser.role === "admin" ? '/api/workspace/admin/list-workspace' : '/api/workspace/list-workspace-public'
+        const url = currentUser?.role === "admin" ? '/api/workspace/admin/list-workspace' : '/api/workspace/list-workspace-public'
         const res = await fetch(url);
         if(res.ok){
             const json = await res.json()
-            setWorkSpaces(json.data)
+            setUserWorkSpaces(json.data)
         }else{
-            setWorkSpaces([])
+            setUserWorkSpaces([])
         }
     }
     async function getFolders(){
-        await fetchCurrentUser();
+        //await fetchCurrentUser();
         
-        const res = await fetch(currentUser.role === 'admin' ? `/api/workspace/admin/list-folder?workspace_id=${workspaceid}` : `/api/workspace/list-folder?workspace_id=${workspaceid}`);
+        const res = await fetch(`/api/workspace/list-folder?workspace_id=${workspaceid}`);
         if(res.ok){
             const json = await res.json()
             
@@ -108,12 +105,15 @@ const SideBar = () => {
                 <AccordionItem value="profile" className='p-2 gap-2 flex flex-col w-full'>
                     <AccordionTrigger className='flex-row-reverse justify-between items-center gap-2'>
                         <div className='flex w-full justify-between'>
-                        
                             <h1 className='font-[600] text-sm leading-5 mr-10'>{currentUser?.email}</h1>
-                            
                         </div>
                     </AccordionTrigger>
-                    <AccordionContent className='flex flex-col justify-center gap-4 items-start h-fit bg-[#EFF5F5] rounded-lg p-2'>
+                    <AccordionContent className='flex flex-col justify-center gap-2 items-start h-fit bg-[#EFF5F5] rounded-lg p-2'>
+
+                    <Link href={`/admin/users`} className='flex gap-2 items-center hover:cursor-pointer hover:bg-[#d9dada] w-full p-2 rounded-md'>
+                    <Settings className='w-4 h-4' color='#14B8A6' /><span className='font-[500] leading-5 text-sm'>Admin Setting</span>
+                    
+                    </Link>
                         
                     <div className='flex items-center gap-2 hover:cursor-pointer hover:bg-[#d9dada] w-full p-2 rounded-md' onClick={async () => {
                     const res = await logout();
@@ -133,7 +133,7 @@ const SideBar = () => {
 
             <Account/>
             {!showAdvance ?
-                workSpaces.length > 0 && <Link href={`/workspace/${workspaceid}/advance`} className='w-full flex justify-between items-center bg-[#DEEAEA] p-3 rounded-md hover:cursor-pointer' onClick={() => { setShowAdvance(!showAdvance) }}>
+                workSpaces?.length > 0 && <Link href={`/workspace/${workspaceid}/advance`} className='w-full flex justify-between items-center bg-[#DEEAEA] p-3 rounded-md hover:cursor-pointer' onClick={() => { setShowAdvance(!showAdvance) }}>
                     <h1 className='font-[600] text-sm leading-5'>Advanced</h1>
                     <Image src={rightArrow} alt='open' />
                 </Link>
@@ -151,7 +151,7 @@ const SideBar = () => {
                 })}
             </div>}
 
-           {workSpaces.length > 0 && <NewFolder setFolderAdded={setFolderAdded} openMenu={false} />}
+           {workSpaces?.length > 0 && <NewFolder setFolderAdded={setFolderAdded} openMenu={false} />}
         
         </div>
 

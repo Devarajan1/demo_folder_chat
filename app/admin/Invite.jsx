@@ -7,25 +7,28 @@ import { Users, X } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { useParams } from 'next/navigation';
 import { useToast } from '../../components/ui/use-toast';
+import { currentSessionUserAtom } from '../store'
 
+import { useAtom } from 'jotai';
 function Invite() {
     const [users, setUsers] = useState([]);
     const [loader, setLoader] = useState(false);
     const [userEmail, setUserEmail] = useState('');
     const [selectedUser, setSelectedUser] = useState([]);
     const [existingUser, setExistingUser] = useState([]);
-    const [currentUser, setCurrentUser] = useState({});
+    const [currentUser, setCurrentUser] = useAtom(currentSessionUserAtom);
     const { workspaceid } = useParams();
     const { toast } = useToast();
 
-    async function fetchCurrentUser() {
-        setLoader(true)
-        const user = await getCurrentUser();
-        console.log(user, 'all users')
-        setCurrentUser(user)
-    };
+    // async function fetchCurrentUser() {
+    //     setLoader(true)
+    //     const user = await getCurrentUser();
+    //     console.log(user, 'all users')
+    //     setCurrentUser(user)
+    // };
 
     async function fetchAllUsers() {
+        setLoader(true)
         try {
             // await fetchCurrentUser()
             const res = await getAllUsers();
@@ -85,10 +88,7 @@ function Invite() {
         }
     };
 
-
-
     async function inviteWorkspaceUser(userData) {
-
         try {
             const userIDS = userData.map(user => user.id);
 
@@ -130,12 +130,12 @@ function Invite() {
                 method: 'DELETE',
             });
             if (response.ok) {
-                console.log(response)
+                // console.log(response)
                 toast({
                     variant: 'default',
                     title: "User removed"
                 });
-                await fetchCurrentUser();
+                // await fetchCurrentUser();
                 await fetchWorkspaceUsers();
                 await fetchAllUsers();
 
@@ -146,15 +146,13 @@ function Invite() {
     };
 
     const getEmailById = (userId) => {
-        console.log(userId)
-
         const user = users.find(user => user.id === userId);
         console.log(user)
         return user ? user.email : 'Email not found';
     };
 
     useEffect(() => {
-        fetchCurrentUser();
+        // fetchCurrentUser();
         fetchWorkspaceUsers();
         fetchAllUsers();
 

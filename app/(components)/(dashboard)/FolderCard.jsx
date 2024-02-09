@@ -5,7 +5,7 @@ import Image from 'next/image';
 import threeDot from '../../../public/assets/more-horizontal.svg'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../../components/ui/accordion";
 import { useAtom } from 'jotai';
-import { chatTitleAtom, chatSessionIDAtom, folderIdAtom, folderAddedAtom, chatHistoryAtom, tempAtom } from '../../store';
+import { chatTitleAtom, chatSessionIDAtom, folderIdAtom, folderAddedAtom, chatHistoryAtom, tempAtom, currentSessionUserAtom } from '../../store';
 import { Popover, PopoverContent, PopoverTrigger } from '../../../components/ui/popover';
 import { Pencil, Trash2, Check, X, MessageSquare } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
@@ -37,7 +37,7 @@ const FolderCard = ({ fol }) => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [documentSet, setDocumentSet] = useState([]);
     const [temp, setTemp] = useAtom(tempAtom)
-    const [currentUser, setCurrentUser] = useState({})
+    const [currentUser, setCurrentUser] = useAtom(currentSessionUserAtom);
     const { workspaceid, chatid } = useParams();
 
     const router = useRouter();
@@ -88,10 +88,10 @@ const FolderCard = ({ fol }) => {
         }
     };
 
-    async function fetchCurrentUser(){
-        const user = await getCurrentUser();
-        setCurrentUser(user)
-      };
+    // async function fetchCurrentUser(){
+    //     const user = await getCurrentUser();
+    //     setCurrentUser(user)
+    //   };
   
       
     async function updateFolderName(name, folder) {
@@ -208,7 +208,7 @@ const FolderCard = ({ fol }) => {
     };
 
     useEffect(() => {
-        fetchCurrentUser();
+        // fetchCurrentUser();
     }, []);
 
     useEffect(() => {

@@ -1,7 +1,7 @@
 'use client'
 import { useAtom } from 'jotai'
 import React, { useEffect, useState } from 'react'
-import { darkModeAtom, isPostNameCompleteAtom, isPostUserCompleteAtom, selectOptionAtom, sessionAtom } from '../../store'
+import { darkModeAtom, isPostNameCompleteAtom, isPostUserCompleteAtom, selectOptionAtom, currentSessionUserAtom } from '../../store'
 import {
   Select,
   SelectContent,
@@ -61,7 +61,7 @@ const SelectCard = (props) => {
 const WorkPlace = () => {
   const [darkMode] = useAtom(darkModeAtom);
   const [workPlaceName, setWorkPlaceName] = useState('');
-  const [session, setSession] = useAtom(sessionAtom);
+  const [session, setSession] = useAtom(currentSessionUserAtom);
 
   const router = useRouter();
 
@@ -97,7 +97,7 @@ const UserDetails = () => {
   const [isPostNameComplete, setIsPostNameComplete] = useAtom(isPostNameCompleteAtom);
   const [selectValue, setSelectValue] = useAtom(selectOptionAtom);
 
-  const [session, setSession] = useAtom(sessionAtom);
+  const [session, setSession] = useAtom(currentSessionUserAtom);
 
   const {toast} = useToast();
 

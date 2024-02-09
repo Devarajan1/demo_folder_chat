@@ -238,37 +238,44 @@ export const advanceOption = [
   {
     id:'indexing',
     title:'Indexing',
-    icon: showAllIcon
+    icon: showAllIcon,
+    status:'active'
   },
-  // {
-  //   id:'drive',
-  //   title:'Google Drive',
-  //   icon: gDriveIcon
-  // },
-  // {
-  //   id:'slack',
-  //   title:'Slack',
-  //   icon: slackIcon
-  // },
-  // {
-  //   id:'confluence',
-  //   title:'Confluence',
-  //   icon: confluenceIcon
-  // },
-  // {
-  //   id:'github',
-  //   title:'Github PRs',
-  //   icon: gitPrsIcon
-  // },
   {
     id:'web',
     title:'Web',
-    icon: webIcon
+    icon: webIcon,
+    status:'active'
   },
   {
     id:'files',
     title:'Files',
-    icon: filesIcon
+    icon: filesIcon,
+    status:'active'
+  },
+  {
+    id:'drive',
+    title:'Google Drive',
+    icon: gDriveIcon,
+    status:'inactive'
+  },
+  {
+    id:'slack',
+    title:'Slack',
+    icon: slackIcon,
+    status:'inactive'
+  },
+  {
+    id:'confluence',
+    title:'Confluence',
+    icon: confluenceIcon,
+    status:'inactive'
+  },
+  {
+    id:'github',
+    title:'Github PRs',
+    icon: gitPrsIcon,
+    status:'inactive'
   }
 ];
 

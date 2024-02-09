@@ -8,7 +8,7 @@ import { useDropzone } from 'react-dropzone';
 import { Label } from '../../../../../../components/ui/label';
 import { deleteConnectorFromTable, fetchAllConnector, fetchIndexing, getSess } from '../../../../../../lib/helpers';
 import { useAtom } from 'jotai';
-import { sessionAtom, userConnectorsAtom } from '../../../../../store';
+import { currentSessionUserAtom, userConnectorsAtom } from '../../../../../store';
 import { Loader, X } from 'lucide-react';
 import {
     Table,
@@ -26,7 +26,7 @@ const Files = () => {
     const [userFiles, setUserFiles] = useState([]);
     const [loading, setLoading] = useState(true)
     const [userConnectors, setUserConnectors] = useAtom(userConnectorsAtom);
-    const [session, setSession] = useAtom(sessionAtom);
+    const [session, setSession] = useAtom(currentSessionUserAtom);
     const [existConnector ,setExistConnector] = useState([]);
     const [uploading, setUploading] = useState(false);
     const [connectorName, setConnectorName] = useState('');

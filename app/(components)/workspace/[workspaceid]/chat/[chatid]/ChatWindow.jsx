@@ -9,7 +9,7 @@ import Image from 'next/image'
 import { iconSelector } from '../../../../../../config/constants'
 import { Folder, Loader2, Plus, MoreHorizontal } from 'lucide-react';
 import { useAtom } from 'jotai'
-import { chatHistoryAtom, chatTitleAtom, chatSessionIDAtom, folderAddedAtom, folderAtom, folderIdAtom, showAdvanceAtom, userConnectorsAtom } from '../../../../../store'
+import { currentSessionUserAtom, chatHistoryAtom, chatTitleAtom, chatSessionIDAtom, folderAddedAtom, folderAtom, folderIdAtom, showAdvanceAtom, userConnectorsAtom } from '../../../../../store'
 import ReactMarkdown from "react-markdown";
 import { useToast } from '../../../../../../components/ui/use-toast'
 import { NewFolder } from '../../../../(dashboard)'
@@ -63,7 +63,7 @@ const ChatWindow = () => {
     const [docSetOpen, setDocSetOpen] = useState(false);
     const [workSpaceValue, setWorkSpaceValue] = useState(null)
     const [userWorkSpaces, setUserWorkSpaces] = useState([]);
-    const [currentUser, setCurrentUser] = useState({})
+    const [currentUser, setCurrentUser] = useAtom(currentSessionUserAtom)
     const botResponse = useRef('');
     const router = useRouter();
     const { workspaceid, chatid } = useParams()
@@ -441,11 +441,11 @@ const ChatWindow = () => {
     
     };
 
-    async function fetchCurrentUser(){
-        const user = await getCurrentUser();
+    // async function fetchCurrentUser(){
+    //     const user = await getCurrentUser();
         
-        setCurrentUser(user)
-      };
+    //     setCurrentUser(user)
+    //   };
 
     async function getWorkSpace(){
         const url = currentUser.role === "admin" ? '/api/workspace/admin/list-workspace' : '/api/workspace/list-workspace-public'
@@ -540,7 +540,7 @@ const ChatWindow = () => {
                     }
                 </div>
 
-                {folder?.length > 0 && <div className='flex gap-4 '>
+                {/* {folder?.length > 0 && <div className='flex gap-4 '>
                     <div className='flex gap-2 justify-center items-center hover:cursor-pointer opacity-[60%] hover:opacity-100 text-[12px] font-[600] text-[#334155]'>
                         <Image src={shareIcon} alt='share' />
                         <p>Share</p>
@@ -551,7 +551,7 @@ const ChatWindow = () => {
                         <p>Open Document</p>
 
                     </div>
-                </div>}
+                </div>} */}
             </div>
             {loading ? 
                 <div className='w-full p-2 h-full items-center justify-center '>
