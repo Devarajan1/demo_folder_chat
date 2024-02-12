@@ -241,7 +241,7 @@ const FolderCard = ({ fol }) => {
                                     </div>
                                 )
                             })}
-                            <InviteFolderUser folder_id={id} popoverSetOpen={setPopOpen}/>
+                            {currentUser?.role === 'admin' && <InviteFolderUser folder_id={id} popoverSetOpen={setPopOpen}/>}
                             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                                 <DialogTrigger asChild>
                                     <div className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" onClick={() => { setFolNewName(name); setDialogOpen(true); }}>

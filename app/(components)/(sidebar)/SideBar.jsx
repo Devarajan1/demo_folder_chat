@@ -134,7 +134,6 @@ const SideBar = () => {
             </div>}
 
             <div className='w-full border rounded-sm px-2 py-1'>
-                <h1 className='text-sm font-[600] leading-5 w-full p-1'>Workspaces</h1>
                 <AddWorkspace />
             </div>
             {!showAdvance ?

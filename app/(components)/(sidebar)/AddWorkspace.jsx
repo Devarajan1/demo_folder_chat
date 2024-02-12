@@ -77,6 +77,8 @@ const Account = () => {
   return (
     <div className='w-full '>
       {workspaces?.length > 0 ? (
+        <>
+        <h1 className='text-sm font-[600] leading-5 w-full p-1'>Workspaces</h1>
         <Popover open={open} onOpenChange={setOpen} className='w-full h-40 overflow-y-scroll'>
           <PopoverTrigger asChild>
             <Button
@@ -131,8 +133,9 @@ const Account = () => {
             {currentUser?.role === 'admin' && <WorkspaceDialog openMenu={openWork} setOpenMenu={setOpenWork} showBtn={true} />}
           </PopoverContent>
         </Popover>
-      ) : currentUser?.role === 'admin' && <WorkspaceDialog openMenu={openWork} setOpenMenu={setOpenWork} showBtn={true} />}
+        </>  ) : currentUser?.role === 'admin' && <WorkspaceDialog openMenu={openWork} setOpenMenu={setOpenWork} showBtn={true} />}
     </div>
+    
   )
 }
 
