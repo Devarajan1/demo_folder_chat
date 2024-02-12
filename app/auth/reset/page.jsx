@@ -51,7 +51,7 @@ const Reset = () => {
               <div>
                 <Label htmlFor="email" className={`text-[14px] font-[500] leading-[20px] ${darkMode ? 'text-black' : ''}`}>Email Address</Label>
                 <Input type='email' id="email" name='email' value={email} placeholder='Enter Your Email' className='text-black bg-white font-[500] leading-[20px] mt-2' onChange={(e) => setEmail(e.target.value)} />
-              </div>
+              </div>  
               <p className='tracking-tight text-xs text-red-400 -mt-4'>{error}</p>
               <Button variant={'outline'} className='w-full text-sm font-[400] text-white bg-[#14B8A6] border-[#14B8A6] leading-[24px] flex items-center justify-center'>Send Otp</Button>
               <div className={`w-full text-sm opacity-75 text-center ${darkMode ? 'text-black' : 'text-white'}`}>Already have an account &#63; <Link href={'/auth/login'} className='font-[500] hover:underline'>Sign In</Link></div>

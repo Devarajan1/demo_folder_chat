@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { getAllUsers, getCurrentUser } from '../../lib/user';
 import { Label } from '../../components/ui/label';
 import { Input } from '../../components/ui/input';
@@ -20,6 +20,13 @@ function Invite() {
     const [showList, setShowList] = useState(false)
     const { workspaceid } = useParams();
     const { toast } = useToast();
+    const containerRef = useRef(null);
+
+    const handleClickOutside = (event) => {
+        if (containerRef.current && !containerRef.current.contains(event.target)) {
+          setShowList(false);
+        }
+      };
 
     // async function fetchCurrentUser() {
     //     setLoader(true)
@@ -155,6 +162,14 @@ function Invite() {
         fetchAllUsers();
 
     }, []);
+    useEffect(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+    
+        return () => {
+          document.removeEventListener('mousedown', handleClickOutside);
+        };
+      }, []);
+
 
     return (
         <div className='font-Inter p-2 min-h-[50vh] space-y-1 flex flex-col justify-between box-border'>
@@ -180,16 +195,16 @@ function Invite() {
                     }
                 </div>
 
-                {/* {(users?.length > 0) ?
-                    <div className='w-full border rounded-md max-h-[25vh] overflow-y-scroll no-scrollbar'>
-                        {users?.map(user => user?.email.includes(userEmail) && <p key={user?.id} className='p-2 hover:cursor-pointer hover:bg-slate-100 border-b text-sm leading-5 font-[400]' onClick={(() => handleAddUser(user))}>{user?.email}</p>)}
+                {(showList && users?.length > 0) ?
+                    <div ref={containerRef}  className='border rounded-md max-h-[25vh] overflow-y-scroll no-scrollbar bg-white w-full z-20 absolute'>
+                        {users?.map(user => user?.email.includes(userEmail) && <p key={user?.id} className='p-2 hover:cursor-pointer hover:bg-slate-100 border-b text-sm leading-5 font-[400]  ' onClick={(() => handleAddUser(user))}>{user?.email}</p>)}
                     </div> :
                     loader && <div className='w-full h-32 flex justify-center items-center'>
                         <p className='animate-pulse font-[500] text-sm leading-8'>Loading...</p>
                     </div>
-                } */}
+                }
 
-                {showList && <div className='w-full  border rounded-md max-h-[25vh] overflow-y-scroll no-scrollbar'>
+                {/* {showList && <div className='w-full  border rounded-md max-h-[25vh] overflow-y-scroll no-scrollbar'>
                     {users?.length > 0 ? users?.map(user => user?.email.includes(userEmail) && <p key={user?.id} className='absolute bg-white w-full z-20 p-2 hover:cursor-pointer hover:bg-slate-100 border-b text-sm leading-5 font-[400]' onClick={(() => handleAddUser(user))}>{user?.email}</p>):
                     <p className='absolute p-2 hover:cursor-pointer hover:bg-slate-100 border-b text-sm leading-5 font-[400] z-20 bg-white w-full'>No user found</p>
                     }
@@ -197,7 +212,7 @@ function Invite() {
 
                 {loader && <div className='w-full h-32 flex justify-center items-center'>
                     <p className='animate-pulse font-[500] text-sm leading-8'>Loading...</p>
-                </div>}
+                </div>} */}
 
                 <div className='fixed w-[90%] p-2'>
                     {!loader && existingUser?.map(user => <div key={user?.id} className='w-full p-2 hover:cursor-pointer border-b text-sm leading-5 font-[400] flex justify-between items-center'>
@@ -208,7 +223,7 @@ function Invite() {
                     </div>)}
                 </div>
             </div>
-            <Button disabled={selectedUser.length === 0} className='w-[25%] m-auto' onClick={() => inviteWorkspaceUser(selectedUser)}>Invite User</Button>
+            <Button disabled={selectedUser.length === 0} className='w-[25%] m-auto z-50' onClick={() => inviteWorkspaceUser(selectedUser)}>Invite User</Button>
         </div>
     )
 }
