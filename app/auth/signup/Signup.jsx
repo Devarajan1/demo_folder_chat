@@ -52,12 +52,7 @@ const Signup = ( { isSignup, shouldVerify } ) => {
             }
         }
         else {
-            const errorDetail = await loginResponse.json();
-            const jsonString = errorDetail.message
-            const validJsonString = jsonString.replace(/'/g, "\"");
-            const errorData = JSON.parse(validJsonString);
-            console.log(errorData)
-            
+            const errorDetail = (await loginResponse.json()).detail;
             if (errorDetail === "LOGIN_BAD_CREDENTIALS") {
               setInputError("Invalid email or password")
               return null
