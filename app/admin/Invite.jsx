@@ -17,6 +17,7 @@ function Invite() {
     const [selectedUser, setSelectedUser] = useState([]);
     const [existingUser, setExistingUser] = useState([]);
     const [currentUser, setCurrentUser] = useAtom(currentSessionUserAtom);
+    const [showList, setShowList] = useState(false)
     const { workspaceid } = useParams();
     const { toast } = useToast();
 
@@ -31,29 +32,30 @@ function Invite() {
         setLoader(true)
         try {
             // await fetchCurrentUser()
+            const wkUsers = await fetchWorkspaceUsers();
             const res = await getAllUsers();
-
+            setLoader(false)
             if (res?.length > 0) {
-                console.log(res, 'all users');
 
                 const nonAdminUsers = res.filter(user => user?.role !== 'admin');
 
                 let fillterdUsers = [];
-                setUsers(nonAdminUsers)
 
-                // for (let i = 0; i < existingUser.length; i++) {
-                //     for (let j = 0; j < nonAdminUsers.length; j++) {
-                //         if (existingUser[i].user_id !== nonAdminUsers[j].id) {
-                //             fillterdUsers.push(nonAdminUsers[j])
-                //         }
-                //     }
-                // };
 
-                // const user = nonAdminUsers.find(user => user.id === userId)
-                const nonCommonInArray1 = nonAdminUsers.filter(item => !existingUser.includes(item));
+                for (let i = 0; i < nonAdminUsers.length; i++) {
+                    let flag = false
+                    for (let j = 0; j < wkUsers.length; j++) {
 
-                console.log(nonCommonInArray1, 'non common')
-                // setUsers(fillterdUsers)
+                        if (wkUsers[j]?.user?.user_id === nonAdminUsers[i].id) {
+                            flag = true
+                        }
+                    };
+                    if (!flag) {
+                        fillterdUsers.push(nonAdminUsers[i])
+                    }
+                };
+
+                setUsers(fillterdUsers)
             }
 
         } catch (error) {
@@ -67,8 +69,9 @@ function Invite() {
         const response = await fetch(`/api/workspace/admin/list-workspace-user?workspace_id=${workspaceid}`);
         if (response.ok) {
             const json = await response.json();
-            console.log(json.data, 'current wk users')
+            // console.log(json.data, 'current wk users')
             setExistingUser(json?.data)
+            return json?.data
         }
     }
 
@@ -144,22 +147,17 @@ function Invite() {
             console.log(error)
         }
     };
-
-    const getEmailById = (userId) => {
-        const user = users.find(user => user.id === userId);
-        console.log(user)
-        return user ? user.email : 'Email not found';
-    };
+    ;
 
     useEffect(() => {
         // fetchCurrentUser();
-        fetchWorkspaceUsers();
+
         fetchAllUsers();
 
     }, []);
 
     return (
-        <div className='font-Inter p-2 min-h-[50vh] space-y-1 flex flex-col justify-between'>
+        <div className='font-Inter p-2 min-h-[50vh] space-y-1 flex flex-col justify-between box-border'>
             <div className='relative'>
                 <Label
                     htmlFor='user-email'
@@ -172,6 +170,8 @@ function Invite() {
                         type='text'
                         value={userEmail}
                         placeholder='write user email here'
+                        onClick={(e) => setShowList(true)}
+                        // onMouseLeave={(e) => setShowList(false)}
                         onChange={(e) => setUserEmail(e.target.value)}
                         className='border-none  max-w-full h-full w-[100%] focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
                     />
@@ -180,18 +180,29 @@ function Invite() {
                     }
                 </div>
 
-                {(users?.length > 0) ?
+                {/* {(users?.length > 0) ?
                     <div className='w-full border rounded-md max-h-[25vh] overflow-y-scroll no-scrollbar'>
                         {users?.map(user => user?.email.includes(userEmail) && <p key={user?.id} className='p-2 hover:cursor-pointer hover:bg-slate-100 border-b text-sm leading-5 font-[400]' onClick={(() => handleAddUser(user))}>{user?.email}</p>)}
                     </div> :
                     loader && <div className='w-full h-32 flex justify-center items-center'>
                         <p className='animate-pulse font-[500] text-sm leading-8'>Loading...</p>
                     </div>
-                }
-                <div className='absolute'>
-                    {existingUser?.map(user => <div key={user?.id} className='p-2 hover:cursor-pointer  border-b text-sm leading-5 font-[400] flex justify-between items-center'>
+                } */}
 
-                        <p>{getEmailById(user?.user_id)}</p>
+                {showList && <div className='w-full  border rounded-md max-h-[25vh] overflow-y-scroll no-scrollbar'>
+                    {users?.length > 0 ? users?.map(user => user?.email.includes(userEmail) && <p key={user?.id} className='absolute bg-white w-full z-20 p-2 hover:cursor-pointer hover:bg-slate-100 border-b text-sm leading-5 font-[400]' onClick={(() => handleAddUser(user))}>{user?.email}</p>):
+                    <p className='absolute p-2 hover:cursor-pointer hover:bg-slate-100 border-b text-sm leading-5 font-[400] z-20 bg-white w-full'>No user found</p>
+                    }
+                </div>}
+
+                {loader && <div className='w-full h-32 flex justify-center items-center'>
+                    <p className='animate-pulse font-[500] text-sm leading-8'>Loading...</p>
+                </div>}
+
+                <div className='fixed w-[90%] p-2'>
+                    {!loader && existingUser?.map(user => <div key={user?.id} className='w-full p-2 hover:cursor-pointer border-b text-sm leading-5 font-[400] flex justify-between items-center'>
+
+                        <p>{user?.user?.email}</p>
                         <p className='max-w-fit p-2 rounded-full bg-red-100 hover:bg-red-200 text-red-500 font-[600]' onClick={() => removerUserFromWorkspace(user?.id)}>Remove</p>
 
                     </div>)}

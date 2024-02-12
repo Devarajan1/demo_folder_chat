@@ -33,6 +33,13 @@ const Signup = ( { isSignup, shouldVerify } ) => {
 
 
   const signUpFunction = async () => {
+    const emailRegex = /^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$/
+    if(!emailRegex.test(userInput.email)){
+      setInputError("Incorrect email address")
+      return null
+    }
+    
+     
     if (!disabled) {
         // let isSignup = true
         const loginResponse = await basicSignup(userInput.email, userInput.password)
@@ -45,7 +52,11 @@ const Signup = ( { isSignup, shouldVerify } ) => {
             }
         }
         else {
-            const errorDetail = (await loginResponse.json()).detail;
+            const errorDetail = await loginResponse.json();
+            const jsonString = errorDetail.message
+            const validJsonString = jsonString.replace(/'/g, "\"");
+            const errorData = JSON.parse(validJsonString);
+            console.log(errorData)
             setInputError("Unknown error")
             if (errorDetail === "LOGIN_BAD_CREDENTIALS") {
               setInputError("Invalid email or password")
@@ -74,7 +85,6 @@ const Signup = ( { isSignup, shouldVerify } ) => {
   useEffect(() => {
     if (userInput.email !== '' && userInput.email.split('@').length > 1 && userInput.password != '' && userInput.confirm_password != '') {
       setDisabled(false)
-      
     } else {
       setDisabled(true)
     }
@@ -85,7 +95,7 @@ const Signup = ( { isSignup, shouldVerify } ) => {
 
     if (session) {
       setLoading(false);
-      router.push("/chat");
+      router.push("/workspace");
     } else {
       setLoading(false)
     }

@@ -101,8 +101,8 @@ const FolderCard = ({ fol }) => {
         
         try {
             const { id, workspace_id, description, is_active, chat_enabled } = folder
-            const url = currentUser?.role === "admin" ? '/api/workspace/admin/update-folder' :'/api/workspace/update-folder'
-            const response = await fetch(url, {
+            // const url = currentUser?.role === "admin" ? '/api/workspace/admin/update-folder' :'/api/workspace/update-folder'
+            const response = await fetch(`/api/workspace/update-folder`, {
                 credentials:'include',
                 method: 'PUT',
                 headers: {
@@ -134,11 +134,12 @@ const FolderCard = ({ fol }) => {
     async function deleteFolder(fol_id) {
         console.log(fol_id);
         try {
-            const url = currentUser?.role === "admin" ? '/api/workspace/admin/delete-folder' :'/api/workspace/delete-folder' 
-            const response = await fetch(`${url}/${fol_id}`, {
+            // const url = currentUser?.role === "admin" ? '/api/workspace/admin/delete-folder' :'/api/workspace/delete-folder' 
+            const response = await fetch(`/api/workspace/delete-folder/${fol_id}`, {
                 credentials:'include',
                 method:'DELETE'
             });
+            
             if(response.ok){
                 setFolderAdded(!folderAdded)
                 setPopOpen(false)

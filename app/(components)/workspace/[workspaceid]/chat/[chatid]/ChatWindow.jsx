@@ -5,6 +5,10 @@ import Logo from "../../../../../../public/assets/Logo.svg"
 import editIcon from "../../../../../../public/assets/edit-2.svg"
 import shareIcon from '../../../../../../public/assets/Navbar_Share.svg'
 import openDocIcon from '../../../../../../public/assets/Navbar_OpenDoc.svg'
+import thumbsDownIconGray from '../../../../../../public/assets/thumbs-down.svg'
+import thumbsDownIconGreen from '../../../../../../public/assets/thumbs-down - hover.svg'
+import thumbsUpIconGreen from '../../../../../../public/assets/thumbs-up - hover.svg'
+import thumbsUpIconGray from '../../../../../../public/assets/thumbs-up.svg'
 import Image from 'next/image'
 import { iconSelector } from '../../../../../../config/constants'
 import { Folder, Loader2, Plus, MoreHorizontal } from 'lucide-react';
@@ -35,8 +39,6 @@ import { getCurrentUser } from '../../../../../../lib/user'
 
 
 const ChatWindow = () => {
-
-
     const [userConnectors, setUserConnectors] = useAtom(userConnectorsAtom);
     const [loading, setLoading] = useState(true)
     const [rcvdMsg, setRcvdMsg] = useState('')
@@ -69,6 +71,17 @@ const ChatWindow = () => {
     const { workspaceid, chatid } = useParams()
     
     const { toast } = useToast();
+    const [isHoveredLike, setHoveredLike] = useState(false);
+    const [isHoveredDislike, setHoveredDislike] = useState(false)
+
+    // const handleHoverLike = () => {
+    //     setHoveredLike(!isHoveredLike);
+    // };
+
+    // const handleHoverDislike = () => {
+    //     setHoveredDislike(!isHoveredDislike);
+    // };
+
 
     async function createChatSessionId(userMsgdata) {
         setRcvdMsg('')
@@ -448,7 +461,7 @@ const ChatWindow = () => {
     //   };
 
     async function getWorkSpace(){
-        const url = currentUser.role === "admin" ? '/api/workspace/admin/list-workspace' : '/api/workspace/list-workspace-public'
+        const url = currentUser?.role === "admin" ? '/api/workspace/admin/list-workspace' : '/api/workspace/list-workspace-public'
         const res = await fetch(url);
         if(res.ok){
             const json = await res.json();
@@ -581,10 +594,12 @@ const ChatWindow = () => {
                                 <>
 
                                     {msgLoader &&
-                                        <div className='font-[400] text-sm leading-6 self-start float-left border-2 max-w-[70%] bg-transparent py-2 px-4 rounded-lg text-justify rounded-tl-[0px] break-words'>
-                                            {rcvdMsg === '' ? <MoreHorizontal className='m-auto animate-pulse' /> :
+                                        <div className='font-[400] text-sm leading-6 self-start float-left max-w-[70%] bg-transparent py-2 px-4 text-justify rounded-tl-[0px] break-words border-2 rounded-lg'>
+                                            {rcvdMsg === '' ? 
+                                            <MoreHorizontal className='m-auto animate-pulse' /> 
+                                            :
+                                            <div className='space-y-2 box-border'>
                                                 <ReactMarkdown
-                                                    className='w-full'
                                                     components={{
                                                         a: ({ node, ...props }) => (
                                                             <a
@@ -614,7 +629,10 @@ const ChatWindow = () => {
                                                     }}
                                                 >
                                                     {rcvdMsg?.replaceAll("\\n", "\n")}
-                                                </ReactMarkdown>}
+                                                </ReactMarkdown>
+                                                
+                                            </div>
+                                                }
                                         </div>}
 
                                 </>
@@ -708,6 +726,7 @@ const ChatWindow = () => {
 
 
                                         })}
+                                        
                                     </div>
                                 )}
 

@@ -6,6 +6,7 @@ const InnerSetting = () => {
             <div className='flex flex-col gap-6'>
                 <h2 className='font-[600] text-[18px] leading-7'>Privacy</h2>
                 <div className='w-full flex justify-between items-center'>
+                    
                     <div className='font-[400] text-sm leading-6'>
                         <p className='opacity-[50%]'>Cookie settings</p>
                         <p className='font-[500]'>Customize cookies. See Cookie Notice for details.</p>
