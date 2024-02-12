@@ -45,6 +45,11 @@ const Login= ( { shouldVerify } ) => {
 
 
     const Sign = async () => {
+        const emailRegex = /^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$/
+        if(!emailRegex.test(email)){
+            setError("Incorrect email address")
+        return null
+        }
         if (!disabled) {
             let isSignup = false
             const loginResponse = await basicLogin(email, password)
@@ -58,10 +63,11 @@ const Login= ( { shouldVerify } ) => {
             }
             else {
                 const errorDetail = (await loginResponse.json()).detail;
-                setError("Unknown error")
                 if (errorDetail === "LOGIN_BAD_CREDENTIALS") {
-                    setError("Invalid email or password")
+                    setError("Invalid email or password");
+                    return null
                 }
+                setError("Unknown error")
             }
         }
     }

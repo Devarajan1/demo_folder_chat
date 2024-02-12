@@ -1,4 +1,4 @@
-import InnerSetting from "./InnerSetting";
+import ProfileSetting from "./ProfileSetting";
 import MyProfile from "./MyProfile";
 import Plans from "./Plans";
 import Notification from "./Notification";
@@ -6,7 +6,7 @@ import Setting from "./Setting";
 
 
 export {
-    InnerSetting,
+    ProfileSetting,
     MyProfile,
     Plans,
     Notification,

@@ -1,6 +1,5 @@
 
-import { Signup } from '../../(components)/(common)/index'
-import { useRouter } from 'next/navigation';
+import Signup from './Signup'
 import {
   getCurrentUserSS,
   getAuthUrlSS,
@@ -36,7 +35,7 @@ const Page = async (
       return redirect("/auth/waiting-on-verification");
     }
 
-    return redirect("/workspace/0/chat/new");
+    return redirect("/workspace");
   }
 
   // get where to send the user to authenticate

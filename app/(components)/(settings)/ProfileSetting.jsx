@@ -1,6 +1,6 @@
 import React from 'react'
 
-const InnerSetting = () => {
+const ProfileSetting = () => {
   return (
     <div className='w-full py-5 font-Inter flex flex-col'>
             <div className='flex flex-col gap-6'>
@@ -26,4 +26,4 @@ const InnerSetting = () => {
   )
 }
 
-export default InnerSetting
+export default ProfileSetting

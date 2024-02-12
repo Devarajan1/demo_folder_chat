@@ -11,7 +11,7 @@ import { Setting } from '../(settings)'
 import { ChevronDown, Check, UserPlus } from 'lucide-react';
 import { getCurrentUser } from '../../../lib/user';
 import { Button } from '../../../components/ui/button';
-import { Workspace } from '../(common)';
+import { WorkspaceDialog } from '../(common)';
 import {
     Command,
     CommandEmpty,
@@ -128,10 +128,10 @@ const Account = () => {
             ))}
           </CommandGroup>
         </Command>
-        {currentUser?.role === 'admin' && <Workspace openMenu={openWork} setOpenMenu={setOpenWork} showBtn={true} />}
+        {currentUser?.role === 'admin' && <WorkspaceDialog openMenu={openWork} setOpenMenu={setOpenWork} showBtn={true} />}
       </PopoverContent>
     </Popover>
-  ) : currentUser?.role === 'admin' && <Workspace openMenu={openWork} setOpenMenu={setOpenWork} showBtn={true} />}
+  ) : currentUser?.role === 'admin' && <WorkspaceDialog openMenu={openWork} setOpenMenu={setOpenWork} showBtn={true} />}
 </div>
     )
 }

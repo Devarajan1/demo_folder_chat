@@ -57,10 +57,12 @@ const Signup = ( { isSignup, shouldVerify } ) => {
             const validJsonString = jsonString.replace(/'/g, "\"");
             const errorData = JSON.parse(validJsonString);
             console.log(errorData)
-            setInputError("Unknown error")
+            
             if (errorDetail === "LOGIN_BAD_CREDENTIALS") {
               setInputError("Invalid email or password")
+              return null
             }
+            setInputError("Unknown error")
         }
     }
 }

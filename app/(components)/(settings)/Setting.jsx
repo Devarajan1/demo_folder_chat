@@ -7,7 +7,7 @@ import { currentSessionUserAtom } from '../../store';
 import Image from 'next/image';
 import { DropdownMenuSeparator } from "../../../components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "../../../components/ui/popover"
-import { MyProfile, Notification, InnerSetting, Plans } from './index';
+import { MyProfile, Notification, ProfileSetting, Plans } from './index';
 import { setting } from '../../../config/constants';
 import rightArrow from '../../../public/assets/secondary icon.svg';
 import { Button } from '../../../components/ui/button';
@@ -91,7 +91,7 @@ const Setting = ({ item, setItem }) => {
 
                  {item === 'plans' && <Plans />}
                 {item === 'profile' && <MyProfile />}
-                {item === 'settings' && <InnerSetting />}
+                {item === 'settings' && <ProfileSetting />}
                 {item === 'n-settings' && <Notification />}
                
             </div>

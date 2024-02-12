@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 
 import { useAtom } from 'jotai';
 import { darkModeAtom } from '../../store';
-import { Header, UpdatePassword } from '../../(components)/(common)';
+import UpdatePassword from './UpdatePassword';
 import Link from 'next/link';
 
 

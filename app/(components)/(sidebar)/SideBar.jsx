@@ -1,12 +1,12 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image';
-import { Account, NewFolder, FolderCard } from '../(dashboard)'
+import { AddWorkspace, NewFolder, FolderCard } from './index'
 import { useAtom } from 'jotai';
 import { folderAtom, showAdvanceAtom, folderIdAtom, currentSessionUserAtom, folderAddedAtom, workAddedAtom, workSpacesAtom } from '../../store';
 import rightArrow from '../../../public/assets/secondary icon.svg';
 import { LogOut, Settings } from 'lucide-react';
-import { AdvanceMenu } from './index'
+import AdvanceMenu from '../workspace/[workspaceid]/advance/(component)/AdvanceMenu'
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getCurrentUser, logout } from '../../../lib/user';
@@ -131,7 +131,7 @@ const SideBar = () => {
                 
             </div>}
 
-            <Account/>
+            <AddWorkspace/>
             {!showAdvance ?
                 workSpaces?.length > 0 && <Link href={`/workspace/${workspaceid}/advance`} className='w-full flex justify-between items-center bg-[#DEEAEA] p-3 rounded-md hover:cursor-pointer' onClick={() => { setShowAdvance(!showAdvance) }}>
                     <h1 className='font-[600] text-sm leading-5'>Advanced</h1>

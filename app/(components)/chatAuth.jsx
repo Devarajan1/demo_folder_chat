@@ -1,4 +1,4 @@
-import { SideBar } from './(common)';
+import { SideBar } from './(sidebar)';
 import {
     getAuthTypeMetadataSS,
     getCurrentUserSS,

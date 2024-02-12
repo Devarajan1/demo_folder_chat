@@ -16,7 +16,7 @@ import { useAtom } from 'jotai'
 import { currentSessionUserAtom, chatHistoryAtom, chatTitleAtom, chatSessionIDAtom, folderAddedAtom, folderAtom, folderIdAtom, showAdvanceAtom, userConnectorsAtom } from '../../../../../store'
 import ReactMarkdown from "react-markdown";
 import { useToast } from '../../../../../../components/ui/use-toast'
-import { NewFolder } from '../../../../(dashboard)'
+import { NewFolder } from '../../../../(sidebar)'
 import { useRouter } from 'next/navigation'
 import { getSess } from '../../../../../../lib/helpers'
 import { Dialog, DialogTrigger, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../../../../../../components/ui/dialog'
@@ -27,7 +27,7 @@ import { cn } from '../../../../../../lib/utils'
 import plus from '../../../../../../public/assets/plus.svg'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { Workspace } from '../../../../(common)'
+import { WorkspaceDialog } from '../../../../(common)'
 import {
     Select,
     SelectContent,
@@ -576,7 +576,7 @@ const ChatWindow = () => {
                         <Folder color='#14B8A6' size={'3rem'} className='block animate-pulse' />
                         <p className='text-[16px] leading-5 font-[400]'><strong className='hover:underline hover:cursor-pointer' onClick={() => setOpen(true)}>Create</strong> a Folder and start chating with folder.chat</p>
                         {open && <NewFolder setFolderAdded={setFolderAdded} openMenu={open} setOpenMenu={setOpen} />}
-                        {workspaceid == 0 && <Workspace openMenu={openWorkSpace} setOpenMenu={setOpenWorkSpace} showBtn={false}/>}
+                        {workspaceid == 0 && <WorkspaceDialog openMenu={openWorkSpace} setOpenMenu={setOpenWorkSpace} showBtn={false}/>}
                     </div>:
                     <div className='w-full h-full flex flex-col justify-center items-center gap-4'>
                     <p className='text-[16px] leading-5 font-[400]'>No workspace found</p></div>)
