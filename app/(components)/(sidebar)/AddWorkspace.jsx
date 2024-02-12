@@ -13,16 +13,16 @@ import { getCurrentUser } from '../../../lib/user';
 import { Button } from '../../../components/ui/button';
 import { WorkspaceDialog } from '../(common)';
 import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
 } from "../../../components/ui/command"
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from "../../../components/ui/popover"
 import { cn } from '../../../lib/utils';
 import Link from 'next/link';
@@ -31,109 +31,109 @@ import Invite from '../../admin/Invite';
 
 const Account = () => {
 
-    const [isPostOtpComplete, setPostSignupComplete] = useAtom(isPostSignUpCompleteAtom);
-    const [isPostUserComplete, setPostUserComplete] = useAtom(isPostUserCompleteAtom);
-    const [open, setOpen] = useState(false);
-    const [openWork, setOpenWork] = useState(false)
-    const [item, setItem] = useState('profile')
-    const [folderId, setFolderId] = useAtom(folderIdAtom);
-    const [currentUser, setCurrentUser] = useAtom(currentSessionUserAtom);
-    const [value, setValue] = useState('')
-    const router = useRouter();
-    const { workspaceid } = useParams()
-    const [workspaces, setWorkSpaces] = useState([])
+  const [isPostOtpComplete, setPostSignupComplete] = useAtom(isPostSignUpCompleteAtom);
+  const [isPostUserComplete, setPostUserComplete] = useAtom(isPostUserCompleteAtom);
+  const [open, setOpen] = useState(false);
+  const [openWork, setOpenWork] = useState(false)
+  const [item, setItem] = useState('profile')
+  const [folderId, setFolderId] = useAtom(folderIdAtom);
+  const [currentUser, setCurrentUser] = useAtom(currentSessionUserAtom);
+  const [value, setValue] = useState('')
+  const router = useRouter();
+  const { workspaceid } = useParams()
+  const [workspaces, setWorkSpaces] = useState([])
 
-    // async function fetchCurrentUser() {
-    //     const user = await getCurrentUser();
-    //     setCurrentUser(user)
-    // };
+  // async function fetchCurrentUser() {
+  //     const user = await getCurrentUser();
+  //     setCurrentUser(user)
+  // };
 
-    
-    async function getWorkSpace() {
-        const url = currentUser?.role === "admin" ? '/api/workspace/admin/list-workspace' : '/api/workspace/list-workspace-public'
-        const res = await fetch(url);
-        const json = await res.json()
 
-        if (json?.data?.length > 0) {
-            const currentWorkSpace = json?.data?.filter(workspace => workspace.id == workspaceid);
-            if (currentWorkSpace.length > 0) {
-                setValue(currentWorkSpace[0])
-            } else {
-                setValue(json?.data[0])
-            }
-            setWorkSpaces(json?.data)
-        } else {
-            setValue('')
-        }
+  async function getWorkSpace() {
+    const url = currentUser?.role === "admin" ? '/api/workspace/admin/list-workspace' : '/api/workspace/list-workspace-public'
+    const res = await fetch(url);
+    const json = await res.json()
 
+    if (json?.data?.length > 0) {
+      const currentWorkSpace = json?.data?.filter(workspace => workspace.id == workspaceid);
+      if (currentWorkSpace.length > 0) {
+        setValue(currentWorkSpace[0])
+      } else {
+        setValue(json?.data[0])
+      }
+      setWorkSpaces(json?.data)
+    } else {
+      setValue('')
     }
 
-    useEffect(() => {
-        // fetchCurrentUser();
-        getWorkSpace()
-        
-    }, [workspaceid]);
+  }
 
-    return (
-        <div className='w-full '>
-  {workspaces?.length > 0 ? (
-    <Popover open={open} onOpenChange={setOpen} className='w-full h-40 overflow-y-scroll'>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-full justify-between"
-        >
-          {value
-            ? workspaces.find(workspace => workspace?.name === value?.name)?.name
-            : "Select workspace..."}
-          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-full p-2 space-y-2">
-        {currentUser?.role === 'admin' && (
-          <Dialog>
-            <DialogTrigger asChild>
-              <UserPlus className='hover:cursor-pointer float-right border p-[0.070rem] w-[15%] rounded-sm hover:bg-slate-200'/>
-            </DialogTrigger>
-            <DialogContent>
-              <Invite />
-            </DialogContent>
-          </Dialog>
-        )}
-        <Command>
-          <CommandInput placeholder="Search workspace..." className="h-9" />
-          <CommandEmpty>No workspace found.</CommandEmpty>
-          <CommandGroup>
-            {workspaces?.map(workspace => (
-              <Link href={`/workspace/${workspace?.id}/chat/new`} key={workspace.id} className='hover:cursor-pointer' onClick={() => setFolderId(null)}>
-                <CommandItem
-                  className='hover:cursor-pointer'
-                  value={workspace.name}
-                  onSelect={(currentValue) => {
-                    setValue(workspace)
-                    setOpen(false)
-                  }}
-                >
-                  {workspace.name}
-                  <Check
-                    className={cn(
-                      "ml-auto h-4 w-4",
-                      value?.name === workspace?.name ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                </CommandItem>
-              </Link>
-            ))}
-          </CommandGroup>
-        </Command>
-        {currentUser?.role === 'admin' && <WorkspaceDialog openMenu={openWork} setOpenMenu={setOpenWork} showBtn={true} />}
-      </PopoverContent>
-    </Popover>
-  ) : currentUser?.role === 'admin' && <WorkspaceDialog openMenu={openWork} setOpenMenu={setOpenWork} showBtn={true} />}
-</div>
-    )
+  useEffect(() => {
+    // fetchCurrentUser();
+    getWorkSpace()
+
+  }, [workspaceid]);
+
+  return (
+    <div className='w-full '>
+      {workspaces?.length > 0 ? (
+        <Popover open={open} onOpenChange={setOpen} className='w-full h-40 overflow-y-scroll'>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={open}
+              className="w-full justify-between"
+            >
+              {value
+                ? workspaces.find(workspace => workspace?.name === value?.name)?.name
+                : "Select workspace..."}
+              <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-full p-2 space-y-2">
+            {currentUser?.role === 'admin' && (
+              <Dialog>
+                <DialogTrigger asChild>
+                  <UserPlus className='hover:cursor-pointer float-right border p-[0.070rem] w-[15%] rounded-sm hover:bg-slate-200' />
+                </DialogTrigger>
+                <DialogContent>
+                  <Invite />
+                </DialogContent>
+              </Dialog>
+            )}
+            <Command>
+              <CommandInput placeholder="Search workspace..." className="h-9" />
+              <CommandEmpty>No workspace found.</CommandEmpty>
+              <CommandGroup>
+                {workspaces?.map(workspace => (
+                  <Link href={`/workspace/${workspace?.id}/chat/new`} key={workspace.id} className='hover:cursor-pointer' onClick={() => setFolderId(null)}>
+                    <CommandItem
+                      className='hover:cursor-pointer'
+                      value={workspace.name}
+                      onSelect={(currentValue) => {
+                        setValue(workspace)
+                        setOpen(false)
+                      }}
+                    >
+                      {workspace.name}
+                      <Check
+                        className={cn(
+                          "ml-auto h-4 w-4",
+                          value?.name === workspace?.name ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                    </CommandItem>
+                  </Link>
+                ))}
+              </CommandGroup>
+            </Command>
+            {currentUser?.role === 'admin' && <WorkspaceDialog openMenu={openWork} setOpenMenu={setOpenWork} showBtn={true} />}
+          </PopoverContent>
+        </Popover>
+      ) : currentUser?.role === 'admin' && <WorkspaceDialog openMenu={openWork} setOpenMenu={setOpenWork} showBtn={true} />}
+    </div>
+  )
 }
 
 export default Account

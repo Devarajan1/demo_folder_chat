@@ -1,10 +1,9 @@
 import user from '../public/assets/user.svg';
 import creditCardIcon from '../public/assets/credit-card.svg';
 import settingsIcon from '../public/assets/settings.svg';
-import {CreditCard, Keyboard, Settings, Upload, User, Edit, Trash2, MessagesSquare } from "lucide-react";
+import { CreditCard, Keyboard, Settings, Upload, User, Edit, Trash2, MessagesSquare, UserRoundPlus } from "lucide-react";
 import showAllIcon from '../public/assets/Danswer-All.svg';
 import threeLines from '../public/assets/Danswer-All-B.svg'
-
 import gDriveIcon from '../public/assets/Danswer-google.svg';
 import slackIcon from '../public/assets/Danswer-slack.svg';
 import confluenceIcon from '../public/assets/Danswer-confluence.svg';
@@ -209,19 +208,9 @@ export const folderOptions = [
     icon: MessagesSquare
   },
   {
-    id:'edit',
-    title:'Edit',
-    icon: Edit
-  },
-  {
     id:'upload',
     title:'Upload New File',
     icon: Upload
-  },
-  {
-    id:"delete",
-    title:'Delete',
-    icon:Trash2
   }
 ];
 

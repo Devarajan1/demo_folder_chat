@@ -7,7 +7,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "..
 import { useAtom } from 'jotai';
 import { chatTitleAtom, chatSessionIDAtom, folderIdAtom, folderAddedAtom, chatHistoryAtom, tempAtom, currentSessionUserAtom } from '../../store';
 import { Popover, PopoverContent, PopoverTrigger } from '../../../components/ui/popover';
-import { Pencil, Trash2, Check, X, MessageSquare } from 'lucide-react';
+import { Pencil, Trash2, Check, X, MessageSquare, Edit, UserRoundPlus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { Input } from '../../../components/ui/input';
 import fileIcon from '../../../public/assets/Danswer-doc-B.svg';
@@ -18,8 +18,9 @@ import { Label } from '../../../components/ui/label';
 import { cn } from '../../../lib/utils';
 import Link from 'next/link';
 import { getCurrentUser } from '../../../lib/user';
+import InviteFolderUser from './InviteFolderUser'
 
-const FolderCard = ({ fol }) => { 
+const FolderCard = ({ fol }) => {
 
     const { name, id, workspace_id } = fol
 
@@ -36,7 +37,8 @@ const FolderCard = ({ fol }) => {
     const [folNewName, setFolNewName] = useState('');
     const [dialogOpen, setDialogOpen] = useState(false);
     const [documentSet, setDocumentSet] = useState([]);
-    const [temp, setTemp] = useAtom(tempAtom)
+    const [temp, setTemp] = useAtom(tempAtom);
+    const [workSpaceUsers, setWorkSpaceUsers] = useState([])
     const [currentUser, setCurrentUser] = useAtom(currentSessionUserAtom);
     const { workspaceid, chatid } = useParams();
 
@@ -57,8 +59,7 @@ const FolderCard = ({ fol }) => {
         setPopOpen(false)
     };
 
-    function handleFilessOnclick(data) {
-
+    function handleFilesOnclick(data) {
         setChatSessionID(data.session_id)
         setFolderId(data.folder_id)
     };
@@ -71,7 +72,7 @@ const FolderCard = ({ fol }) => {
             return null
         }
         setIsRenamingChat(false)
-        
+
         setChatRename(!chatTitle)
     };
 
@@ -92,23 +93,19 @@ const FolderCard = ({ fol }) => {
     //     const user = await getCurrentUser();
     //     setCurrentUser(user)
     //   };
-  
-      
-    async function updateFolderName(name, folder) {
-        // console.log(name, folder, currentUser);
 
-        // return null
-        
+
+    async function updateFolderName(name, folder) {
         try {
             const { id, workspace_id, description, is_active, chat_enabled } = folder
             // const url = currentUser?.role === "admin" ? '/api/workspace/admin/update-folder' :'/api/workspace/update-folder'
             const response = await fetch(`/api/workspace/update-folder`, {
-                credentials:'include',
+                credentials: 'include',
                 method: 'PUT',
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body:JSON.stringify({
+                body: JSON.stringify({
                     "workspace_folder_id": id,
                     "workspace_id": workspace_id,
                     "name": name,
@@ -118,7 +115,7 @@ const FolderCard = ({ fol }) => {
                     "chat_enabled": chat_enabled
                 })
             });
-            if(response.ok){
+            if (response.ok) {
                 console.log(response)
                 setFolderAdded(!folderAdded)
                 setDialogOpen(false);
@@ -127,20 +124,18 @@ const FolderCard = ({ fol }) => {
         } catch (error) {
             console.log(error)
         }
-        
+
         return null
     };
 
     async function deleteFolder(fol_id) {
-        console.log(fol_id);
         try {
-            // const url = currentUser?.role === "admin" ? '/api/workspace/admin/delete-folder' :'/api/workspace/delete-folder' 
             const response = await fetch(`/api/workspace/delete-folder/${fol_id}`, {
-                credentials:'include',
-                method:'DELETE'
+                credentials: 'include',
+                method: 'DELETE'
             });
-            
-            if(response.ok){
+
+            if (response.ok) {
                 setFolderAdded(!folderAdded)
                 setPopOpen(false)
                 return null
@@ -148,20 +143,19 @@ const FolderCard = ({ fol }) => {
         } catch (error) {
             console.log(error)
         }
-        
+
     };
 
     async function deleteDocSetFile(data) {
-               
+
         const allPairIds = documentSet[0]?.cc_pair_descriptors.map(connector => connector.id)
         const idxOfID = allPairIds.indexOf(data.id);
         console.log(allPairIds)
         allPairIds.splice(idxOfID, 1)
-        
-        console.log(allPairIds)
-        return null
-        if (allPairIds?.length > 0) {
 
+        console.log(allPairIds)
+        
+        if (allPairIds?.length > 0) {
             await fetch(`/api/manage/admin/document-set`, {
                 method: 'PATCH',
                 headers: {
@@ -169,13 +163,14 @@ const FolderCard = ({ fol }) => {
                 },
                 body: JSON.stringify({
                     "id": documentSet[0]?.id,
-                    "cc_pair_ids": allPairIds
+                    "cc_pair_ids": allPairIds,
+                    "description":''
                 })
             })
 
         } else if (allPairIds?.length === 0) {
 
-            await fetch(`${process.env.NEXT_PUBLIC_INTEGRATION_IP}/api/manage/admin/document-set/${documentSet[0]?.id}`, {
+            await fetch(`/api/manage/admin/document-set/${documentSet[0]?.id}`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -184,7 +179,7 @@ const FolderCard = ({ fol }) => {
             setDocumentSet([])
             router.push(`/workspace/${workspaceid}/chat/upload`)
         }
-
+        await getDocSetDetails(id)
 
     }
 
@@ -192,31 +187,39 @@ const FolderCard = ({ fol }) => {
         if (!folder_id) {
             return null
         }
-        
+
         const res = await fetch(`/api/manage/document-set-v2/${folder_id}`)
-        if(res.ok){
+        if (res.ok) {
             const data = await res.json();
-            
-            if(data.length > 0){
+
+            if (data.length > 0) {
                 setDocumentSet(data)
-            }else{
+            } else {
                 setDocumentSet([])
             }
-            
+
         }
 
 
     };
 
+    async function fetchWkUsers() {
+        const response = await fetch(`/api/workspace/admin/list-workspace-user?workspace_id=${workspaceid}`);
+        if (response.ok) {
+            const json = await response.json();
+            setWorkSpaceUsers(json?.data)
+        }
+    }
     useEffect(() => {
         // fetchCurrentUser();
+        fetchWkUsers()
     }, []);
 
     useEffect(() => {
         getDocSetDetails(id);
     }, [chatHistory, chatTitle, id, workspaceid, temp, chatid]);
 
- 
+
     return (
 
         <Accordion type="single" collapsible defaultValue={folderId}>
@@ -230,73 +233,70 @@ const FolderCard = ({ fol }) => {
                             <Image src={threeDot} alt={'options'} className='w-4 h-4 hover:cursor-pointer' />
                         </PopoverTrigger>
                         <PopoverContent className="w-full flex flex-col p-1 gap-[2px]">
-                            {folderOptions.map((option, idx) => {
+                            {folderOptions.map((option) => {
                                 return (
-                                    option.id !== 'delete' ?
-                                        option.id !== 'edit' ?
-                                            <div key={option.id} className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" onClick={() => { handleOptionsOnclick(option.id, id, workspace_id) }}>
-                                                <option.icon className="mr-2 h-4 w-4" />
-                                                <span>{option.title}</span>
-                                            </div> :
-                                            <Dialog key={option.id} open={dialogOpen} onOpenChange={setDialogOpen}>
-                                                <DialogTrigger asChild>
-                                                    <div key={option.id} className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" onClick={() => { setFolNewName(name); setDialogOpen(true); }}>
-                                                        <option.icon className="mr-2 h-4 w-4" />
-                                                        <span>{option.title}</span>
-                                                    </div>
-                                                </DialogTrigger>
-                                                <DialogContent>
-                                                    <DialogHeader className='mb-2'>
-                                                        <DialogTitle>
-                                                            Update Name
-                                                        </DialogTitle>
-                                                    </DialogHeader>
-                                                    <Label htmlFor='doc-name'>New Name</Label>
-                                                    <Input
-                                                        id='doc-name'
-                                                        type='text'
-                                                        placeholder='new name'
-                                                        value={folNewName}
-                                                        autoComplete='off'
-                                                        className='text-black'
-                                                        onChange={(e) => setFolNewName(e.target.value)}
-                                                    />
-
-
-                                                    <DialogFooter className={cn('w-full')}>
-                                                        <Button variant={'outline'} className={cn('bg-[#14B8A6] text-[#ffffff] m-auto')} onClick={() => updateFolderName(folNewName, fol)}>Update</Button>
-                                                    </DialogFooter>
-
-                                                </DialogContent>
-                                            </Dialog>
-
-                                        :
-                                        <AlertDialog key={option.id}>
-                                            <AlertDialogTrigger asChild>
-                                                <div className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" >
-                                                    <option.icon className="mr-2 h-4 w-4" />
-                                                    <span>{option.title}</span>
-                                                </div>
-                                            </AlertDialogTrigger>
-
-                                            <AlertDialogContent>
-                                                <AlertDialogHeader>
-                                                    <AlertDialogTitle>
-                                                        Are you sure?
-                                                    </AlertDialogTitle>
-                                                    <AlertDialogDescription>
-                                                        This action cannot be undone.
-                                                    </AlertDialogDescription>
-                                                </AlertDialogHeader>
-                                                <AlertDialogFooter>
-                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                    <AlertDialogAction className='bg-[#14B8A6] hover:bg-[#14B8A6] hover:opacity-75' onClick={() => deleteFolder(id)}>Continue</AlertDialogAction>
-                                                </AlertDialogFooter>
-
-                                            </AlertDialogContent>
-                                        </AlertDialog>
+                                    <div key={option.id} className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" onClick={() => { handleOptionsOnclick(option.id, id, workspace_id) }}>
+                                        <option.icon className="mr-2 h-4 w-4" />
+                                        <span>{option.title}</span>
+                                    </div>
                                 )
                             })}
+                            <InviteFolderUser folder_id={id} popoverSetOpen={setPopOpen}/>
+                            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                                <DialogTrigger asChild>
+                                    <div className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" onClick={() => { setFolNewName(name); setDialogOpen(true); }}>
+                                        <Edit className="mr-2 h-4 w-4" />
+                                        <span>Edit</span>
+                                    </div>
+                                </DialogTrigger>
+                                <DialogContent>
+                                    <DialogHeader className='mb-2'>
+                                        <DialogTitle>
+                                            Update Name
+                                        </DialogTitle>
+                                    </DialogHeader>
+                                    <Label htmlFor='doc-name'>New Name</Label>
+                                    <Input
+                                        id='doc-name'
+                                        type='text'
+                                        placeholder='new name'
+                                        value={folNewName}
+                                        autoComplete='off'
+                                        className='text-black'
+                                        onChange={(e) => setFolNewName(e.target.value)}
+                                    />
+
+
+                                    <DialogFooter className={cn('w-full')}>
+                                        <Button variant={'outline'} className={cn('bg-[#14B8A6] text-[#ffffff] m-auto')} onClick={() => updateFolderName(folNewName, fol)}>Update</Button>
+                                    </DialogFooter>
+
+                                </DialogContent>
+                            </Dialog>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <div className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" >
+                                        <Trash2 className="mr-2 h-4 w-4" />
+                                        <span>Delete</span>
+                                    </div>
+                                </AlertDialogTrigger>
+
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>
+                                            Are you sure?
+                                        </AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            This action cannot be undone.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction className='bg-[#14B8A6] hover:bg-[#14B8A6] hover:opacity-75' onClick={() => deleteFolder(id)}>Continue</AlertDialogAction>
+                                    </AlertDialogFooter>
+
+                                </AlertDialogContent>
+                            </AlertDialog>
                         </PopoverContent>
                     </Popover>
                 </div>
@@ -311,7 +311,7 @@ const FolderCard = ({ fol }) => {
                             files?.map((data) => {
 
                                 return (
-                                    <Link href={`/chat/${data?.session_id}`} key={data?.id} className={`flex justify-between items-center h-fit rounded-lg p-2 hover:cursor-pointer hover:bg-slate-100 ${chatid === data.session_id ? 'bg-slate-200' : ''}`} onClick={() => handleFilessOnclick(data)}>
+                                    <Link href={`/chat/${data?.session_id}`} key={data?.id} className={`flex justify-between items-center h-fit rounded-lg p-2 hover:cursor-pointer hover:bg-slate-100 ${chatid === data.session_id ? 'bg-slate-200' : ''}`} onClick={() => handleFilesOnclick(data)}>
                                         <div className='inline-flex gap-1 items-center'>
                                             <div>
                                                 <MessageSquare color='#14B8A6' size={'1rem'} className='hover:cursor-pointer' />

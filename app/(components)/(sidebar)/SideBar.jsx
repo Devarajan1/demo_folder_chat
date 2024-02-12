@@ -14,6 +14,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "..
 
 
 const SideBar = () => {
+
+
     const [folder, setFolder] = useAtom(folderAtom);
     const [showAdvance, setShowAdvance] = useAtom(showAdvanceAtom);
     const [open, setOpen] = useState(false);
@@ -72,7 +74,7 @@ const SideBar = () => {
     }, [workSpaceAdded])
 
     return (
-        <div className='w-full bg-[#EFF5F5] flex flex-col py-[19px] px-[18px] gap-4 font-Inter relative min-h-screen'>
+        <div className='w-full bg-[#EFF5F5] flex flex-col py-[19px] px-1 gap-4 font-Inter relative min-h-screen'>
 
             {currentUser?.email && 
             <div className='flex flex-col gap-2 w-full p-2'>
@@ -131,7 +133,10 @@ const SideBar = () => {
                 
             </div>}
 
-            <AddWorkspace/>
+            <div className='w-full border rounded-sm px-2 py-1'>
+                <h1 className='text-sm font-[600] leading-5 w-full p-1'>Workspaces</h1>
+                <AddWorkspace />
+            </div>
             {!showAdvance ?
                 workSpaces?.length > 0 && <Link href={`/workspace/${workspaceid}/advance`} className='w-full flex justify-between items-center bg-[#DEEAEA] p-3 rounded-md hover:cursor-pointer' onClick={() => { setShowAdvance(!showAdvance) }}>
                     <h1 className='font-[600] text-sm leading-5'>Advanced</h1>
@@ -143,7 +148,8 @@ const SideBar = () => {
                 </div>}
 
 
-            {folder?.length > 0 && <div className='flex flex-col gap-2'>
+            {folder?.length > 0 && <div className='flex flex-col gap-2 w-full border rounded-sm px-2 py-1 shadow-sm'>
+                <h1 className='text-sm font-[600] leading-5 w-full p-1'>Folders</h1>
                 {folder?.map((fol) => {
                     return (
                         <FolderCard key={fol.id} fol={fol} />
