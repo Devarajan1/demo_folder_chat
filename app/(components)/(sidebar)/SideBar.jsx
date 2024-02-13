@@ -29,60 +29,60 @@ const SideBar = () => {
     const router = useRouter()
     const { workspaceid } = useParams()
 
-    async function fetchCurrentUser(){
+    async function fetchCurrentUser() {
         const user = await getCurrentUser();
         setCurrentUser(user)
         await getWorkSpace(user)
-      };
-    
+    };
 
-    async function getWorkSpace(user){
+
+    async function getWorkSpace(user) {
         const url = user?.role === "admin" ? '/api/workspace/admin/list-workspace' : '/api/workspace/list-workspace-public'
         const res = await fetch(url, {
-            method:'GET',
-            credentials:'include'
+            method: 'GET',
+            credentials: 'include'
         });
-        if(res.ok){
+        if (res.ok) {
             const json = await res.json()
             setUserWorkSpaces(json.data)
-        }else{
+        } else {
             setUserWorkSpaces([])
         }
     }
-    async function getFolders(){
+    async function getFolders() {
         //await fetchCurrentUser();
-        
+
         const res = await fetch(`/api/workspace/list-folder?workspace_id=${workspaceid}`);
-        if(res.ok){
+        if (res.ok) {
             const json = await res.json()
-            
-            if(json.data.length > 0){
+
+            if (json.data.length > 0) {
                 setFolder(json?.data);
                 setFolderId(json?.data[json?.data.length - 1].id)
-            }else{
+            } else {
                 setFolder([])
                 setFolderId(null)
             }
-        }else{
+        } else {
             setFolder([])
         }
     }
 
     useEffect(() => {
         getFolders()
-        
+
     }, [folderAdded, workspaceid, workSpaceAdded]);
 
-    useEffect(()=> {
+    useEffect(() => {
         fetchCurrentUser()
     }, [workSpaceAdded])
 
     return (
         <div className='w-full bg-[#EFF5F5] flex flex-col py-[19px] px-1 gap-4 font-Inter relative min-h-screen'>
 
-            {currentUser?.email && 
-            <div className='flex flex-col gap-2 w-full p-2'>
-                {/* <div className='flex flex-col gap-2 w-full'>
+            {currentUser?.email &&
+                <div className='flex flex-col gap-2 w-full p-2'>
+                    {/* <div className='flex flex-col gap-2 w-full'>
 
                     {sidebarOptions.map(option => {
                         return (
@@ -107,35 +107,35 @@ const SideBar = () => {
                         )
                     })}
                 </div> */}
-                <Accordion type="single" defaultValue='profile' collapsible className='w-full'>
-                <AccordionItem value="profile" className='p-2 gap-2 flex flex-col w-full'>
-                    <AccordionTrigger className='flex-row-reverse justify-between items-center gap-2'>
-                        <div className='flex w-full justify-between'>
-                            <h1 className='font-[600] text-sm leading-5 mr-10 break-all w-full'>{currentUser?.email}</h1>
-                        </div>
-                    </AccordionTrigger>
-                    <AccordionContent className='flex flex-col justify-center gap-2 items-start h-fit bg-[#EFF5F5] rounded-lg p-2'>
+                    <Accordion type="single" defaultValue='profile' collapsible className='w-full'>
+                        <AccordionItem value="profile" className='p-2 gap-2 flex flex-col w-full'>
+                            <AccordionTrigger className='flex-row-reverse justify-between items-center gap-2'>
+                                <div className='flex w-full justify-between'>
+                                    <h1 className='font-[600] text-sm leading-5 mr-10 break-all w-full'>{currentUser?.email}</h1>
+                                </div>
+                            </AccordionTrigger>
+                            <AccordionContent className='flex flex-col justify-center gap-2 items-start h-fit bg-[#EFF5F5] rounded-lg p-2'>
 
-                    {currentUser?.role === 'admin' && <Link href={`/admin/users`} className='flex gap-2 items-center hover:cursor-pointer hover:bg-[#d9dada] w-full p-2 rounded-md'>
-                    <Settings className='w-4 h-4' color='#14B8A6' /><span className='font-[500] leading-5 text-sm'>Admin Setting</span>
-                    
-                    </Link>}
-                        
-                    <div className='flex items-center gap-2 hover:cursor-pointer hover:bg-[#d9dada] w-full p-2 rounded-md' onClick={async () => {
-                    const res = await logout();
-                    if (res.ok) {
-                        setFolderId(null)
-                        router.push('/auth/login')
-                    }
-                }}>
-                    <LogOut className='w-4 h-4' color='#14B8A6' /><span className='font-[500] leading-5 text-sm hover:cursor-pointer'>Log Out</span>
-                    {/* <Image src={threeDot} alt={'options'} className='w-4 h-4 hover:cursor-pointer' /> */}
-                </div>
-                    </AccordionContent>
-                </AccordionItem>
-                </Accordion>
-                
-            </div>}
+                                {currentUser?.role === 'admin' && <Link href={`/admin/users`} className='flex gap-2 items-center hover:cursor-pointer hover:bg-[#d9dada] w-full p-2 rounded-md'>
+                                    <Settings className='w-4 h-4' color='#14B8A6' /><span className='font-[500] leading-5 text-sm'>Admin Setting</span>
+
+                                </Link>}
+
+                                <div className='flex items-center gap-2 hover:cursor-pointer hover:bg-[#d9dada] w-full p-2 rounded-md' onClick={async () => {
+                                    const res = await logout();
+                                    if (res.ok) {
+                                        setFolderId(null)
+                                        router.push('/auth/login')
+                                    }
+                                }}>
+                                    <LogOut className='w-4 h-4' color='#14B8A6' /><span className='font-[500] leading-5 text-sm hover:cursor-pointer'>Log Out</span>
+                                    {/* <Image src={threeDot} alt={'options'} className='w-4 h-4 hover:cursor-pointer' /> */}
+                                </div>
+                            </AccordionContent>
+                        </AccordionItem>
+                    </Accordion>
+
+                </div>}
 
             <AddWorkspace />
             {!showAdvance ?
@@ -158,8 +158,8 @@ const SideBar = () => {
                 })}
             </div>}
 
-           {workSpaces?.length > 0 && <NewFolder setFolderAdded={setFolderAdded} openMenu={false} />}
-        
+            {workSpaces?.length > 0 && <NewFolder setFolderAdded={setFolderAdded} openMenu={false} />}
+
         </div>
 
     )

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../../components/ui/accordion";
 import threeDot from '../../../public/assets/more-horizontal.svg'
 import { useAtom } from 'jotai';
-import { isPostSignUpCompleteAtom, isPostUserCompleteAtom, folderIdAtom, currentSessionUserAtom, folderAddedAtom,workAddedAtom } from '../../store';
+import { isPostSignUpCompleteAtom, isPostUserCompleteAtom, folderIdAtom, currentSessionUserAtom, folderAddedAtom, workAddedAtom } from '../../store';
 import { useRouter } from 'next/navigation';
 import { sidebarOptions } from '../../../config/constants';
 import { Dialog, DialogTrigger, DialogContent } from '../../../components/ui/dialog';
@@ -56,9 +56,9 @@ const AddWorkspace = () => {
     // console.log(user)
     const url = user?.role === "admin" ? '/api/workspace/admin/list-workspace' : '/api/workspace/list-workspace-public'
     const res = await fetch(url, {
-      method:'GET',
-      credentials:'include'
-  });
+      method: 'GET',
+      credentials: 'include'
+    });
     const json = await res.json()
 
     if (json?.data?.length > 0) {
@@ -75,17 +75,17 @@ const AddWorkspace = () => {
 
   };
 
-  async function deleteWorkSpace(id){
+  async function deleteWorkSpace(id) {
     console.log(id);
     // setPopOpen(false);
     // return null
-    
+
     try {
       const response = await fetch(`/api/workspace/admin/delete-workspace/${id}`, {
-        credentials:'include',
-        method:'DELETE'
+        credentials: 'include',
+        method: 'DELETE'
       });
-      if(response?.ok){
+      if (response?.ok) {
         toast({
           variant: 'default',
           title: "Workspace deleted !"
@@ -97,14 +97,14 @@ const AddWorkspace = () => {
       console.log(error)
     }
   }
-  async function fetchCurrentUser(){
+  async function fetchCurrentUser() {
     const user = await getCurrentUser();
     setCurrentUser(user)
     await getWorkSpace(user)
   };
   useEffect(() => {
     fetchCurrentUser();
-    
+
   }, [workspaceid]);
 
   return (
@@ -126,8 +126,8 @@ const AddWorkspace = () => {
                     : "Select workspace..."}
                   <div className='flex'>
                     {
-                      !open ? 
-                        <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" /> 
+                      !open ?
+                        <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         :
                         <ChevronUp className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     }
@@ -138,54 +138,54 @@ const AddWorkspace = () => {
               </PopoverTrigger>
               <Popover open={popOpen} onOpenChange={setPopOpen}>
                 <PopoverTrigger asChild className='w-fit'>
-                  <MoreHorizontal className="ml-2 h-4 w-4 shrink-0 opacity-50 hover:cursor-pointer"/>
+                  <MoreHorizontal className="ml-2 h-4 w-4 shrink-0 opacity-50 hover:cursor-pointer" />
                 </PopoverTrigger>
                 <PopoverContent className='w-fit p-1 flex flex-col'>
-                  <div className="flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" onClick={()=> setFolderOpen(true)}>
+                  <div className="flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" onClick={() => setFolderOpen(true)}>
                     <Folder className="mr-2 h-4 w-4" />
                     <span>Add New Folder</span>
-                    
+
                   </div>
                   {folderOpen && <NewFolder setFolderAdded={setFolderAdded} openMenu={folderOpen} setOpenMenu={setFolderOpen} />}
                   {currentUser?.role === 'admin' &&
-                  <>
-                  <Dialog>
-                  <DialogTrigger asChild>
-                    
-                    <div className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" >
-                        <UserPlus className="mr-2 h-4 w-4" />
-                        <span>Invite Users</span>
-                      </div>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <Invite />
-                  </DialogContent>
-                  </Dialog>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <div className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        <span>Delete Workspace</span>
-                      </div>
-                    </AlertDialogTrigger>
+                    <>
+                      <Dialog>
+                        <DialogTrigger asChild>
 
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          Are you sure?
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This action cannot be undone. This will delete all folders and files inside this workspace.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel onClick={()=> setPopOpen(false)}>Cancel</AlertDialogCancel>
-                        <AlertDialogAction className='bg-[#14B8A6] hover:bg-[#14B8A6] hover:opacity-75' onClick={()=> deleteWorkSpace(workspaceid)}>Continue</AlertDialogAction>
-                      </AlertDialogFooter>
+                          <div className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" >
+                            <UserPlus className="mr-2 h-4 w-4" />
+                            <span>Invite Users</span>
+                          </div>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <Invite />
+                        </DialogContent>
+                      </Dialog>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <div className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            <span>Delete Workspace</span>
+                          </div>
+                        </AlertDialogTrigger>
 
-                    </AlertDialogContent>
-                  </AlertDialog>
-                  </>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Are you sure?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone. This will delete all folders and files inside this workspace.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel onClick={() => setPopOpen(false)}>Cancel</AlertDialogCancel>
+                            <AlertDialogAction className='bg-[#14B8A6] hover:bg-[#14B8A6] hover:opacity-75' onClick={() => deleteWorkSpace(workspaceid)}>Continue</AlertDialogAction>
+                          </AlertDialogFooter>
+
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </>
                   }
 
                 </PopoverContent>
@@ -193,7 +193,7 @@ const AddWorkspace = () => {
             </div>
 
             <PopoverContent className="w-full p-2 space-y-2">
-              
+
               <Command>
                 <CommandInput placeholder="Search workspace..." className="h-9" />
                 <CommandEmpty>No workspace found.</CommandEmpty>
@@ -220,7 +220,7 @@ const AddWorkspace = () => {
                   ))}
                 </CommandGroup>
               </Command>
-              {currentUser?.role === 'admin' && <WorkspaceDialog openMenu={openWork} setOpenMenu={setOpenWork} showBtn={true} setPopOpen={setOpen}/>}
+              {currentUser?.role === 'admin' && <WorkspaceDialog openMenu={openWork} setOpenMenu={setOpenWork} showBtn={true} setPopOpen={setOpen} />}
             </PopoverContent>
           </Popover>
         </>) : currentUser?.role === 'admin' && <WorkspaceDialog openMenu={openWork} setOpenMenu={setOpenWork} showBtn={true} />}

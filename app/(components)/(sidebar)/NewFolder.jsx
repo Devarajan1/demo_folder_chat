@@ -28,8 +28,8 @@ import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation'
 import { getCurrentUser } from '../../../lib/user';
 
-const NewFolder = ( { setFolderAdded, openMenu, setOpenMenu }) => {
-    
+const NewFolder = ({ setFolderAdded, openMenu, setOpenMenu }) => {
+
     const [folderId, setFolderId] = useAtom(folderIdAtom);
     const [open, setOpen] = useState(openMenu);
     const [inputError, setInputError] = useState(false);
@@ -42,47 +42,47 @@ const NewFolder = ( { setFolderAdded, openMenu, setOpenMenu }) => {
     const [fol, setFol] = useState({
         "title": '',
         "description": '',
-        "type":[],
+        "type": [],
         "function": '',
     });
 
 
-    async function createFolder(folderData){
+    async function createFolder(folderData) {
         if (folderData.title === '' || folderData.description === '' || folderData.function === '') {
             setInputError('select all the field first');
             return null
-        } 
+        }
 
         try {
             const response = await fetch('/api/workspace/create-folder', {
-                method:'POST',
-                credentials:'include',
+                method: 'POST',
+                credentials: 'include',
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    "workspace_id":workspaceid,
+                    "workspace_id": workspaceid,
                     "user_id": currentUser?.id,
                     "name": folderData.title,
                     "description": folderData.description,
                     "function": folderData.description,
-                    "is_active":true,
-                    "chat_enabled":true,
-                    "permissions":{
+                    "is_active": true,
+                    "chat_enabled": true,
+                    "permissions": {
                         "type": folderData.type
                     }
                 })
             });
 
-            if(response?.ok){
+            if (response?.ok) {
                 const json = await response.json()
                 setFolderId(json?.data?.id)
                 setOpen(false)
                 setFolderAdded(json?.data?.id)
                 router.push(`/workspace/${workspaceid}/chat/upload`)
-                return 
+                return
             }
-            
+
         } catch (error) {
             console.log(error)
         }
@@ -92,16 +92,16 @@ const NewFolder = ( { setFolderAdded, openMenu, setOpenMenu }) => {
     //     const user = await getCurrentUser();
     //     setCurrentUser(user)
     //   };
-  
-      useEffect(() => {
+
+    useEffect(() => {
         //   fetchCurrentUser();
-      }, []);
-   
+    }, []);
+
 
     return (
         <Dialog open={open} onOpenChange={() => {
-            setOpen(!open); 
-            setInputError(false); 
+            setOpen(!open);
+            setInputError(false);
             setFol({
                 title: '',
                 description: '',
@@ -187,8 +187,8 @@ const NewFolder = ( { setFolderAdded, openMenu, setOpenMenu }) => {
                         <Label htmlFor="description" className="font-[500] text-sm leading-5">
                             Function
                         </Label>
-                        <Select 
-                            id="function" 
+                        <Select
+                            id="function"
                             value={fol.function}
                             onValueChange={(e) => setFol({
                                 ...fol,
@@ -199,7 +199,7 @@ const NewFolder = ( { setFolderAdded, openMenu, setOpenMenu }) => {
                                 <SelectValue
                                     placeholder="Select an option"
                                     className='font-[400] text-[12px] leading-[20px]'
-                                    
+
                                 />
                             </SelectTrigger>
                             <SelectContent className="full">

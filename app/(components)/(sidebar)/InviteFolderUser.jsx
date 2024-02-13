@@ -29,7 +29,7 @@ function InviteFolderUser({ folder_id, popoverSetOpen }) {
     const containerRef = useRef(null);
 
     async function fetchWorkspaceUsers() {
-        const apiURL = currentUser?.role === 'admin' ? `/api/workspace/admin/list-workspace-user?workspace_id=${workspaceid}`: `/api/workspace/list-workspace-user-public?workspace_id=${workspaceid}`
+        const apiURL = currentUser?.role === 'admin' ? `/api/workspace/admin/list-workspace-user?workspace_id=${workspaceid}` : `/api/workspace/list-workspace-user-public?workspace_id=${workspaceid}`
         const response = await fetch(apiURL);
         if (response.ok) {
             const json = await response.json();
@@ -39,14 +39,14 @@ function InviteFolderUser({ folder_id, popoverSetOpen }) {
             return json?.data
         }
     }
-    async function fetchFolderUsersList(){
+    async function fetchFolderUsersList() {
 
         const wkUserList = await fetchWorkspaceUsers()
         const response = await fetch(`/api/workspace/list-folder-user?folder_id=${folder_id}`);
 
-        if(response.ok){
+        if (response.ok) {
             const json = await response.json();
-            if(json?.data?.length > 0){
+            if (json?.data?.length > 0) {
                 setExistingUser(json?.data);
                 let fillterdUsers = [];
                 for (let i = 0; i < wkUserList.length; i++) {
@@ -63,7 +63,7 @@ function InviteFolderUser({ folder_id, popoverSetOpen }) {
                 };
 
                 setUsers(fillterdUsers)
-            }else{
+            } else {
                 setUsers(wkUserList)
                 setExistingUser([])
             }
@@ -72,15 +72,15 @@ function InviteFolderUser({ folder_id, popoverSetOpen }) {
 
     const handleClickOutside = (event) => {
         if (containerRef.current && !containerRef.current.contains(event.target)) {
-          setShowList(false);
+            setShowList(false);
         }
-      };
+    };
 
 
     async function fetchAllUsers() {
         setLoader(true)
         try {
-            
+
             const wkUsers = await fetchWorkspaceUsers();
             setLoader(false)
             if (res?.length > 0) {
@@ -113,7 +113,7 @@ function InviteFolderUser({ folder_id, popoverSetOpen }) {
         }
     };
 
-    
+
     function handleRemoveUser(userObj) {
         setSelectedUser(selectedUser.filter(user => user?.user?.email !== userObj?.user?.email));
         setUsers((prev => [...prev, userObj]));
@@ -130,10 +130,10 @@ function InviteFolderUser({ folder_id, popoverSetOpen }) {
     };
 
     async function inviteFolderUserFunction(userData) {
-        
+
         try {
             const userIDS = userData.map(user => user?.user?.user_id);
-           
+
 
             const response = await fetch(`/api/workspace/create-folder-user-bulk`, {
                 credentials: 'include',
@@ -188,7 +188,7 @@ function InviteFolderUser({ folder_id, popoverSetOpen }) {
             console.log(error)
         }
     };
-    
+
 
     useEffect(() => {
         // fetchCurrentUser();
@@ -199,11 +199,11 @@ function InviteFolderUser({ folder_id, popoverSetOpen }) {
 
     useEffect(() => {
         document.addEventListener('mousedown', handleClickOutside);
-    
+
         return () => {
-          document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('mousedown', handleClickOutside);
         };
-      }, []);
+    }, []);
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
@@ -219,33 +219,33 @@ function InviteFolderUser({ folder_id, popoverSetOpen }) {
                     </DialogTitle>
                 </DialogHeader>
                 <div className='font-Inter p-2 min-h-[50vh] space-y-1 flex flex-col justify-between box-border'>
-            <div className='relative'>
-                <div className='w-full flex flex-row flex-wrap gap-0 border rounded-md  items-center p-1'>
-                    <Input
-                        
-                        type='text'
-                        value={userEmail}
-                        placeholder='write user email here'
-                        onClick={(e) => setShowList(true)}
-                        // onMouseLeave={(e) => setShowList(false)}
-                        onChange={(e) => setUserEmail(e.target.value)}
-                        className='border-none  max-w-full h-full w-[100%] focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
-                    />
-                    {selectedUser.length > 0 &&
-                        selectedUser?.map(user => <p key={user?.id} className='py-1 px-2 border rounded-md hover:cursor-pointer text-sm leading-5 font-[400] flex justify-between items-center gap-1 bg-slate-100 mx-1'>{user?.user?.email} <X size={10} className='' onClick={() => handleRemoveUser(user)} /></p>)
-                    }
-                </div>
+                    <div className='relative'>
+                        <div className='w-full flex flex-row flex-wrap gap-0 border rounded-md  items-center p-1'>
+                            <Input
 
-                {(showList && users?.length > 0) ?
-                    <div ref={containerRef}  className='border rounded-md max-h-[25vh] overflow-y-scroll no-scrollbar bg-white w-full z-20 absolute'>
-                        {users?.map(user => user?.user?.email?.includes(userEmail) && <p key={user?.id} className='p-2 hover:cursor-pointer hover:bg-slate-100 border-b text-sm leading-5 font-[400]  ' onClick={(() => handleAddUser(user))}>{user?.user?.email}</p>)}
-                    </div> :
-                    loader && <div className='w-full h-32 flex justify-center items-center'>
-                        <p className='animate-pulse font-[500] text-sm leading-8'>Loading...</p>
-                    </div>
-                }
+                                type='text'
+                                value={userEmail}
+                                placeholder='write user email here'
+                                onClick={(e) => setShowList(true)}
+                                // onMouseLeave={(e) => setShowList(false)}
+                                onChange={(e) => setUserEmail(e.target.value)}
+                                className='border-none  max-w-full h-full w-[100%] focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
+                            />
+                            {selectedUser.length > 0 &&
+                                selectedUser?.map(user => <p key={user?.id} className='py-1 px-2 border rounded-md hover:cursor-pointer text-sm leading-5 font-[400] flex justify-between items-center gap-1 bg-slate-100 mx-1'>{user?.user?.email} <X size={10} className='' onClick={() => handleRemoveUser(user)} /></p>)
+                            }
+                        </div>
 
-                {/* {showList && <div className='w-full  border rounded-md max-h-[25vh] overflow-y-scroll no-scrollbar'>
+                        {(showList && users?.length > 0) ?
+                            <div ref={containerRef} className='border rounded-md max-h-[25vh] overflow-y-scroll no-scrollbar bg-white w-full z-20 absolute'>
+                                {users?.map(user => user?.user?.email?.includes(userEmail) && <p key={user?.id} className='p-2 hover:cursor-pointer hover:bg-slate-100 border-b text-sm leading-5 font-[400]  ' onClick={(() => handleAddUser(user))}>{user?.user?.email}</p>)}
+                            </div> :
+                            loader && <div className='w-full h-32 flex justify-center items-center'>
+                                <p className='animate-pulse font-[500] text-sm leading-8'>Loading...</p>
+                            </div>
+                        }
+
+                        {/* {showList && <div className='w-full  border rounded-md max-h-[25vh] overflow-y-scroll no-scrollbar'>
                     {users?.length > 0 ? users?.map(user => user?.email.includes(userEmail) && <p key={user?.id} className='absolute bg-white w-full z-20 p-2 hover:cursor-pointer hover:bg-slate-100 border-b text-sm leading-5 font-[400]' onClick={(() => handleAddUser(user))}>{user?.email}</p>):
                     <p className='absolute p-2 hover:cursor-pointer hover:bg-slate-100 border-b text-sm leading-5 font-[400] z-20 bg-white w-full'>No user found</p>
                     }
@@ -255,17 +255,17 @@ function InviteFolderUser({ folder_id, popoverSetOpen }) {
                     <p className='animate-pulse font-[500] text-sm leading-8'>Loading...</p>
                 </div>} */}
 
-                <div className='fixed w-[90%] p-2'>
-                    {!loader && existingUser?.map(user => <div key={user?.id} className='w-full p-2 hover:cursor-pointer border-b text-sm leading-5 font-[400] flex justify-between items-center'>
+                        <div className='fixed w-[90%] p-2'>
+                            {!loader && existingUser?.map(user => <div key={user?.id} className='w-full p-2 hover:cursor-pointer border-b text-sm leading-5 font-[400] flex justify-between items-center'>
 
-                        <p>{user?.user?.email}</p>
-                        <p className='max-w-fit p-2 rounded-full bg-red-100 hover:bg-red-200 text-red-500 font-[600]' onClick={() => removerUserFromFolder(user?.id)}>Remove</p>
+                                <p>{user?.user?.email}</p>
+                                <p className='max-w-fit p-2 rounded-full bg-red-100 hover:bg-red-200 text-red-500 font-[600]' onClick={() => removerUserFromFolder(user?.id)}>Remove</p>
 
-                    </div>)}
+                            </div>)}
+                        </div>
+                    </div>
+                    <Button disabled={selectedUser?.length === 0} className='w-[25%] m-auto z-50' onClick={() => inviteFolderUserFunction(selectedUser)}>Invite User</Button>
                 </div>
-            </div>
-            <Button disabled={selectedUser?.length === 0} className='w-[25%] m-auto z-50' onClick={() => inviteFolderUserFunction(selectedUser)}>Invite User</Button>
-        </div>
             </DialogContent>
         </Dialog>
     )
