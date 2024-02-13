@@ -29,7 +29,8 @@ function InviteFolderUser({ folder_id, popoverSetOpen }) {
     const containerRef = useRef(null);
 
     async function fetchWorkspaceUsers() {
-        const response = await fetch(`/api/workspace/admin/list-workspace-user?workspace_id=${workspaceid}`);
+        const apiURL = currentUser?.role === 'admin' ? `/api/workspace/admin/list-workspace-user?workspace_id=${workspaceid}`: `/api/workspace/list-workspace-user-public?workspace_id=${workspaceid}`
+        const response = await fetch(apiURL);
         if (response.ok) {
             const json = await response.json();
             // console.log(json.data, 'current wk users')
@@ -208,7 +209,7 @@ function InviteFolderUser({ folder_id, popoverSetOpen }) {
             <DialogTrigger asChild>
                 <div className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer">
                     <UserRoundPlus className="mr-2 h-4 w-4" />
-                    <span>Add User</span>
+                    <span>Share</span>
                 </div>
             </DialogTrigger>
             <DialogContent>

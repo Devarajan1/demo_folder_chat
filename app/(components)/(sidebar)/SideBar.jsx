@@ -29,15 +29,19 @@ const SideBar = () => {
     const router = useRouter()
     const { workspaceid } = useParams()
 
-    // async function fetchCurrentUser(){
-    //     const user = await getCurrentUser();
-    //     setCurrentUser(user)
-    //   };
+    async function fetchCurrentUser(){
+        const user = await getCurrentUser();
+        setCurrentUser(user)
+        await getWorkSpace(user)
+      };
     
 
-    async function getWorkSpace(){
-        const url = currentUser?.role === "admin" ? '/api/workspace/admin/list-workspace' : '/api/workspace/list-workspace-public'
-        const res = await fetch(url);
+    async function getWorkSpace(user){
+        const url = user?.role === "admin" ? '/api/workspace/admin/list-workspace' : '/api/workspace/list-workspace-public'
+        const res = await fetch(url, {
+            method:'GET',
+            credentials:'include'
+        });
         if(res.ok){
             const json = await res.json()
             setUserWorkSpaces(json.data)
@@ -70,7 +74,7 @@ const SideBar = () => {
     }, [folderAdded, workspaceid, workSpaceAdded]);
 
     useEffect(()=> {
-        getWorkSpace()
+        fetchCurrentUser()
     }, [workSpaceAdded])
 
     return (
@@ -107,15 +111,15 @@ const SideBar = () => {
                 <AccordionItem value="profile" className='p-2 gap-2 flex flex-col w-full'>
                     <AccordionTrigger className='flex-row-reverse justify-between items-center gap-2'>
                         <div className='flex w-full justify-between'>
-                            <h1 className='font-[600] text-sm leading-5 mr-10'>{currentUser?.email}</h1>
+                            <h1 className='font-[600] text-sm leading-5 mr-10 break-all w-full'>{currentUser?.email}</h1>
                         </div>
                     </AccordionTrigger>
                     <AccordionContent className='flex flex-col justify-center gap-2 items-start h-fit bg-[#EFF5F5] rounded-lg p-2'>
 
-                    <Link href={`/admin/users`} className='flex gap-2 items-center hover:cursor-pointer hover:bg-[#d9dada] w-full p-2 rounded-md'>
+                    {currentUser?.role === 'admin' && <Link href={`/admin/users`} className='flex gap-2 items-center hover:cursor-pointer hover:bg-[#d9dada] w-full p-2 rounded-md'>
                     <Settings className='w-4 h-4' color='#14B8A6' /><span className='font-[500] leading-5 text-sm'>Admin Setting</span>
                     
-                    </Link>
+                    </Link>}
                         
                     <div className='flex items-center gap-2 hover:cursor-pointer hover:bg-[#d9dada] w-full p-2 rounded-md' onClick={async () => {
                     const res = await logout();
@@ -133,9 +137,7 @@ const SideBar = () => {
                 
             </div>}
 
-            <div className='w-full border rounded-sm px-2 py-1'>
-                <AddWorkspace />
-            </div>
+            <AddWorkspace />
             {!showAdvance ?
                 workSpaces?.length > 0 && <Link href={`/workspace/${workspaceid}/advance`} className='w-full flex justify-between items-center bg-[#DEEAEA] p-3 rounded-md hover:cursor-pointer' onClick={() => { setShowAdvance(!showAdvance) }}>
                     <h1 className='font-[600] text-sm leading-5'>Advanced</h1>

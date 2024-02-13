@@ -18,6 +18,8 @@ import { Label } from '../../../components/ui/label';
 import { cn } from '../../../lib/utils';
 import Link from 'next/link';
 import { getCurrentUser } from '../../../lib/user';
+import { iconSelector } from '../../../config/constants'
+
 import InviteFolderUser from './InviteFolderUser'
 
 const FolderCard = ({ fol }) => {
@@ -89,11 +91,6 @@ const FolderCard = ({ fol }) => {
         }
     };
 
-    // async function fetchCurrentUser(){
-    //     const user = await getCurrentUser();
-    //     setCurrentUser(user)
-    //   };
-
 
     async function updateFolderName(name, folder) {
         try {
@@ -150,11 +147,10 @@ const FolderCard = ({ fol }) => {
 
         const allPairIds = documentSet[0]?.cc_pair_descriptors.map(connector => connector.id)
         const idxOfID = allPairIds.indexOf(data.id);
-        console.log(allPairIds)
         allPairIds.splice(idxOfID, 1)
 
         console.log(allPairIds)
-        
+
         if (allPairIds?.length > 0) {
             await fetch(`/api/manage/admin/document-set`, {
                 method: 'PATCH',
@@ -164,7 +160,7 @@ const FolderCard = ({ fol }) => {
                 body: JSON.stringify({
                     "id": documentSet[0]?.id,
                     "cc_pair_ids": allPairIds,
-                    "description":''
+                    "description": ''
                 })
             })
 
@@ -230,7 +226,7 @@ const FolderCard = ({ fol }) => {
                     </AccordionTrigger>
                     <Popover open={popOpen} onOpenChange={setPopOpen}>
                         <PopoverTrigger asChild>
-                            <Image src={threeDot} alt={'options'} className='w-4 h-4 hover:cursor-pointer' />
+                            <Image src={threeDot} alt={'options'} className='w-6 h-6 hover:cursor-pointer opacity-70 hover:opacity-100' />
                         </PopoverTrigger>
                         <PopoverContent className="w-full flex flex-col p-1 gap-[2px]">
                             {folderOptions.map((option) => {
@@ -241,7 +237,8 @@ const FolderCard = ({ fol }) => {
                                     </div>
                                 )
                             })}
-                            {currentUser?.role === 'admin' && <InviteFolderUser folder_id={id} popoverSetOpen={setPopOpen}/>}
+                            {/* {currentUser?.role === 'admin' && <InviteFolderUser folder_id={id} popoverSetOpen={setPopOpen}/>} */}
+                            <InviteFolderUser folder_id={id} popoverSetOpen={setPopOpen} />
                             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                                 <DialogTrigger asChild>
                                     <div className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" onClick={() => { setFolNewName(name); setDialogOpen(true); }}>
@@ -372,7 +369,7 @@ const FolderCard = ({ fol }) => {
                                                             </AlertDialogHeader>
                                                             <AlertDialogFooter>
                                                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                                <AlertDialogAction className='bg-[#14B8A6] hover:bg-[#14B8A6] hover:opacity-75' onClick={() => deleteChatsBySessionId(data.session_id)}>Continue</AlertDialogAction>
+                                                                <AlertDialogAction className='bg-[#14B8A6] hover:bg-[#14B8A6] hover:opacity-75' onClick={() => console.log(data.session_id, 'will implement this logic later')}>Continue</AlertDialogAction>
                                                             </AlertDialogFooter>
 
                                                         </AlertDialogContent>
@@ -383,33 +380,26 @@ const FolderCard = ({ fol }) => {
                                 )
                             })
                     }
-                    {
-                        documentSet[0]?.cc_pair_descriptors?.map((data) => {
+                    {<>
 
+                        {documentSet[0]?.cc_pair_descriptors?.map((data) => {
                             return (
-
-                                <div key={data.id} className={`flex justify-between items-center h-fit rounded-lg p-2 hover:cursor-pointer hover:bg-slate-100`}>
-                                    <div className='inline-flex gap-1 items-center'>
-                                        <Image src={fileIcon} alt='file' />
-                                        <span className={`font-[500] text-sm leading-5 text-ellipsis break-all line-clamp-1 mr-3 text-emphasis`} >{data?.name}</span>
-
-                                    </div>
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <Image src={threeDot} alt={'options'} className='w-4 h-4 hover:cursor-pointer' />
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-full flex flex-col p-1 gap-[2px]">
-                                            {docsOptions?.map((option) => {
-                                                return (
-
+                                <div key={data?.id} className='border p-1 rounded-sm'>
+                                    <div className='flex justify-between items-center h-fit rounded-lg p-2'>
+                                        <p className='text-sm font-[600] leading-5'>{data?.name}</p>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <Image src={threeDot} alt={'options'} className='w-6 h-6 hover:cursor-pointer opacity-70 hover:opacity-100' />
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-full flex flex-col p-1 gap-[2px]">
+                                                {docsOptions?.map((option) => (
                                                     <AlertDialog key={option.id}>
                                                         <AlertDialogTrigger asChild>
                                                             <div className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" >
-                                                                <option.icon className="mr-2 h-4 w-4" />
+                                                                {option.icon && <option.icon className="mr-2 h-4 w-4" />}
                                                                 <span>{option.title}</span>
                                                             </div>
                                                         </AlertDialogTrigger>
-
                                                         <AlertDialogContent>
                                                             <AlertDialogHeader>
                                                                 <AlertDialogTitle>
@@ -423,18 +413,26 @@ const FolderCard = ({ fol }) => {
                                                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                                                                 <AlertDialogAction className='bg-[#14B8A6] hover:bg-[#14B8A6] hover:opacity-75' onClick={() => deleteDocSetFile(data)}>Continue</AlertDialogAction>
                                                             </AlertDialogFooter>
-
                                                         </AlertDialogContent>
                                                     </AlertDialog>
+                                                ))}
+                                            </PopoverContent>
+                                        </Popover>
+                                    </div>
+                                    {data?.connector?.connector_specific_config?.file_locations?.map((file) => (
+                                        <div key={file.split('/')[3]} className={`flex justify-between items-center h-fit rounded-lg p-2 hover:cursor-pointer hover:bg-slate-100`}>
+                                            <div className='inline-flex gap-1 items-center'>
+                                                <Image src={iconSelector(file.split('/')[4].split('.')[1])} alt='file' />
+                                                <span className={`font-[500] text-sm leading-5 text-ellipsis break-all line-clamp-1 mr-3 text-emphasis`} >{file.split('/')[4]}</span>
+                                            </div>
 
-                                                )
-                                            })}
-                                        </PopoverContent>
-                                    </Popover>
-
+                                        </div>
+                                    ))}
                                 </div>
-                            )
-                        })
+                            );
+                        })}
+
+                    </>
                     }
                 </AccordionContent>
             </AccordionItem>

@@ -27,7 +27,7 @@ import { cn } from '../../../../../../lib/utils'
 import plus from '../../../../../../public/assets/plus.svg'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { WorkspaceDialog } from '../../../../(common)'
+import { WorkspaceDialog } from '../../../../(sidebar)'
 import {
     Select,
     SelectContent,
@@ -68,11 +68,11 @@ const ChatWindow = () => {
     const [currentUser, setCurrentUser] = useAtom(currentSessionUserAtom)
     const botResponse = useRef('');
     const router = useRouter();
-    const { workspaceid, chatid } = useParams()
+    const { workspaceid, chatid } = useParams();
     
     const { toast } = useToast();
     const [isHoveredLike, setHoveredLike] = useState(false);
-    const [isHoveredDislike, setHoveredDislike] = useState(false)
+    const [isHoveredDislike, setHoveredDislike] = useState(false);
 
     // const handleHoverLike = () => {
     //     setHoveredLike(!isHoveredLike);
@@ -110,7 +110,7 @@ const ChatWindow = () => {
     }
     async function sendMsg(data) {
 
-        if (data && data.trim() === '') return null;
+        if (data === '' || data.trim() === '') return null;
 
         setTextFieldDisabled(true);
         setResponseObj(null)
@@ -359,8 +359,9 @@ const ChatWindow = () => {
     };
 
     async function getChatHistoryFromServer(id) {
-        await getDocSetDetails(folderId)
+        
         try {
+            await getDocSetDetails(folderId)
             const data = await fetch(`/api/chat/get-chat-session/${id}`);
             const json = await data.json();
             if (json?.messages.length > 0) {
@@ -432,7 +433,7 @@ const ChatWindow = () => {
 
     
     async function getDocSetDetails(folder_id) {
-        console.log(folder_id)
+        
         if (!folder_id) {
             setLoading(false);
             return null
@@ -441,40 +442,57 @@ const ChatWindow = () => {
         const res = await fetch(`/api/manage/document-set-v2/${folder_id}`)
         if(res.ok){
             const data = await res.json();
-            if(data.length > 0){
+            if(data?.length > 0){
                 setDocumentSet(data)
             }else{
                 setDocumentSet([])
-                router.push(`/workspace/${workspaceid}/chat/upload`)
+                if(folder !== null){
+                    router.push(`/workspace/${workspaceid}/chat/upload`)
+                }
             }
         }else{
-            router.push(`/workspace/${workspaceid}/chat/upload`)
+            if(folder !== null){
+                router.push(`/workspace/${workspaceid}/chat/upload`)
+            }
         }
-        setLoading(false)
+        if(loading){
+            setLoading(false)
+        }
     
     };
 
-    // async function fetchCurrentUser(){
-    //     const user = await getCurrentUser();
+    async function fetchCurrentUser(){
+        const user = await getCurrentUser();
         
-    //     setCurrentUser(user)
-    //   };
+        setCurrentUser(user)
+        await getWorkSpace(user)
+      };
 
-    async function getWorkSpace(){
-        const url = currentUser?.role === "admin" ? '/api/workspace/admin/list-workspace' : '/api/workspace/list-workspace-public'
-        const res = await fetch(url);
-        if(res.ok){
-            const json = await res.json();
-            setUserWorkSpaces(json.data)
-        }else{
-            setUserWorkSpaces([])
+    async function getWorkSpace(user){
+        setLoading(true)
+        try {
+            const url = user?.role === "admin" ? '/api/workspace/admin/list-workspace' : '/api/workspace/list-workspace-public'
+            const res = await fetch(url, {
+                method:'GET',
+                credentials:'include'
+            });
+            if(res?.ok){
+                const json = await res.json();
+                setUserWorkSpaces(json.data)
+            }else{
+                setUserWorkSpaces([])
+            }
+        } catch (error) {
+            console.log(error)
+        }finally{
+            setLoading(false)
         }
     }
 
 
 
     useEffect(() => {
-        getWorkSpace()
+        
         resizeTextarea();
     }, [userMsg]);
 
@@ -503,7 +521,12 @@ const ChatWindow = () => {
         if (chatSessionID === 'new') {
             setChatMsg([])
         }
-    }, [chatSessionID])
+    }, [chatSessionID]);
+
+
+    useEffect(()=> {
+        fetchCurrentUser()
+    }, [])
 
 
     return (
@@ -511,7 +534,7 @@ const ChatWindow = () => {
             <div className='w-full flex justify-between px-4 py-2 h-fit '>
                 <div className='flex gap-2 justify-center items-center hover:cursor-pointer'>
                     {folder?.length === 0 ? <Image src={Logo} alt='folder.chat' /> :
-                        <span className='text-sm leading-5 font-[500] opacity-[60%] hover:opacity-100'>Context : {documentSet[0]?.name?.split('-')[0] || 'No Doc Uploaded'}</span>}
+                        <span className='text-sm leading-5 font-[500] opacity-[60%] hover:opacity-100'>Context : {documentSet[0]?.name?.split('-')[0] || 'No Context'}</span>}
 
                     {folder?.length !== 0 && (!documentSet[0]?.id ?
                         <Link href={'/chat/upload'}>
@@ -519,36 +542,7 @@ const ChatWindow = () => {
                         </Link>
                         :
                         null
-                        // <Dialog open={docSetOpen} onOpenChange={() => { setInputDocDes(''); setDocSetOpen(!docSetOpen) }}>
-                        //     <DialogTrigger asChild>
-                        //         <Image src={editIcon} alt='edit' title='edit' onClick={async () => { await getDocSetDetails(folderId); setDocSetOpen(true) }} />
-                        //     </DialogTrigger>
-                        //     <DialogContent>
-                        //         <DialogHeader className='mb-2'>
-                        //             <DialogTitle>
-                        //                 Update Documents
-                        //             </DialogTitle>
-                        //         </DialogHeader>
-                        //         <h1 className='font-[600] text-sm leading-5 m-2'>Select Documents</h1>
-                        //         <div className='flex w-full flex-wrap gap-1'>
-
-                        //             {/* {documentSet[0]?.cc_pair_id?.length > 0 &&
-                        //                 documentSet[0]?.cc_pair_id?.map((connector, idx) =>
-                        //                     <div key={connector} className='flex items-center gap-2 justify-center px-2'>
-                        //                         <input type="checkbox" value={connector} id={connector} checked={selectedDoc.includes(connector)} className={`px-2 py-1 border rounded hover:cursor-pointer hover:bg-gray-100`} onChange={(e) => handleDocSetID(e.target.value)} /><label htmlFor={connector} >{documentSet[0]?.files_name[idx]}</label>
-                        //                     </div>)
-                        //             } */}
-                        //             {userConnectors?.map((connector) =>
-                        //                 <div className='space-x-2 p-1 border flex items-center rounded-sm hover:bg-slate-100 w-fit break-all' key={connector?.cc_pair_id}>
-                        //                     <input type="checkbox" value={connector?.cc_pair_id} checked={selectedDoc?.includes(connector?.cc_pair_id)} id={connector?.cc_pair_id} className={`px-2 py-1 border rounded hover:cursor-pointer hover:bg-gray-100 `} onChange={(e) => handleDocSetID(e.target.value)} /><label htmlFor={connector?.cc_pair_id} >{connector?.name}</label></div>)
-                        //             }
-                        //         </div>
-                        //         <DialogFooter className={cn('w-full')}>
-                        //             <Button variant={'outline'} className={cn('bg-[#14B8A6] text-[#ffffff] m-auto')} onClick={() => updateDocumentSet(selectedDoc, inputDocDes)}>Update</Button>
-                        //         </DialogFooter>
-
-                        //     </DialogContent>
-                        // </Dialog>
+                        
                     )
                     }
                 </div>
@@ -572,7 +566,8 @@ const ChatWindow = () => {
                 </div> 
                     :
                 (folder?.length === 0 ?
-                    (userWorkSpaces.length > 0 ? <div className='w-full h-full flex flex-col justify-center items-center gap-4'>
+                    (userWorkSpaces?.length > 0 ? 
+                    <div className='w-full h-full flex flex-col justify-center items-center gap-4'>
                         <Folder color='#14B8A6' size={'3rem'} className='block animate-pulse' />
                         <p className='text-[16px] leading-5 font-[400]'><strong className='hover:underline hover:cursor-pointer' onClick={() => setOpen(true)}>Create</strong> a Folder and start chating with folder.chat</p>
                         {open && <NewFolder setFolderAdded={setFolderAdded} openMenu={open} setOpenMenu={setOpen} />}

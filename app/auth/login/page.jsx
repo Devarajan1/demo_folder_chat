@@ -41,7 +41,7 @@ const Page = async (
       return redirect("/auth/waiting-on-verification");
     }
 
-    return redirect("/workspace/0/chat/new");
+    return redirect("/workspace");
   }
 
   // get where to send the user to authenticate

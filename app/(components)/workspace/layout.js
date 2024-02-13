@@ -13,19 +13,21 @@ export default function RootLayout({ children }) {
 
     const router = useRouter();
   
-    async function getWork(){
+    async function getWork(user){
+      
       try {
-        const url = currentUser?.role === "admin" ? '/api/workspace/admin/list-workspace' : '/api/workspace/list-workspace-public'
+        const url = user?.role === "admin" ? '/api/workspace/admin/list-workspace' : '/api/workspace/list-workspace-public'
         const res = await fetch(url, {
             method:'GET',
             credentials:'include'
         });
-        if(res.ok){
+        if(res?.ok){
             const json = await res.json()
             setUserWorkSpaces(json?.data)
+            
             if(json?.data?.length > 0){
               
-                router.push(`/workspace/${json?.data[0].id}/chat/new`)
+                router.push(`/workspace/${json?.data[json?.data?.length-1].id}/chat/new`)
             }else{
             router.push(`/workspace/0/chat/new`)
             }
@@ -39,11 +41,12 @@ export default function RootLayout({ children }) {
     async function fetchCurrentUser(){
       const user = await getCurrentUser();
       setCurrentUser(user)
+      await getWork(user)
     };
   
     useEffect(()=> {
       fetchCurrentUser()
-      getWork()
+      
     }, [workAdded])
 return (
          children 

@@ -101,12 +101,13 @@ const NewFolder = ( { setFolderAdded, openMenu, setOpenMenu }) => {
     return (
         <Dialog open={open} onOpenChange={() => {
             setOpen(!open); 
-            setInputError(false); setFol({
+            setInputError(false); 
+            setFol({
                 title: '',
                 description: '',
                 function: ''
             });
-            setOpenMenu && setOpenMenu(false)
+            setOpenMenu(false)
         }}>
             <DialogTrigger className='w-full'>
                 {!openMenu && <div variant={'outline'} className='w-full text-sm font-[400] text-white bg-[#14B8A6] border-[#14B8A6] leading-[24px] flex items-center justify-between p-2 px-4 rounded-md hover:bg-[#DEEAEA] hover:text-black shadow-md'>

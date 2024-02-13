@@ -44,18 +44,16 @@ function Invite() {
             // await fetchCurrentUser()
             const wkUsers = await fetchWorkspaceUsers();
             const res = await getAllUsers();
+            console.log(res)
             setLoader(false)
             if (res?.length > 0) {
 
-                const nonAdminUsers = res.filter(user => user?.role !== 'admin');
-
+                const nonAdminUsers = res?.filter(user => user?.role !== 'admin');
+                console.log(nonAdminUsers)
                 let fillterdUsers = [];
-
-
-                for (let i = 0; i < nonAdminUsers.length; i++) {
+                for (let i = 0; i < nonAdminUsers?.length; i++) {
                     let flag = false
-                    for (let j = 0; j < wkUsers.length; j++) {
-
+                    for (let j = 0; j < wkUsers?.length; j++) {
                         if (wkUsers[j]?.user?.user_id === nonAdminUsers[i].id) {
                             flag = true
                         }
@@ -64,7 +62,7 @@ function Invite() {
                         fillterdUsers.push(nonAdminUsers[i])
                     }
                 };
-
+                console.log(fillterdUsers)
                 setUsers(fillterdUsers)
             }
 
@@ -80,8 +78,14 @@ function Invite() {
         if (response.ok) {
             const json = await response.json();
             // console.log(json.data, 'current wk users')
-            setExistingUser(json?.data)
-            return json?.data
+            if(json?.data !== null){
+                setExistingUser(json?.data)
+                return json?.data
+            }else{
+                setExistingUser([])
+                return []
+            }
+            
         }
     }
 
@@ -93,7 +97,7 @@ function Invite() {
 
     function handleAddUser(userObj) {
         let isExist = selectedUser.filter(user => user.email === userObj?.email);
-        if (isExist.length === 0) {
+        if (isExist?.length === 0) {
 
             setSelectedUser((prev) => [...prev, userObj]);
             setUsers(users.filter(user => user.email !== userObj?.email))
@@ -193,7 +197,7 @@ function Invite() {
                         onChange={(e) => setUserEmail(e.target.value)}
                         className='border-none  max-w-full h-full w-[100%] focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
                     />
-                    {selectedUser.length > 0 &&
+                    {selectedUser?.length > 0 &&
                         selectedUser?.map(user => <p key={user?.id} className='py-1 px-2 border rounded-md hover:cursor-pointer text-sm leading-5 font-[400] flex justify-between items-center gap-1 bg-slate-100 mx-1'>{user?.email} <X size={10} className='' onClick={() => handleRemoveUser(user)} /></p>)
                     }
                 </div>
@@ -226,7 +230,7 @@ function Invite() {
                     </div>)}
                 </div>
             </div>
-            <Button disabled={selectedUser.length === 0} className='w-[25%] m-auto z-50' onClick={() => inviteWorkspaceUser(selectedUser)}>Invite User</Button>
+            <Button disabled={selectedUser?.length === 0} className='w-[25%] m-auto z-50' onClick={() => inviteWorkspaceUser(selectedUser)}>Invite User</Button>
         </div>
     )
 }

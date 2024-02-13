@@ -12,7 +12,7 @@ import { getCurrentUser } from '../../../lib/user';
 import { currentSessionUserAtom } from '../../store';
 
 
-const Workspace = ({ openMenu, setOpenMenu, showBtn }) => {
+const WorkspaceDialog = ({ openMenu, setOpenMenu, showBtn, setPopOpen }) => {
     
     const [inputError, setInputError] = useState(false);
     const [workAdded, setWorkAdded] = useAtom(workAddedAtom)
@@ -27,7 +27,7 @@ const Workspace = ({ openMenu, setOpenMenu, showBtn }) => {
 
     async function createWorkspace() {
         
-        if (userInput.name === '') {
+        if (userInput?.name === '') {
             setInputError('Write some valid workspace name');
             return null
         }
@@ -46,11 +46,11 @@ const Workspace = ({ openMenu, setOpenMenu, showBtn }) => {
                 })
             });
             if (res.ok) {
-                const json = await res.json();
-                setWorkAdded(!workAdded)
                 setOpenMenu(false);
-                setFolderId(null)
-                router.push(`/workspace/${json?.data?.id}/chat/new`)
+                setFolderId(null);
+                setWorkAdded(!workAdded)
+                setPopOpen && setPopOpen(false)
+                // router.push(`/workspace/${json?.data?.id}/chat/new`)
                 
             }else{
                 const json = await res.json()
@@ -82,11 +82,10 @@ const Workspace = ({ openMenu, setOpenMenu, showBtn }) => {
             setOpenMenu(!openMenu)
             setInputError(false); 
             setUserInput('');
-
         }}>
             {showBtn && <DialogTrigger className='w-full'>
-            <Button className='py-0 h-8 w-full bg-[#14B8A6] hover:bg-[#14B8A6] hover:opacity-75'>
-                    Add Workspace
+                <Button className='py-0 h-8 w-full bg-[#14B8A6] hover:bg-[#14B8A6] hover:opacity-75'>
+                    New Workspace
                 </Button>
             </DialogTrigger>}
 
@@ -123,4 +122,4 @@ const Workspace = ({ openMenu, setOpenMenu, showBtn }) => {
     )
 }
 
-export default Workspace
+export default WorkspaceDialog

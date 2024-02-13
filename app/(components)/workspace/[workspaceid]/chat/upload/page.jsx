@@ -78,7 +78,7 @@ const Upload = () => {
           isZip = true
           return toast({
             variant: 'destructive',
-            title: "Zip File Not Allowed"
+            title: "Zip file not allowed"
           });
         }
         formData.append("files", file);
@@ -94,7 +94,7 @@ const Upload = () => {
         method: "POST",
         body: formData
       });
-      if (data.ok) {
+      if (data?.ok) {
         const json = await data.json();
 
         await connectorRequest(json.file_paths)
@@ -136,15 +136,6 @@ const Upload = () => {
       );
       const json = await data?.json();
 
-
-      // if (existConnector?.length === 0) {
-
-      //   await insertDataInConTable([json?.id])
-      // } else {
-
-      //   await updatetDataInConTable(existConnector, json?.id)
-      // }
-
       await getCredentials(json?.id)
     } catch (error) {
       console.log('error while connectorRequest :', error)
@@ -171,7 +162,6 @@ const Upload = () => {
         })
       });
       const json = await data?.json();
-      // console.log('getCredentials done', json)
       await sendURL(connectID, json?.id)
     } catch (error) {
       console.log('error while getCredentials:', error)
@@ -233,8 +223,6 @@ const Upload = () => {
           ]
         })
       });
-      const json = await data.json()
-      // console.log('run once done', json);
 
     } catch (error) {
       console.log('error in runOnce :', error)
@@ -272,7 +260,7 @@ const Upload = () => {
         },
         body: JSON.stringify({
           "folder_id": folderId,
-          "name": `${set_name}`,
+          "name": `${set_name}-${Date.now()}`,
           "description": context.description,
           "cc_pair_ids": docSetid
         })
@@ -445,7 +433,6 @@ const Upload = () => {
       })
     };
     
-    // console.log(selectedDoc);
     
     if (documentSet?.length === 0) {
       await setDocumentSetInServer2(selectedDoc, context);
@@ -463,8 +450,6 @@ const Upload = () => {
     if (res.ok) {
 
       const data = await res.json();
-      console.log(data)
-      //console.log(data[0].cc_pair_descriptors.map(item => item.id))
       if (data.length > 0) {
         setDocumentSet(data)
       } else {
@@ -476,10 +461,6 @@ const Upload = () => {
 
   };
 
-  // async function fetchCurrentUser(){
-  //   const user = await getCurrentUser();
-  //   setCurrentUser(user)
-  // };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
@@ -498,7 +479,9 @@ const Upload = () => {
     // fetchCurrentUser()
     if (folderId) {
       getDocSetDetails(folderId);
-
+    }
+    else {
+      setLoading(false)
     }
 
   }, [folderId]);
@@ -578,18 +561,9 @@ const Upload = () => {
                 <Image src={uploadIcon} alt='upload' />
                 <div className='w-full text-center'>
                   <p className='font-[400] leading-6 text-[15px] opacity-[80%]'>Click to upload or drag and drop</p>
-                  <p className='opacity-[50%] text-sm leading-6'>PDF & TXT</p>
+                  <p className='opacity-[50%] text-sm leading-6'>pdf, txt & docx</p>
                   {/* <p className='opacity-[50%] text-sm leading-6'>Max Size 1MB</p> */}
                 </div>
-
-                {/* <div
-
-                  {...getInputProps()}
-                  type='file'
-                  id='upload-files'
-                  accept='.pdf, .doc, .docx, .xls, .xlsx'
-                  style={{ display: 'none' }}
-                />   */}
               </div>
               {userConnectors?.length > 0 &&
                 <div className='w-full text-sm leading-5 text-center space-y-2'>
