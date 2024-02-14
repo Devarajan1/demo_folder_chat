@@ -46,9 +46,10 @@ const AddWorkspace = () => {
   const [folderAdded, setFolderAdded] = useAtom(folderAddedAtom);
   const router = useRouter();
   const { workspaceid } = useParams()
-  const [workspaces, setWorkSpaces] = useState([]);
+  const [workspaces, setWorkSpaces] = useState(null);
   const [popOpen, setPopOpen] = useState(false);
-  const [workAdded, setWorkAdded] = useAtom(workAddedAtom)
+  const [workAdded, setWorkAdded] = useAtom(workAddedAtom);
+  const [dialogOpen, setDialogOpen] = useState(false)
   const { toast } = useToast();
 
 
@@ -71,15 +72,13 @@ const AddWorkspace = () => {
       setWorkSpaces(json?.data)
     } else {
       setValue('')
+      setWorkSpaces([])
     }
 
   };
 
   async function deleteWorkSpace(id) {
-    console.log(id);
-    // setPopOpen(false);
-    // return null
-
+    
     try {
       const response = await fetch(`/api/workspace/admin/delete-workspace/${id}`, {
         credentials: 'include',
@@ -92,6 +91,7 @@ const AddWorkspace = () => {
         });
         setPopOpen(false)
         setWorkAdded(!workAdded)
+        router.push('/workspace')
       }
     } catch (error) {
       console.log(error)
@@ -108,9 +108,9 @@ const AddWorkspace = () => {
   }, [workspaceid]);
 
   return (
-    <div className='w-full border rounded-sm px-2 py-1'>
-      {workspaces?.length > 0 ? (
-        <>
+    workspaces !== null && <div className='w-full border rounded-sm px-2 py-1'>
+      {workspaces?.length > 0 ? 
+      (<>
           <h1 className='text-sm font-[600] leading-5 w-full p-1'>Workspaces</h1>
           <Popover open={open} onOpenChange={setOpen} className='w-full h-40 overflow-y-scroll'>
             <div className='flex items-center'>
@@ -149,7 +149,7 @@ const AddWorkspace = () => {
                   {folderOpen && <NewFolder setFolderAdded={setFolderAdded} openMenu={folderOpen} setOpenMenu={setFolderOpen} />}
                   {currentUser?.role === 'admin' &&
                     <>
-                      <Dialog>
+                      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                         <DialogTrigger asChild>
 
                           <div className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" >
@@ -158,7 +158,7 @@ const AddWorkspace = () => {
                           </div>
                         </DialogTrigger>
                         <DialogContent>
-                          <Invite />
+                          <Invite popOpen={popOpen} setPopOpen={setPopOpen} dialogOpen={dialogOpen} setDialogOpen={setDialogOpen}/>
                         </DialogContent>
                       </Dialog>
                       <AlertDialog>

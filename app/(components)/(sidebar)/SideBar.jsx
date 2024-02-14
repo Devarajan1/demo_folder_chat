@@ -32,7 +32,8 @@ const SideBar = () => {
     async function fetchCurrentUser() {
         const user = await getCurrentUser();
         setCurrentUser(user)
-        await getWorkSpace(user)
+        await getWorkSpace(user);
+        await getFolders()
     };
 
 
@@ -51,7 +52,9 @@ const SideBar = () => {
     }
     async function getFolders() {
         //await fetchCurrentUser();
-
+        if (!workspaceid) {
+            return null
+        }
         const res = await fetch(`/api/workspace/list-folder?workspace_id=${workspaceid}`);
         if (res.ok) {
             const json = await res.json()
@@ -117,7 +120,7 @@ const SideBar = () => {
                             <AccordionContent className='flex flex-col justify-center gap-2 items-start h-fit bg-[#EFF5F5] rounded-lg p-2'>
 
                                 {currentUser?.role === 'admin' && <Link href={`/admin/users`} className='flex gap-2 items-center hover:cursor-pointer hover:bg-[#d9dada] w-full p-2 rounded-md'>
-                                    <Settings className='w-4 h-4' color='#14B8A6' /><span className='font-[500] leading-5 text-sm'>Admin Setting</span>
+                                    <Settings className='w-4 h-4' color='#14B8A6' /><span className='font-[500] leading-5 text-sm'>Admin Settings</span>
 
                                 </Link>}
 

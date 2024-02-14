@@ -33,7 +33,7 @@ const nextConfig = {
       },
     ];
 
-    if (process.env.NODE_ENV === "production") return defaultRedirects;
+    if (process.env.NODE_ENV != "production") return defaultRedirects;
 
     return defaultRedirects.concat([
       {

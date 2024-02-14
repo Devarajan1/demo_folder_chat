@@ -50,7 +50,7 @@ const WorkspaceDialog = ({ openMenu, setOpenMenu, showBtn, setPopOpen }) => {
                 setFolderId(null);
                 setWorkAdded(!workAdded)
                 setPopOpen && setPopOpen(false)
-                // router.push(`/workspace/${json?.data?.id}/chat/new`)
+                router.push(`/workspace/${json?.data?.id}/chat/new`)
                 
             }else{
                 const json = await res.json()

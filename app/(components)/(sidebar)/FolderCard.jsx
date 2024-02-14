@@ -199,16 +199,16 @@ const FolderCard = ({ fol }) => {
 
     };
 
-    async function fetchWkUsers() {
-        const response = await fetch(`/api/workspace/admin/list-workspace-user?workspace_id=${workspaceid}`);
-        if (response.ok) {
-            const json = await response.json();
-            setWorkSpaceUsers(json?.data)
-        }
-    }
+    // async function fetchWkUsers() {
+    //     const response = await fetch(`/api/workspace/admin/list-workspace-user?workspace_id=${workspaceid}`);
+    //     if (response?.ok) {
+    //         const json = await response.json();
+    //         setWorkSpaceUsers(json?.data)
+    //     }
+    // }
     useEffect(() => {
         // fetchCurrentUser();
-        fetchWkUsers()
+        // fetchWkUsers()
     }, []);
 
     useEffect(() => {
@@ -222,7 +222,7 @@ const FolderCard = ({ fol }) => {
             <AccordionItem value={id} className='rounded-lg bg-[#ffffff] py-3 px-2 gap-2 flex flex-col' >
                 <div className='w-full flex justify-between'>
                     <AccordionTrigger className='flex-row-reverse items-center gap-2 w-full'>
-                        <h2 className='text-sm leading-5 font-[600]'>{name}</h2>
+                        <h2 className='text-sm leading-5 font-[600] break-all'>{name}</h2>
                     </AccordionTrigger>
                     <Popover open={popOpen} onOpenChange={setPopOpen}>
                         <PopoverTrigger asChild>
@@ -382,8 +382,9 @@ const FolderCard = ({ fol }) => {
                     }
                     {<>
 
-                        {documentSet[0]?.cc_pair_descriptors?.map((data) => {
+                        {documentSet[0]?.cc_pair_descriptors?.map((data, idx) => {
                             return (
+                                
                                 <div key={data?.id} className='border p-1 rounded-sm'>
                                     <div className='flex justify-between items-center h-fit rounded-lg p-2'>
                                         <p className='text-sm font-[600] leading-5'>{data?.name}</p>
@@ -420,7 +421,7 @@ const FolderCard = ({ fol }) => {
                                         </Popover>
                                     </div>
                                     {data?.connector?.connector_specific_config?.file_locations?.map((file) => (
-                                        <div key={file.split('/')[3]} className={`flex justify-between items-center h-fit rounded-lg p-2 hover:cursor-pointer hover:bg-slate-100`}>
+                                        <div key={file} className={`flex justify-between items-center h-fit rounded-lg p-2 hover:cursor-pointer hover:bg-slate-100`}>
                                             <div className='inline-flex gap-1 items-center'>
                                                 <Image src={iconSelector(file.split('/')[4].split('.')[1])} alt='file' />
                                                 <span className={`font-[500] text-sm leading-5 text-ellipsis break-all line-clamp-1 mr-3 text-emphasis`} >{file.split('/')[4]}</span>

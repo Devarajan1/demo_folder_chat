@@ -11,7 +11,7 @@ import { currentSessionUserAtom } from '../store'
 
 import { useAtom } from 'jotai';
 
-function Invite() {
+function Invite({ popOpen, setPopOpen, dialogOpen, setDialogOpen }) {
 
     
     const [users, setUsers] = useState([]);
@@ -123,7 +123,9 @@ function Invite() {
                     "is_admin": false
                 })
             });
-            if (response.ok) {
+            if (response?.ok) {
+                setDialogOpen && setDialogOpen(false)
+                setPopOpen && setPopOpen(false)
                 return toast({
                     variant: 'default',
                     title: "User added!"
@@ -152,6 +154,8 @@ function Invite() {
                     variant: 'default',
                     title: "User removed"
                 });
+                setDialogOpen && setDialogOpen(false)
+                setPopOpen && setPopOpen(false)
                 // await fetchCurrentUser();
                 await fetchWorkspaceUsers();
                 await fetchAllUsers();
