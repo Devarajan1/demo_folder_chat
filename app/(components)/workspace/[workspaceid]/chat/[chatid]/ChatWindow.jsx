@@ -608,7 +608,7 @@ const ChatWindow = () => {
                                             }
 
                                         </div>}
-                                        {responseObj?.length > 0 &&  
+                                        {/* {responseObj?.length > 0 &&  
                                         (<div className='font-[400] text-sm leading-6 self-start float-left max-w-[70%] bg-transparent text-justify break-words'>
                                                     <h1 className='font-[600] text-sm leading-6'>Source:</h1>
                                                     {responseObj[0]?.source_type !== 'file' ?
@@ -618,7 +618,7 @@ const ChatWindow = () => {
                                                     }
                                                 </div>
                                             )
-                                        }
+                                        } */}
 
                                 </>
 

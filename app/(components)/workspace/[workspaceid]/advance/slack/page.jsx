@@ -1,7 +1,7 @@
 'use client'
 import React, { useState } from 'react'
 import Image from 'next/image';
-import slackIcon from '../../../../../../public/assets/Danswer-slack-B.svg'
+import slackIcon from '../../../../../../public/assets/slack-B.svg'
 import { Input } from '../../../../../../components/ui/input';
 import { Button } from '../../../../../../components/ui/button';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow,

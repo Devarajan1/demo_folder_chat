@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import Image from 'next/image';
 import { Input } from '../../../../../../components/ui/input';
 import { Button } from '../../../../../../components/ui/button';
-import gitIcon from '../../../../../../public/assets/Danswer-github-B.svg';
+import gitIcon from '../../../../../../public/assets/github-B.svg';
 import check from '../../../../../../public/assets/check-circle.svg';
 import trash from '../../../../../../public/assets/trash-2.svg';
 import { useToast } from '../../../../../../components/ui/use-toast';

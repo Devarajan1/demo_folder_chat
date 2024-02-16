@@ -1,14 +1,14 @@
 'use client'
 import React, { useState } from 'react'
 import Image from 'next/image';
-import slackIcon from '../../../../../../public/assets/Danswer-slack-B.svg'
+import slackIcon from '../../../../../../public/assets/slack-B.svg'
 import { Input } from '../../../../../../components/ui/input';
 import { Button } from '../../../../../../components/ui/button';
-import gDriveIcon from '../../../../../../public/assets/Danswer-google-B.svg'
-import webIcon from '../../../../../../public/assets/Danswer-web-B.svg'
-import confluenceIcon from '../../../../../../public/assets/Danswer-confluence-B.svg'
-import gitIcon from '../../../../../../public/assets/Danswer-github-B.svg';
-import fileIcon from '../../../../../../public/assets/Danswer-doc-B.svg';
+import gDriveIcon from '../../../../../../public/assets/google-B.svg'
+import webIcon from '../../../../../../public/assets/web-B.svg'
+import confluenceIcon from '../../../../../../public/assets/confluence-B.svg'
+import gitIcon from '../../../../../../public/assets/github-B.svg';
+import fileIcon from '../../../../../../public/assets/doc-B.svg';
 import check from '../../../../../../public/assets/check-circle.svg';
 import trash from '../../../../../../public/assets/trash-2.svg';
 import { useDropzone } from 'react-dropzone';

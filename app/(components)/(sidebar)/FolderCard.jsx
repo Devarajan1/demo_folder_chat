@@ -10,7 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '../../../components/ui/
 import { Pencil, Trash2, Check, X, MessageSquare, Edit, UserRoundPlus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { Input } from '../../../components/ui/input';
-import fileIcon from '../../../public/assets/Danswer-doc-B.svg';
+import fileIcon from '../../../public/assets/doc-B.svg';
 import { Dialog, DialogTrigger, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../../../components/ui/dialog';
 import { useToast } from '../../../components/ui/use-toast';
 import { Button } from '../../../components/ui/button';

@@ -80,7 +80,7 @@ const AddWorkspace = () => {
 
   };
 
-  async function updateWorkName(newName) {
+  async function updateWorkName(newName, workID) {
     if(newName === ''){
       return toast({
         variant:'destructive',
@@ -97,7 +97,7 @@ const AddWorkspace = () => {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-              "workspace_id": parseInt(workspaceid),
+              "workspace_id": parseInt(workID),
               "name": newName,
               "is_active": true,
               "domain": "NA"
@@ -166,7 +166,7 @@ const AddWorkspace = () => {
       {workspaces?.length > 0 ? 
       (<>
           <h1 className='text-sm font-[600] leading-5 w-full p-1'>Workspaces</h1>
-          <Popover open={open} onOpenChange={setOpen} className='w-full h-40 overflow-y-scroll'>
+          <Popover open={open} onOpenChange={setOpen} className='w-full h-40 overflow-y-scroll no-scrollbar'>
             <div className='flex items-center'>
               <PopoverTrigger asChild>
                 <Button
@@ -199,7 +199,6 @@ const AddWorkspace = () => {
                   <div className="flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" onClick={() => setFolderOpen(true)}>
                     <Folder className="mr-2 h-4 w-4" />
                     <span>Add New Folder</span>
-
                   </div>
                   {folderOpen && <NewFolder setFolderAdded={setFolderAdded} openMenu={folderOpen} setOpenMenu={setFolderOpen} setPopOpen={setPopOpen}/>}
                   {currentUser?.role === 'admin' &&
@@ -240,7 +239,7 @@ const AddWorkspace = () => {
                                     </DialogFooter>
 
                                 </DialogContent>
-                            </Dialog>
+                      </Dialog>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <div className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" >
@@ -279,9 +278,10 @@ const AddWorkspace = () => {
                 <CommandEmpty>No workspace found.</CommandEmpty>
                 <CommandGroup>
                   {workspaces?.map(workspace => (
-                    <Link href={`/workspace/${workspace?.id}/chat/new`} key={workspace.id} className='hover:cursor-pointer' onClick={() => setFolderId(null)}>
+                    <div key={workspace.id} className='flex justify-center items-center hover:cursor-pointer'>
+                      <Link href={`/workspace/${workspace?.id}/chat/new`} className='hover:cursor-pointer flex flex-row justify-between w-full items-center px-2' onClick={() => setFolderId(null)}>
                       <CommandItem
-                        className='hover:cursor-pointer'
+                        className='flex justify-between w-full hover:cursor-pointer'
                         value={workspace.name}
                         onSelect={(currentValue) => {
                           setValue(workspace)
@@ -291,12 +291,44 @@ const AddWorkspace = () => {
                         {workspace.name}
                         <Check
                           className={cn(
-                            "ml-auto h-4 w-4",
+                            "ml-auto h-4 w-4 z-50",
                             value?.name === workspace?.name ? "opacity-100" : "opacity-0"
                           )}
                         />
                       </CommandItem>
+                      
                     </Link>
+                    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                                <DialogTrigger asChild onClick={()=> setWorkNewName(workspace.name)}>
+                                  <Edit className="mr-2 h-4 w-4" />
+                                </DialogTrigger>
+                                <DialogContent>
+                                    <DialogHeader className='mb-2'>
+                                        <DialogTitle>
+                                            Update Name
+                                        </DialogTitle>
+                                    </DialogHeader>
+                                    <Label htmlFor='work-name'>New Name</Label>
+                                    <Input
+                                        id='work-name'
+                                        type='text'
+                                        placeholder='new name'
+                                        value={workNewName}
+                                        autoComplete='off'
+                                        className='text-black'
+                                        onChange={(e) => setWorkNewName(e.target.value)}
+                                    />
+
+
+                                    <DialogFooter className={cn('w-full')}>
+                                        <Button variant={'outline'} className={cn('bg-[#14B8A6] text-[#ffffff] m-auto')} onClick={() => updateWorkName(workNewName, workspace?.id)}>Update</Button>
+                                    </DialogFooter>
+
+                                </DialogContent>
+                      </Dialog>
+                  
+                    </div>
+                    
                   ))}
                 </CommandGroup>
               </Command>

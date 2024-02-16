@@ -3,11 +3,11 @@ import React, { useState, useEffect } from 'react'
 import Image from 'next/image';
 import { Input } from '../../../../../components/ui/input';
 import searchIcon from '../../../../../public/assets/search.svg';
-import drive from '../../../../../public/assets/Danswer-google-B.svg'
-import web from '../../../../../public/assets/Danswer-web-B.svg'
-import slack from '../../../../../public/assets/Danswer-slack-B.svg'
-import confluence from '../../../../../public/assets/Danswer-confluence-B.svg'
-import file from '../../../../../public/assets/Danswer-doc-B.svg'
+import drive from '../../../../../public/assets/google-B.svg'
+import web from '../../../../../public/assets/web-B.svg'
+import slack from '../../../../../public/assets/slack-B.svg'
+import confluence from '../../../../../public/assets/confluence-B.svg'
+import file from '../../../../../public/assets/doc-B.svg'
 import { useAtom } from 'jotai';
 import { showAdvanceAtom } from '../../../../store';
 import { MoreHorizontal } from 'lucide-react';

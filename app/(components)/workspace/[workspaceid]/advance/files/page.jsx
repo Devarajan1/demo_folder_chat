@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image';
 import { Button } from '../../../../../../components/ui/button';
-import fileIcon from '../../../../../../public/assets/Danswer-doc-B.svg';
+import fileIcon from '../../../../../../public/assets/doc-B.svg';
 import { useToast } from '../../../../../../components/ui/use-toast';
 import { useDropzone } from 'react-dropzone';
 import { Label } from '../../../../../../components/ui/label';

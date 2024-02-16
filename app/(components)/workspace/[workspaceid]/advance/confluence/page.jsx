@@ -11,7 +11,7 @@ import {
     TableHeader,
     TableRow,
   } from "../../../../../../components/ui/table";
-import conIcon from '../../../../../../public/assets/Danswer-confluence-B.svg';
+import conIcon from '../../../../../../public/assets/confluence-B.svg';
 
 import check from '../../../../../../public/assets/check-circle.svg';
 import trash from '../../../../../../public/assets/trash-2.svg';
@@ -246,7 +246,7 @@ const Confluence = () => {
                 <>
                     <div className='self-start text-sm leading-5 flex flex-col gap-2'>
                         <h2 className='font-[600] break-words text-start'>Step 2: Which spaces do you want to make searchable?</h2>
-                        <span className='font-[400] text-[12px] text-start'>To use the Confluence connector, you must first follow the guide described here to give the Danswer backend read access to your documents. Once that is setup, specify any link to a Confluence page below and click “index” to Index. Based on the provided link, we will index the ENTIRE SPACE, not just the specified page. For example, entering https://danswer.atlassian.net/wik/spaces/Engineering/overview and clicking the Index button will index the whole Engineering Confluence space</span>
+                        <span className='font-[400] text-[12px] text-start'>To use the Confluence connector, you must first follow the guide described here to give the backend read access to your documents. Once that is setup, specify any link to a Confluence page below and click “index” to Index. Based on the provided link, we will index the ENTIRE SPACE, not just the specified page. For example, entering https://folderchat.atlassian.net/wik/spaces/Engineering/overview and clicking the Index button will index the whole Engineering Confluence space</span>
                     </div>
 
                     <div className='w-full self-start p-5 border rounded-lg bg-slate-100 shadow-md'>

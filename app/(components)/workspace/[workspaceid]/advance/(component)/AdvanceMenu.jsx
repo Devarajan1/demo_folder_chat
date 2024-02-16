@@ -1,6 +1,6 @@
 import React from 'react'
 import Image from 'next/image';
-import filter from '../../../../../../public/assets/Danswer-filter-Default.svg';
+import filter from '../../../../../../public/assets/filter-Default.svg';
 import { advanceOption } from '../../../../../../config/constants';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';

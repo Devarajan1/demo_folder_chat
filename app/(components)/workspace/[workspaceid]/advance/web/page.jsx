@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Input } from '../../../../../../components/ui/input';
 import { Button } from '../../../../../../components/ui/button';
 
-import webIcon from '../../../../../../public/assets/Danswer-web-B.svg'
+import webIcon from '../../../../../../public/assets/web-B.svg'
 
 import check from '../../../../../../public/assets/check-circle.svg';
 import trash from '../../../../../../public/assets/trash-2.svg';
