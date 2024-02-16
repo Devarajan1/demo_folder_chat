@@ -271,7 +271,7 @@ const AddWorkspace = () => {
               </Popover>
             </div>
 
-            <PopoverContent className="w-full p-2 space-y-2 max-h-52 overflow-y-scroll">
+            <PopoverContent className="w-full p-2 space-y-2 max-h-52 overflow-y-scroll no-scrollbar">
 
               <Command>
                 <CommandInput placeholder="Search workspace..." className="h-9" />
