@@ -18,8 +18,6 @@ import { useToast } from '../../../components/ui/use-toast'
 
 
 const SelectCard = (props) => {
-  console.log(props)
-  console.log(props?.option?.title)
   const [selectedValue, setSelectedValue] = useState('');
   const [selectValue, setSelectValue] = useAtom(selectOptionAtom);
 

@@ -6,9 +6,9 @@ import { useAtom } from 'jotai';
 import { isPostSignUpCompleteAtom, isPostUserCompleteAtom, folderIdAtom, currentSessionUserAtom, folderAddedAtom, workAddedAtom } from '../../store';
 import { useRouter } from 'next/navigation';
 import { sidebarOptions } from '../../../config/constants';
-import { Dialog, DialogTrigger, DialogContent } from '../../../components/ui/dialog';
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../../../components/ui/dialog';
 import { Setting } from '../(settings)'
-import { ChevronDown, Check, UserPlus, ChevronUp, MoreHorizontal, Trash2, Folder } from 'lucide-react';
+import { ChevronDown, Check, UserPlus, ChevronUp, MoreHorizontal, Trash2, Folder, Briefcase, Edit } from 'lucide-react';
 import { getCurrentUser } from '../../../lib/user';
 import { Button } from '../../../components/ui/button';
 import WorkspaceDialog from './WorkspaceDialog'
@@ -31,6 +31,8 @@ import Invite from '../../admin/Invite';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../../../components/ui/alert-dialog';
 import { useToast } from '../../../components/ui/use-toast';
 import NewFolder from './NewFolder';
+import { Input } from '../../../components/ui/input';
+import { Label } from '../../../components/ui/label';
 
 const AddWorkspace = () => {
 
@@ -46,10 +48,11 @@ const AddWorkspace = () => {
   const [folderAdded, setFolderAdded] = useAtom(folderAddedAtom);
   const router = useRouter();
   const { workspaceid } = useParams()
-  const [workspaces, setWorkSpaces] = useState(null);
+  const [workspaces, setWorkSpaces] = useState([]);
   const [popOpen, setPopOpen] = useState(false);
   const [workAdded, setWorkAdded] = useAtom(workAddedAtom);
-  const [dialogOpen, setDialogOpen] = useState(false)
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [workNewName, setWorkNewName] = useState('')
   const { toast } = useToast();
 
 
@@ -76,6 +79,57 @@ const AddWorkspace = () => {
     }
 
   };
+
+  async function updateWorkName(newName) {
+    if(newName === ''){
+      return toast({
+        variant:'destructive',
+        title:'Provide valid name'
+      })
+    }
+    try {
+        
+        // const url = currentUser?.role === "admin" ? '/api/workspace/admin/update-folder' :'/api/workspace/update-folder'
+        const response = await fetch(`/api/workspace/admin/update-workspace`, {
+            credentials: 'include',
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              "workspace_id": parseInt(workspaceid),
+              "name": newName,
+              "is_active": true,
+              "domain": "NA"
+          })
+        });
+        setWorkNewName('')
+        if (response.ok) {
+            setWorkAdded(!workAdded)
+            setDialogOpen(false);
+            setPopOpen(false);
+           
+            return toast({
+                variant: 'default',
+                title: 'Wokspace name updated successfully!'
+            });
+        }else{
+            const error = await response.json()
+            if(error?.detail){
+                setPopOpen(false);
+                return toast({
+                    variant: 'destructive',
+                    title: error?.detail
+                });
+            }
+        }
+    } catch (error) {
+        
+        console.log(error, detail, 'dddd')
+    }
+
+    return null
+};
 
   async function deleteWorkSpace(id) {
     
@@ -105,10 +159,10 @@ const AddWorkspace = () => {
   useEffect(() => {
     fetchCurrentUser();
 
-  }, [workspaceid]);
+  }, [workspaceid, workAdded]);
 
   return (
-    workspaces !== null && <div className='w-full border rounded-sm px-2 py-1'>
+    workspaces?.length > 0 && <div className='w-full border rounded-sm px-2 py-1'>
       {workspaces?.length > 0 ? 
       (<>
           <h1 className='text-sm font-[600] leading-5 w-full p-1'>Workspaces</h1>
@@ -120,6 +174,7 @@ const AddWorkspace = () => {
                   role="combobox"
                   aria-expanded={open}
                   className="w-full justify-between"
+                  onClick={()=> localStorage.removeItem('lastFolderId')}
                 >
                   {value
                     ? workspaces.find(workspace => workspace?.name === value?.name)?.name
@@ -146,21 +201,46 @@ const AddWorkspace = () => {
                     <span>Add New Folder</span>
 
                   </div>
-                  {folderOpen && <NewFolder setFolderAdded={setFolderAdded} openMenu={folderOpen} setOpenMenu={setFolderOpen} />}
+                  {folderOpen && <NewFolder setFolderAdded={setFolderAdded} openMenu={folderOpen} setOpenMenu={setFolderOpen} setPopOpen={setPopOpen}/>}
                   {currentUser?.role === 'admin' &&
                     <>
+                    <div className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" onClick={()=> setOpenWork(true)}>
+                            <Briefcase className="mr-2 h-4 w-4" />
+                            <span>Add New Workspace</span>
+                      </div>
+                      <WorkspaceDialog openMenu={openWork} setOpenMenu={setOpenWork} showBtn={false} setPopOpen={setPopOpen} />
+                      <Invite setPopOpen={setPopOpen}/>
                       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                        <DialogTrigger asChild>
+                                <DialogTrigger asChild>
+                                    <div className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" >
+                                        <Edit className="mr-2 h-4 w-4" />
+                                        <span>Edit</span>
+                                    </div>
+                                </DialogTrigger>
+                                <DialogContent>
+                                    <DialogHeader className='mb-2'>
+                                        <DialogTitle>
+                                            Update Name
+                                        </DialogTitle>
+                                    </DialogHeader>
+                                    <Label htmlFor='work-name'>New Name</Label>
+                                    <Input
+                                        id='work-name'
+                                        type='text'
+                                        placeholder='new name'
+                                        value={workNewName}
+                                        autoComplete='off'
+                                        className='text-black'
+                                        onChange={(e) => setWorkNewName(e.target.value)}
+                                    />
 
-                          <div className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" >
-                            <UserPlus className="mr-2 h-4 w-4" />
-                            <span>Invite Users</span>
-                          </div>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <Invite popOpen={popOpen} setPopOpen={setPopOpen} dialogOpen={dialogOpen} setDialogOpen={setDialogOpen}/>
-                        </DialogContent>
-                      </Dialog>
+
+                                    <DialogFooter className={cn('w-full')}>
+                                        <Button variant={'outline'} className={cn('bg-[#14B8A6] text-[#ffffff] m-auto')} onClick={() => updateWorkName(workNewName)}>Update</Button>
+                                    </DialogFooter>
+
+                                </DialogContent>
+                            </Dialog>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <div className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" >
@@ -192,7 +272,7 @@ const AddWorkspace = () => {
               </Popover>
             </div>
 
-            <PopoverContent className="w-full p-2 space-y-2">
+            <PopoverContent className="w-full p-2 space-y-2 max-h-52 overflow-y-scroll">
 
               <Command>
                 <CommandInput placeholder="Search workspace..." className="h-9" />
@@ -220,7 +300,7 @@ const AddWorkspace = () => {
                   ))}
                 </CommandGroup>
               </Command>
-              {currentUser?.role === 'admin' && <WorkspaceDialog openMenu={openWork} setOpenMenu={setOpenWork} showBtn={true} setPopOpen={setOpen} />}
+              
             </PopoverContent>
           </Popover>
         </>) : currentUser?.role === 'admin' && <WorkspaceDialog openMenu={openWork} setOpenMenu={setOpenWork} showBtn={true} />}

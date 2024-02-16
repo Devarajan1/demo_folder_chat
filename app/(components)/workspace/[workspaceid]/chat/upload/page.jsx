@@ -96,7 +96,6 @@ const Upload = () => {
       });
       if (data?.ok) {
         const json = await data.json();
-
         await connectorRequest(json.file_paths)
       } else {
         console.log(data)
@@ -338,7 +337,6 @@ const Upload = () => {
             title: "Please write context name"
           })
     }
-    console.log(ccID, folderId);
     
     setDialogLoader(true)
     try {

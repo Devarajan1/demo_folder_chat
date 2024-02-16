@@ -61,7 +61,12 @@ const SideBar = () => {
 
             if (json.data.length > 0) {
                 setFolder(json?.data);
-                setFolderId(json?.data[json?.data.length - 1].id)
+                if(localStorage.getItem('lastFolderId')){
+                    setFolderId(localStorage.getItem('lastFolderId'))
+                }else{
+                    setFolderId(json?.data[json?.data.length - 1]?.id)
+                }
+                
             } else {
                 setFolder([])
                 setFolderId(null)
@@ -127,7 +132,8 @@ const SideBar = () => {
                                 <div className='flex items-center gap-2 hover:cursor-pointer hover:bg-[#d9dada] w-full p-2 rounded-md' onClick={async () => {
                                     const res = await logout();
                                     if (res.ok) {
-                                        setFolderId(null)
+                                        setFolderId(null);
+                                        setCurrentUser(null)
                                         router.push('/auth/login')
                                     }
                                 }}>

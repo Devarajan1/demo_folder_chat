@@ -29,7 +29,6 @@ const Drive = () => {
 
     function uploadFile(file) {
         setFilesList(prev => [...prev, file[0]]);
-        console.log(file[0].name)
         
         setFiles(null)
     };

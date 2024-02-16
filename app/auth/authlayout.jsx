@@ -26,7 +26,7 @@ export default async function AuthLayout({ children }) {
       return redirect("/auth/waiting-on-verification");
     }
 
-    return redirect("/workspace/0/chat/new");
+    return redirect("/workspace");
   }
   return (
     <div className={`flex font-Inter items-center h-screen w-full box-border flex-col`}>

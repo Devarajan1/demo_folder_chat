@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import { getCurrentUser } from '../../../lib/user';
 import { useAtom } from 'jotai';
-import { currentSessionUserAtom, workSpacesAtom, workAddedAtom } from '../../store'
+import { currentSessionUserAtom, workSpacesAtom, workAddedAtom, folderIdAtom } from '../../store'
 import { useParams } from 'next/navigation';
 
 export default function RootLayout({ children }) {
@@ -11,6 +11,7 @@ export default function RootLayout({ children }) {
   const [currentUser, setCurrentUser] = useAtom(currentSessionUserAtom);
   const [userWorkSpaces, setUserWorkSpaces] = useAtom(workSpacesAtom);
   const [workAdded, setWorkAdded] = useAtom(workAddedAtom)
+  const [folderId, setFolderId] = useAtom(folderIdAtom)
   const { workspaceid, chatid } = useParams();
 
   const router = useRouter();
@@ -26,19 +27,33 @@ export default function RootLayout({ children }) {
       if (res?.ok) {
         const json = await res.json()
         setUserWorkSpaces(json?.data)
-        if (chatid == 'new') {
-          if (json?.data?.length > 0) {
-            router.push(`/workspace/${json?.data[json?.data?.length - 1].id}/chat/new`);
-            // if (chatid && chatid !== 'new') {
-            //   router.push(`/workspace/${workspaceid}/chat/${chatid}`);
-            // } else if (workspaceid && workspaceid !== '0') {
-            //   router.push(`/workspace/${workspaceid}/chat/new`);
-            // } else {
-            //   router.push(`/workspace/${json?.data[json?.data?.length - 1].id}/chat/new`);
-            // }
+        // if (chatid == 'new') {
+        //   if (json?.data?.length > 0) {
+        //     router.push(`/workspace/${json?.data[json?.data?.length - 1].id}/chat/new`);
+        //     if (chatid && chatid !== 'new') {
+        //       router.push(`/workspace/${workspaceid}/chat/${chatid}`);
+        //     } else if (workspaceid && workspaceid !== '0') {
+        //       router.push(`/workspace/${workspaceid}/chat/new`);
+        //     } else {
+        //       router.push(`/workspace/${json?.data[json?.data?.length - 1].id}/chat/new`);
+        //     }
+        //   } else {
+        //     router.push(`/workspace/0/chat/new`)
+        //   }
+        // }
+        if (json?.data?.length > 0) {
+          //router.push(`/workspace/${json?.data[json?.data?.length - 1].id}/chat/new`);
+          if (chatid && chatid !== 'new') {
+            setFolderId(localStorage.getItem('lastFolderId'))
+            router.push(`/workspace/${workspaceid}/chat/${chatid}`);
+          } else if (workspaceid && workspaceid !== '0') {
+            setFolderId(localStorage.getItem('lastFolderId'))
+            router.push(`/workspace/${workspaceid}/chat/new`);
           } else {
-            router.push(`/workspace/0/chat/new`)
+            router.push(`/workspace/${json?.data[json?.data?.length - 1].id}/chat/new`);
           }
+        } else {
+          router.push(`/workspace/0/chat/new`)
         }
       }
 
@@ -57,6 +72,7 @@ export default function RootLayout({ children }) {
     fetchCurrentUser()
 
   }, [workAdded])
+  
   return (
     children
   )

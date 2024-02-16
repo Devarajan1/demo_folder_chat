@@ -24,7 +24,6 @@ const Page = async (
   } catch (e) {
     console.log(`Some fetch failed for the login page - ${e}`);
   }
-  console.log('user', currentUser)
 
   if (authTypeMetadata?.authType === "disabled") {
     return redirect("/");

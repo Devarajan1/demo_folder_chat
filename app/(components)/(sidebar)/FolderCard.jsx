@@ -12,6 +12,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { Input } from '../../../components/ui/input';
 import fileIcon from '../../../public/assets/Danswer-doc-B.svg';
 import { Dialog, DialogTrigger, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../../../components/ui/dialog';
+import { useToast } from '../../../components/ui/use-toast';
 import { Button } from '../../../components/ui/button';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '../../../components/ui/alert-dialog'
 import { Label } from '../../../components/ui/label';
@@ -43,6 +44,7 @@ const FolderCard = ({ fol }) => {
     const [workSpaceUsers, setWorkSpaceUsers] = useState([])
     const [currentUser, setCurrentUser] = useAtom(currentSessionUserAtom);
     const { workspaceid, chatid } = useParams();
+    const { toast } = useToast();
 
     const router = useRouter();
 
@@ -68,7 +70,7 @@ const FolderCard = ({ fol }) => {
 
 
     async function updateTitle(value, id, originalTitle) {
-        console.log(value, id, originalTitle)
+        // console.log(value, id, originalTitle)
         if (value === originalTitle) {
             setIsRenamingChat(false)
             return null
@@ -113,12 +115,25 @@ const FolderCard = ({ fol }) => {
                 })
             });
             if (response.ok) {
-                console.log(response)
                 setFolderAdded(!folderAdded)
                 setDialogOpen(false);
                 setPopOpen(false);
+                return toast({
+                    variant: 'default',
+                    title: 'Folder name updated successfully!'
+                });
+            }else{
+                const error = await response.json()
+                if(error?.detail){
+                    setPopOpen(false);
+                    return toast({
+                        variant: 'destructive',
+                        title: error?.detail
+                    });
+                }
             }
         } catch (error) {
+            
             console.log(error)
         }
 
@@ -148,8 +163,6 @@ const FolderCard = ({ fol }) => {
         const allPairIds = documentSet[0]?.cc_pair_descriptors.map(connector => connector.id)
         const idxOfID = allPairIds.indexOf(data.id);
         allPairIds.splice(idxOfID, 1)
-
-        console.log(allPairIds)
 
         if (allPairIds?.length > 0) {
             await fetch(`/api/manage/admin/document-set`, {
@@ -185,7 +198,7 @@ const FolderCard = ({ fol }) => {
         }
 
         const res = await fetch(`/api/manage/document-set-v2/${folder_id}`)
-        if (res.ok) {
+        if (res?.ok) {
             const data = await res.json();
 
             if (data.length > 0) {
@@ -218,7 +231,7 @@ const FolderCard = ({ fol }) => {
 
     return (
 
-        <Accordion type="single" collapsible defaultValue={folderId}>
+        <Accordion type="single" collapsible defaultValue={parseInt(folderId)}>
             <AccordionItem value={id} className='rounded-lg bg-[#ffffff] py-3 px-2 gap-2 flex flex-col' >
                 <div className='w-full flex justify-between'>
                     <AccordionTrigger className='flex-row-reverse items-center gap-2 w-full'>
@@ -237,8 +250,8 @@ const FolderCard = ({ fol }) => {
                                     </div>
                                 )
                             })}
-                            {/* {currentUser?.role === 'admin' && <InviteFolderUser folder_id={id} popoverSetOpen={setPopOpen}/>} */}
-                            <InviteFolderUser folder_id={id} popoverSetOpen={setPopOpen} />
+                            {currentUser?.role === 'admin' && <InviteFolderUser folder_id={id} popoverSetOpen={setPopOpen}/>}
+                            {/* <InviteFolderUser folder_id={id} popoverSetOpen={setPopOpen} /> */}
                             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                                 <DialogTrigger asChild>
                                     <div className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" onClick={() => { setFolNewName(name); setDialogOpen(true); }}>
@@ -300,7 +313,7 @@ const FolderCard = ({ fol }) => {
                 <AccordionContent className='flex flex-col gap-2 p-1'>
                     {
                         files?.length === 0 ?
-                            <Link href={`/workspace/${workspace_id}/chat/new`} className='flex justify-between bg-[#EFF5F5] hover:cursor-pointer hover:bg-slate-200 p-2 rounded-lg' onClick={() => { setFolderId(id) }}>
+                            <Link href={`/workspace/${workspace_id}/chat/new`} className='flex justify-between bg-[#EFF5F5] hover:cursor-pointer hover:bg-slate-200 p-2 rounded-lg' onClick={() => { setFolderId(id); localStorage.setItem('lastFolderId', id) }}>
                                 <span className='text-sm font-[500] leading-5 '>Create First Chat</span>
 
                             </Link>
@@ -387,7 +400,7 @@ const FolderCard = ({ fol }) => {
                                 
                                 <div key={data?.id} className='border p-1 rounded-sm'>
                                     <div className='flex justify-between items-center h-fit rounded-lg p-2'>
-                                        <p className='text-sm font-[600] leading-5'>{data?.name}</p>
+                                        <p className='text-sm font-[600] leading-5 break-all'>{data?.name}</p>
                                         <Popover>
                                             <PopoverTrigger asChild>
                                                 <Image src={threeDot} alt={'options'} className='w-6 h-6 hover:cursor-pointer opacity-70 hover:opacity-100' />
@@ -423,7 +436,7 @@ const FolderCard = ({ fol }) => {
                                     {data?.connector?.connector_specific_config?.file_locations?.map((file) => (
                                         <div key={file} className={`flex justify-between items-center h-fit rounded-lg p-2 hover:cursor-pointer hover:bg-slate-100`}>
                                             <div className='inline-flex gap-1 items-center'>
-                                                <Image src={iconSelector(file.split('/')[4].split('.')[1])} alt='file' />
+                                                <Image src={iconSelector(file.split('/')[4].split('.')[file.split('/')[4].split('.').length-1])} alt='file' />
                                                 <span className={`font-[500] text-sm leading-5 text-ellipsis break-all line-clamp-1 mr-3 text-emphasis`} >{file.split('/')[4]}</span>
                                             </div>
 

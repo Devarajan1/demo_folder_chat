@@ -10,6 +10,7 @@ import { folderIdAtom, workAddedAtom } from '../../store';
 import { useRouter } from 'next/navigation';
 import { getCurrentUser } from '../../../lib/user';
 import { currentSessionUserAtom } from '../../store';
+import { useToast } from '../../../components/ui/use-toast';
 
 
 const WorkspaceDialog = ({ openMenu, setOpenMenu, showBtn, setPopOpen }) => {
@@ -19,6 +20,7 @@ const WorkspaceDialog = ({ openMenu, setOpenMenu, showBtn, setPopOpen }) => {
     const [currentUser, setCurrentUser] = useAtom(currentSessionUserAtom);
     const [folderId, setFolderId] = useAtom(folderIdAtom);
     const { workspaceid } = useParams();
+    const { toast } = useToast();
 
     const router = useRouter()
 
@@ -50,6 +52,10 @@ const WorkspaceDialog = ({ openMenu, setOpenMenu, showBtn, setPopOpen }) => {
                 setFolderId(null);
                 setWorkAdded(!workAdded)
                 setPopOpen && setPopOpen(false)
+                toast({
+                    variant: 'default',
+                    title: 'Workspace created successfully!'
+                });
                 router.push(`/workspace/${json?.data?.id}/chat/new`)
                 
             }else{
@@ -60,7 +66,6 @@ const WorkspaceDialog = ({ openMenu, setOpenMenu, showBtn, setPopOpen }) => {
                 }
             }
         } catch (error) {
-            
             console.log(error)
         }
     };
@@ -79,9 +84,11 @@ const WorkspaceDialog = ({ openMenu, setOpenMenu, showBtn, setPopOpen }) => {
     return (
         <Dialog open={openMenu} onOpenChange={() => {
             // (workspaceid !== '0' || !openMenu) && setOpenMenu(!openMenu);
+            setPopOpen && setPopOpen(false)
             setOpenMenu(!openMenu)
             setInputError(false); 
             setUserInput('');
+            
         }}>
             {showBtn && <DialogTrigger className='w-full'>
                 <Button className='py-0 h-8 w-full bg-[#14B8A6] hover:bg-[#14B8A6] hover:opacity-75'>

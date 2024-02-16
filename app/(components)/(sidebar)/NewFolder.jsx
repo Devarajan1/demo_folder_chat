@@ -26,16 +26,17 @@ import { folderIdAtom, currentSessionUserAtom } from '../../store';
 import { Folder } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation'
+import { useToast } from '../../../components/ui/use-toast';
 import { getCurrentUser } from '../../../lib/user';
 
-const NewFolder = ({ setFolderAdded, openMenu, setOpenMenu }) => {
+const NewFolder = ({ setFolderAdded, openMenu, setOpenMenu, setPopOpen }) => {
 
     const [folderId, setFolderId] = useAtom(folderIdAtom);
     const [open, setOpen] = useState(openMenu);
     const [inputError, setInputError] = useState(false);
     const [currentUser, setCurrentUser] = useAtom(currentSessionUserAtom);
     const { workspaceid } = useParams()
-
+    const { toast } = useToast();
     const router = useRouter()
 
 
@@ -78,9 +79,14 @@ const NewFolder = ({ setFolderAdded, openMenu, setOpenMenu }) => {
                 const json = await response.json()
                 setFolderId(json?.data?.id)
                 setOpen(false)
+                setPopOpen && setPopOpen(false)
                 setFolderAdded(json?.data?.id)
+                toast({
+                    variant: 'default',
+                    title: 'Folder created successfully!'
+                });
                 router.push(`/workspace/${workspaceid}/chat/upload`)
-                return
+                return null
             }
 
         } catch (error) {
@@ -108,6 +114,7 @@ const NewFolder = ({ setFolderAdded, openMenu, setOpenMenu }) => {
                 function: ''
             });
             setOpenMenu(false)
+            setPopOpen && setPopOpen(false)
         }}>
             <DialogTrigger className='w-full'>
                 {!openMenu && <div variant={'outline'} className='w-full text-sm font-[400] text-white bg-[#14B8A6] border-[#14B8A6] leading-[24px] flex items-center justify-between p-2 px-4 rounded-md hover:bg-[#DEEAEA] hover:text-black shadow-md'>

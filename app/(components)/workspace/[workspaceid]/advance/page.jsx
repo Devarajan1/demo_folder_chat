@@ -275,7 +275,6 @@ const AdvancePage = () => {
             finalJSX.push(currentText);
           }
         }
-        console.log(finalJSX)
         return finalJSX;
       };
 

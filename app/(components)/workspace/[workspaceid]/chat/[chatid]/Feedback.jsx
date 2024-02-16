@@ -44,16 +44,16 @@ const Feedback = ({ msgID }) => {
 
     return (
         <Dialog open={open} onOpenChange={setOpen} className='w-fit border'>
-            <DialogTrigger asChild className='w-6 h-6 hover:cursor-pointer hover:bg-slate-100 ml-0 rounded-sm'>
-                <div className='w-10 h-4 p-1 flex'>
-                    <Image src={thumbsUpIconGray} alt="like" className="mr-4" onClick={() => setFeedback(true)} />
-                    <Image src={thumbsDownIconGray} alt="dislike" onClick={() => setFeedback(false)} />
+            <DialogTrigger asChild className='w-10 h-6 ml-0'>
+                <div className='w-10 h-4 p-1 flex space-x-1'>
+                    <Image src={thumbsUpIconGray} alt="like" className="hover:cursor-pointer hover:opacity-60" onClick={() => setFeedback(true)} />
+                    <Image src={thumbsDownIconGray} alt="dislike" className='hover:cursor-pointer hover:opacity-60' onClick={() => setFeedback(false)} />
                 </div>
             </DialogTrigger>
 
             <DialogContent className='w-full flex flex-col item-center justify-center p-8'>
                 <DialogHeader>
-                    <DialogTitle>Provide additional feedback </DialogTitle>
+                    <DialogTitle className='font-[600]'>Provide additional feedback</DialogTitle>
                 </DialogHeader>
                 <textarea rows={3} className='p-2 border' placeholder={feedback ? 'What did you like about this response?' : 'What was the issue with response? How could it be improved?'} onChange={(e) => setFeedbackInput({
                     ...feedbackInput,

@@ -98,7 +98,6 @@ function Admin() {
 
     async function fetchCurrentUser() {
         const user = await getCurrentUser();
-        console.log(user)
         setCurrentUser(user)
     };
 

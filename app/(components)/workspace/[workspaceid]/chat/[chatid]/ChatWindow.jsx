@@ -247,15 +247,17 @@ const ChatWindow = () => {
                 for (const obj of response) {
                     if (obj.answer_piece) {
                         botResponse.current += obj.answer_piece;
+                        //console.log(obj.answer_piece)
                         answer += obj.answer_piece;
                         setRcvdMsg((prev) => prev + obj.answer_piece);
                     } else if (obj.parent_message) {
-                        setResponseObj(obj);
+                        // setResponseObj(obj);
 
                         if (obj?.context_docs?.top_documents.length > 0 && Object.keys(obj.citations).length !== 0) {
                             const key = Object.keys(obj.citations);
 
                             const relatedDoc = obj?.context_docs?.top_documents.filter(doc => doc?.db_doc_id === obj?.citations[key[0]]);
+                            setResponseObj(relatedDoc)
                             documents = obj?.context_docs?.top_documents;
                             query = obj?.context_docs?.rephrased_query
 
@@ -509,9 +511,7 @@ const ChatWindow = () => {
             <div className='w-full flex justify-between px-4 py-2 h-fit '>
                 <div className='flex gap-2 justify-center items-center hover:cursor-pointer'>
                     {folder?.length === 0 ? <Image src={Logo} alt='folder.chat' /> :
-                        <Link href={`/workspace/${workspaceid}/chat/17`}>
-                            <span className='text-sm leading-5 font-[500] opacity-[60%] hover:opacity-100'>Context : {documentSet[0]?.name?.split('-')[0] || 'No Context'}</span>
-                        </Link>
+                        <span className='text-sm leading-5 font-[500] opacity-[60%] hover:opacity-100'>Context : {documentSet[0]?.name?.split('-')[0] || 'No Context'}</span>
                     }
 
                     {folder?.length !== 0 && (!documentSet[0]?.id ?
@@ -608,6 +608,17 @@ const ChatWindow = () => {
                                             }
 
                                         </div>}
+                                        {responseObj?.length > 0 &&  
+                                        (<div className='font-[400] text-sm leading-6 self-start float-left max-w-[70%] bg-transparent text-justify break-words'>
+                                                    <h1 className='font-[600] text-sm leading-6'>Source:</h1>
+                                                    {responseObj[0]?.source_type !== 'file' ?
+                                                        <a href={responseObj[0]?.link} target='_blank' className='w-full border p-1 text-[13px] hover:bg-gray-100 text-gray-700 rounded-md hover:cursor-pointer flex gap-1'><Image src={iconSelector(responseObj[0]?.source_type)} alt={responseObj[0]?.source_type} />{responseObj[0]?.semantic_identifier}</a>
+                                                        :
+                                                        <div className='w-full border p-1 text-[13px] hover:bg-gray-100 text-gray-700 rounded-md hover:cursor-default flex gap-1'><Image src={iconSelector(responseObj[0]?.semantic_identifier.split('.')[responseObj[0]?.semantic_identifier.split('.').length-1])} alt={responseObj[0]?.source_type} />{responseObj[0]?.semantic_identifier}</div>
+                                                    }
+                                                </div>
+                                            )
+                                        }
 
                                 </>
 
@@ -688,7 +699,7 @@ const ChatWindow = () => {
                                         {msg?.citations && msg?.context_docs?.top_documents?.map((doc) => {
 
                                             const key = Object.keys(msg?.citations);
-
+                                            
                                             return (doc?.db_doc_id === msg?.citations[key[0]] && (
                                                 <div className='font-[400] text-sm leading-6 self-start float-left max-w-[70%] bg-transparent text-justify break-words'>
                                                     <h1 className='font-[600] text-sm leading-6'>Source:</h1>
@@ -704,7 +715,6 @@ const ChatWindow = () => {
                                         })}
                                         <div className='flex gap-1 max-w-[70%] item-start justify-start'>
                                             <Feedback msgID={msg?.message_id} />
-
                                         </div>
                                     </div>
                                 )}

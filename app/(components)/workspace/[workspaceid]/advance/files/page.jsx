@@ -314,7 +314,7 @@ const Files = () => {
                     <TableBody>
                     {loading && <TableRow><TableCell colSpan={3} className='w-full text-start p-2'>Loading...</TableCell></TableRow>}
                         {files.map((item, idx) => {
-                            // console.log(item)
+                            
                             return (
                                 <TableRow className='border-b hover:cursor-pointer' key={idx}>
                                     <TableCell className="font-medium w-[80%] text-left p-2 py-3 text-ellipsis break-all text-emphasis overflow-hidden">{item?.name}</TableCell>
