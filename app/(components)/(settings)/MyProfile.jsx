@@ -40,11 +40,9 @@ const MyProfile = () => {
             }
         }
     };
-    
-    async function deleteUser(){
-        return null
-        
 
+    async function deleteUser() {
+        return null
     }
 
     return (
@@ -52,7 +50,7 @@ const MyProfile = () => {
             <div className='w-full flex justify-between items-center pr-5'>
                 <div>
                     <Label className='font-[500] text-xs leading-5'>Preferred Name</Label>
-                    <p className='font-[500] text-sm leading-6'>{}</p>
+                    <p className='font-[500] text-sm leading-6'>{ }</p>
                 </div>
 
                 <Dialog open={nameDialogOpen} onOpenChange={setNameDialogOpen}>
@@ -72,7 +70,6 @@ const MyProfile = () => {
                                     value={preName}
                                     onChange={(e) => setPreName(e.target.value)}
                                     autoComplete='off'
-
                                 />
                             </div>
                         </div>
@@ -88,7 +85,7 @@ const MyProfile = () => {
                 <div className='w-full flex justify-between items-center pr-5'>
                     <div className='font-[400] text-sm leading-6'>
                         <p className='opacity-[70%]'>Email</p>
-                        <p className='font-[500]'>{}</p>
+                        <p className='font-[500]'>{ }</p>
                     </div>
                     <Dialog>
                         <DialogTrigger>
@@ -151,10 +148,10 @@ const MyProfile = () => {
                                             value={newPassword}
                                             onChange={(e) => { setNewPassword(e.target.value); setInputError(false) }}
                                         />
-                                        {newPassword !== '' && 
-                                        <div className="absolute top-5 right-2 transform -translate-y-1/2 px-2 py-1" onClick={() => showPassword('password')}>
-                                            <Image src={eye_icon} alt='show-password' title='Show Password' />
-                                        </div>}
+                                        {newPassword !== '' &&
+                                            <div className="absolute top-5 right-2 transform -translate-y-1/2 px-2 py-1" onClick={() => showPassword('password')}>
+                                                <Image src={eye_icon} alt='show-password' title='Show Password' />
+                                            </div>}
                                     </div>
                                     <div className='w-full relative'>
                                         <Input
@@ -197,7 +194,6 @@ const MyProfile = () => {
                         <AlertDialogTrigger asChild>
                             <Image src={rightArrow} alt='open' className='hover:cursor-pointer' />
                         </AlertDialogTrigger>
-
                         <AlertDialogContent>
                             <AlertDialogHeader>
                                 <AlertDialogTitle>
@@ -211,7 +207,6 @@ const MyProfile = () => {
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                                 <AlertDialogAction className='bg-[#14B8A6] hover:bg-[#14B8A6] hover:opacity-75' onClick={signOut}>Continue</AlertDialogAction>
                             </AlertDialogFooter>
-
                         </AlertDialogContent>
                     </AlertDialog>
                 </div>
@@ -224,7 +219,6 @@ const MyProfile = () => {
                         <AlertDialogTrigger asChild>
                             <Image src={rightArrow} alt='open' className='hover:cursor-pointer' />
                         </AlertDialogTrigger>
-
                         <AlertDialogContent>
                             <AlertDialogHeader>
                                 <AlertDialogTitle>
@@ -237,13 +231,11 @@ const MyProfile = () => {
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction className='bg-[#14B8A6] hover:bg-[#14B8A6] hover:opacity-75' onClick={()=> deleteUser()}>Continue</AlertDialogAction>
+                                <AlertDialogAction className='bg-[#14B8A6] hover:bg-[#14B8A6] hover:opacity-75' onClick={() => deleteUser()}>Continue</AlertDialogAction>
                             </AlertDialogFooter>
-
                         </AlertDialogContent>
                     </AlertDialog>
                 </div>
-
             </div>
         </div>
     )
