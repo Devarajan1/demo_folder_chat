@@ -51,34 +51,29 @@ const FolderCard = ({ fol }) => {
     function handleOptionsOnclick(id, fol_id, wk_id) {
         setFolderId(fol_id);
         if (id === 'new-chat') {
-            localStorage.removeItem('chatSessionID')
-            localStorage.removeItem('lastFolderId')
-            setChatSessionID('new')
-            router.push(`/workspace/${wk_id}/chat/new`)
-
+            localStorage.removeItem('chatSessionID');
+            localStorage.removeItem('lastFolderId');
+            setChatSessionID('new');
+            router.push(`/workspace/${wk_id}/chat/new`);
         } else if (id === 'upload') {
-            router.push(`/workspace/${wk_id}/chat/upload`)
+            router.push(`/workspace/${wk_id}/chat/upload`);
         }
-
-        setPopOpen(false)
-    };
+        setPopOpen(false);
+    }
 
     function handleFilesOnclick(data) {
-        setChatSessionID(data.session_id)
-        setFolderId(data.folder_id)
-    };
-
+        setChatSessionID(data.session_id);
+        setFolderId(data.folder_id);
+    }
 
     async function updateTitle(value, id, originalTitle) {
-        // console.log(value, id, originalTitle)
         if (value === originalTitle) {
-            setIsRenamingChat(false)
-            return null
+            setIsRenamingChat(false);
+            return null;
         }
-        setIsRenamingChat(false)
-
-        setChatRename(!chatTitle)
-    };
+        setIsRenamingChat(false);
+        setChatRename(!chatTitle);
+    }
 
     async function deleteChatsFromServer(chat_session_id) {
         try {
@@ -86,18 +81,19 @@ const FolderCard = ({ fol }) => {
                 method: 'DELETE',
                 headers: {
                     "Content-Type": "application/json"
-                },
-            })
+                }
+            });
+            if (!res.ok) {
+                throw new Error('Failed to delete chat session');
+            }
         } catch (error) {
-            console.log(error)
+            console.error(error);
         }
-    };
-
+    }
 
     async function updateFolderName(name, folder) {
         try {
-            const { id, workspace_id, description, is_active, chat_enabled } = folder
-            // const url = currentUser?.role === "admin" ? '/api/workspace/admin/update-folder' :'/api/workspace/update-folder'
+            const { id, workspace_id, description, is_active, chat_enabled } = folder;
             const response = await fetch(`/api/workspace/update-folder`, {
                 credentials: 'include',
                 method: 'PUT',
@@ -114,31 +110,28 @@ const FolderCard = ({ fol }) => {
                     "chat_enabled": chat_enabled
                 })
             });
-            if (response.ok) {
-                setFolderAdded(!folderAdded)
-                setDialogOpen(false);
-                setPopOpen(false);
-                return toast({
-                    variant: 'default',
-                    title: 'Folder name updated successfully!'
-                });
-            }else{
-                const error = await response.json()
-                if(error?.detail){
+            if (!response.ok) {
+                const error = await response.json();
+                if (error?.detail) {
                     setPopOpen(false);
                     return toast({
                         variant: 'destructive',
                         title: error?.detail
                     });
                 }
+            } else {
+                setFolderAdded(!folderAdded);
+                setDialogOpen(false);
+                setPopOpen(false);
+                return toast({
+                    variant: 'default',
+                    title: 'Folder name updated successfully!'
+                });
             }
         } catch (error) {
-            
-            console.log(error)
+            console.error(error);
         }
-
-        return null
-    };
+    }
 
     async function deleteFolder(fol_id) {
         try {
@@ -146,87 +139,69 @@ const FolderCard = ({ fol }) => {
                 credentials: 'include',
                 method: 'DELETE'
             });
-
-            if (response.ok) {
-                setFolderAdded(!folderAdded)
-                setPopOpen(false)
-                return null
+            if (!response.ok) {
+                throw new Error('Failed to delete folder');
             }
+            setFolderAdded(!folderAdded);
+            setPopOpen(false);
         } catch (error) {
-            console.log(error)
+            console.error(error);
         }
-
-    };
+    }
 
     async function deleteDocSetFile(data) {
+        try {
+            const allPairIds = documentSet[0]?.cc_pair_descriptors.map(connector => connector.id);
+            const idxOfID = allPairIds.indexOf(data.id);
+            allPairIds.splice(idxOfID, 1);
 
-        const allPairIds = documentSet[0]?.cc_pair_descriptors.map(connector => connector.id)
-        const idxOfID = allPairIds.indexOf(data.id);
-        allPairIds.splice(idxOfID, 1)
-
-        if (allPairIds?.length > 0) {
-            await fetch(`/api/manage/admin/document-set`, {
-                method: 'PATCH',
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    "id": documentSet[0]?.id,
-                    "cc_pair_ids": allPairIds,
-                    "description": ''
-                })
-            })
-
-        } else if (allPairIds?.length === 0) {
-
-            await fetch(`/api/manage/admin/document-set/${documentSet[0]?.id}`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-            setDocumentSet([])
-            router.push(`/workspace/${workspaceid}/chat/upload`)
+            if (allPairIds?.length > 0) {
+                await fetch(`/api/manage/admin/document-set`, {
+                    method: 'PATCH',
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        "id": documentSet[0]?.id,
+                        "cc_pair_ids": allPairIds,
+                        "description": ''
+                    })
+                });
+            } else if (allPairIds?.length === 0) {
+                await fetch(`/api/manage/admin/document-set/${documentSet[0]?.id}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                });
+                setDocumentSet([]);
+                router.push(`/workspace/${workspaceid}/chat/upload`);
+            }
+            await getDocSetDetails(id);
+        } catch (error) {
+            console.error(error);
         }
-        await getDocSetDetails(id)
-
     }
 
     async function getDocSetDetails(folder_id) {
-        if (!folder_id) {
-            return null
-        }
-
-        const res = await fetch(`/api/manage/document-set-v2/${folder_id}`)
-        if (res?.ok) {
-            const data = await res.json();
-
-            if (data.length > 0) {
-                setDocumentSet(data)
-            } else {
-                setDocumentSet([])
+        try {
+            if (!folder_id) {
+                return null;
             }
-
+            const res = await fetch(`/api/manage/document-set-v2/${folder_id}`);
+            if (res.ok) {
+                const data = await res.json();
+                setDocumentSet(data.length > 0 ? data : []);
+            }
+        } catch (error) {
+            console.error(error);
         }
-
-
-    };
-
-    // async function fetchWkUsers() {
-    //     const response = await fetch(`/api/workspace/admin/list-workspace-user?workspace_id=${workspaceid}`);
-    //     if (response?.ok) {
-    //         const json = await response.json();
-    //         setWorkSpaceUsers(json?.data)
-    //     }
-    // }
-    useEffect(() => {
-        // fetchCurrentUser();
-        // fetchWkUsers()
-    }, []);
+    }
 
     useEffect(() => {
         getDocSetDetails(id);
     }, [chatHistory, chatTitle, id, workspaceid, temp, chatid]);
+
 
 
     return (
@@ -250,7 +225,7 @@ const FolderCard = ({ fol }) => {
                                     </div>
                                 )
                             })}
-                            {currentUser?.role === 'admin' && <InviteFolderUser folder_id={id} popoverSetOpen={setPopOpen}/>}
+                            {currentUser?.role === 'admin' && <InviteFolderUser folder_id={id} popoverSetOpen={setPopOpen} />}
                             {/* <InviteFolderUser folder_id={id} popoverSetOpen={setPopOpen} /> */}
                             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                                 <DialogTrigger asChild>
@@ -397,7 +372,7 @@ const FolderCard = ({ fol }) => {
 
                         {documentSet[0]?.cc_pair_descriptors?.map((data, idx) => {
                             return (
-                                
+
                                 <div key={data?.id} className='border p-1 rounded-sm'>
                                     <div className='flex justify-between items-center h-fit rounded-lg p-2'>
                                         <p className='text-sm font-[600] leading-5 break-all'>{data?.name}</p>
@@ -436,7 +411,7 @@ const FolderCard = ({ fol }) => {
                                     {data?.connector?.connector_specific_config?.file_locations?.map((file) => (
                                         <div key={file} className={`flex justify-between items-center h-fit rounded-lg p-2 hover:cursor-pointer hover:bg-slate-100`}>
                                             <div className='inline-flex gap-1 items-center'>
-                                                <Image src={iconSelector(file.split('/')[4].split('.')[file.split('/')[4].split('.').length-1])} alt='file' />
+                                                <Image src={iconSelector(file.split('/')[4].split('.')[file.split('/')[4].split('.').length - 1])} alt='file' />
                                                 <span className={`font-[500] text-sm leading-5 text-ellipsis break-all line-clamp-1 mr-3 text-emphasis`} >{file.split('/')[4]}</span>
                                             </div>
 

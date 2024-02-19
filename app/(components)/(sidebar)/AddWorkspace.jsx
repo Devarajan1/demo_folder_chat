@@ -57,114 +57,119 @@ const AddWorkspace = () => {
 
 
   async function getWorkSpace(user) {
-    // console.log(user)
-    const url = user?.role === "admin" ? '/api/workspace/admin/list-workspace' : '/api/workspace/list-workspace-public'
-    const res = await fetch(url, {
-      method: 'GET',
-      credentials: 'include'
-    });
-    const json = await res.json()
-
-    if (json?.data?.length > 0) {
-      const currentWorkSpace = json?.data?.filter(workspace => workspace.id == workspaceid);
-      if (currentWorkSpace.length > 0) {
-        setValue(currentWorkSpace[0])
-      } else {
-        setValue(json?.data[0])
+    try {
+      const url = user?.role === "admin" ? '/api/workspace/admin/list-workspace' : '/api/workspace/list-workspace-public';
+      const res = await fetch(url, {
+        method: 'GET',
+        credentials: 'include'
+      });
+      if (!res.ok) {
+        throw new Error('Failed to fetch workspace data');
       }
-      setWorkSpaces(json?.data)
-    } else {
-      setValue('')
-      setWorkSpaces([])
+      const json = await res.json();
+      if (json?.data?.length > 0) {
+        const currentWorkSpace = json?.data?.filter(workspace => workspace.id == workspaceid);
+        if (currentWorkSpace.length > 0) {
+          setValue(currentWorkSpace[0]);
+        } else {
+          setValue(json?.data[0]);
+        }
+        setWorkSpaces(json?.data);
+      } else {
+        setValue('');
+        setWorkSpaces([]);
+      }
+    } catch (error) {
+      console.error('Error fetching workspace:', error);
     }
-
   };
 
   async function updateWorkName(newName, workID) {
-    if(newName === ''){
-      return toast({
-        variant:'destructive',
-        title:'Provide valid name'
-      })
-    }
     try {
-        
-        // const url = currentUser?.role === "admin" ? '/api/workspace/admin/update-folder' :'/api/workspace/update-folder'
-        const response = await fetch(`/api/workspace/admin/update-workspace`, {
-            credentials: 'include',
-            method: 'PUT',
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              "workspace_id": parseInt(workID),
-              "name": newName,
-              "is_active": true,
-              "domain": "NA"
-          })
-        });
-        setWorkNewName('')
-        if (response.ok) {
-            setWorkAdded(!workAdded)
-            setDialogOpen(false);
-            setPopOpen(false);
-           
-            return toast({
-                variant: 'default',
-                title: 'Wokspace name updated successfully!'
-            });
-        }else{
-            const error = await response.json()
-            if(error?.detail){
-                setPopOpen(false);
-                return toast({
-                    variant: 'destructive',
-                    title: error?.detail
-                });
-            }
-        }
-    } catch (error) {
-        
-        console.log(error, detail, 'dddd')
-    }
+      if (newName === '') {
+        throw new Error('Provide valid name');
+      }
 
-    return null
-};
+      const response = await fetch(`/api/workspace/admin/update-workspace`, {
+        credentials: 'include',
+        method: 'PUT',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          "workspace_id": parseInt(workID),
+          "name": newName,
+          "is_active": true,
+          "domain": "NA"
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update workspace name');
+      }
+
+      setWorkNewName('');
+      setWorkAdded(!workAdded);
+      setDialogOpen(false);
+      setPopOpen(false);
+
+      toast({
+        variant: 'default',
+        title: 'Workspace name updated successfully!'
+      });
+    } catch (error) {
+      console.error('Error updating workspace name:', error);
+      const errorDetail = await response.json();
+      if (errorDetail?.detail) {
+        setPopOpen(false);
+        toast({
+          variant: 'destructive',
+          title: errorDetail?.detail
+        });
+      }
+    }
+  };
 
   async function deleteWorkSpace(id) {
-    
     try {
       const response = await fetch(`/api/workspace/admin/delete-workspace/${id}`, {
         credentials: 'include',
         method: 'DELETE'
       });
+
       if (response?.ok) {
         toast({
           variant: 'default',
           title: "Workspace deleted !"
         });
-        setPopOpen(false)
-        setWorkAdded(!workAdded)
-        router.push('/workspace')
+        setPopOpen(false);
+        setWorkAdded(!workAdded);
+        router.push('/workspace');
       }
     } catch (error) {
-      console.log(error)
+      console.error('Error deleting workspace:', error);
     }
   }
+
   async function fetchCurrentUser() {
-    const user = await getCurrentUser();
-    setCurrentUser(user)
-    await getWorkSpace(user)
+    try {
+      const user = await getCurrentUser();
+      setCurrentUser(user);
+      await getWorkSpace(user);
+    } catch (error) {
+      console.error('Error fetching current user:', error);
+    }
   };
+
   useEffect(() => {
     fetchCurrentUser();
-
   }, [workspaceid, workAdded]);
+
 
   return (
     workspaces?.length > 0 && <div className='w-full border rounded-sm px-2 py-1'>
-      {workspaces?.length > 0 ? 
-      (<>
+      {workspaces?.length > 0 ?
+        (<>
           <h1 className='text-sm font-[600] leading-5 w-full p-1'>Workspaces</h1>
           <Popover open={open} onOpenChange={setOpen} className='w-full h-40 overflow-y-scroll no-scrollbar'>
             <div className='flex items-center'>
@@ -174,7 +179,7 @@ const AddWorkspace = () => {
                   role="combobox"
                   aria-expanded={open}
                   className="w-full justify-between"
-                  onClick={()=> localStorage.removeItem('lastFolderId')}
+                  onClick={() => localStorage.removeItem('lastFolderId')}
                 >
                   {value
                     ? workspaces.find(workspace => workspace?.name === value?.name)?.name
@@ -200,45 +205,45 @@ const AddWorkspace = () => {
                     <Folder className="mr-2 h-4 w-4" />
                     <span>Add New Folder</span>
                   </div>
-                  {folderOpen && <NewFolder setFolderAdded={setFolderAdded} openMenu={folderOpen} setOpenMenu={setFolderOpen} setPopOpen={setPopOpen}/>}
+                  {folderOpen && <NewFolder setFolderAdded={setFolderAdded} openMenu={folderOpen} setOpenMenu={setFolderOpen} setPopOpen={setPopOpen} />}
                   {currentUser?.role === 'admin' &&
                     <>
-                    <div className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" onClick={()=> setOpenWork(true)}>
-                            <Briefcase className="mr-2 h-4 w-4" />
-                            <span>Add New Workspace</span>
+                      <div className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" onClick={() => setOpenWork(true)}>
+                        <Briefcase className="mr-2 h-4 w-4" />
+                        <span>Add New Workspace</span>
                       </div>
                       <WorkspaceDialog openMenu={openWork} setOpenMenu={setOpenWork} showBtn={false} setPopOpen={setPopOpen} />
-                      <Invite setPopOpen={setPopOpen}/>
+                      <Invite setPopOpen={setPopOpen} />
                       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                                <DialogTrigger asChild>
-                                    <div className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" >
-                                        <Edit className="mr-2 h-4 w-4" />
-                                        <span>Edit</span>
-                                    </div>
-                                </DialogTrigger>
-                                <DialogContent>
-                                    <DialogHeader className='mb-2'>
-                                        <DialogTitle>
-                                            Update Name
-                                        </DialogTitle>
-                                    </DialogHeader>
-                                    <Label htmlFor='work-name'>New Name</Label>
-                                    <Input
-                                        id='work-name'
-                                        type='text'
-                                        placeholder='new name'
-                                        value={workNewName}
-                                        autoComplete='off'
-                                        className='text-black'
-                                        onChange={(e) => setWorkNewName(e.target.value)}
-                                    />
+                        <DialogTrigger asChild>
+                          <div className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" >
+                            <Edit className="mr-2 h-4 w-4" />
+                            <span>Edit</span>
+                          </div>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader className='mb-2'>
+                            <DialogTitle>
+                              Update Name
+                            </DialogTitle>
+                          </DialogHeader>
+                          <Label htmlFor='work-name'>New Name</Label>
+                          <Input
+                            id='work-name'
+                            type='text'
+                            placeholder='new name'
+                            value={workNewName}
+                            autoComplete='off'
+                            className='text-black'
+                            onChange={(e) => setWorkNewName(e.target.value)}
+                          />
 
 
-                                    <DialogFooter className={cn('w-full')}>
-                                        <Button variant={'outline'} className={cn('bg-[#14B8A6] text-[#ffffff] m-auto')} onClick={() => updateWorkName(workNewName)}>Update</Button>
-                                    </DialogFooter>
+                          <DialogFooter className={cn('w-full')}>
+                            <Button variant={'outline'} className={cn('bg-[#14B8A6] text-[#ffffff] m-auto')} onClick={() => updateWorkName(workNewName)}>Update</Button>
+                          </DialogFooter>
 
-                                </DialogContent>
+                        </DialogContent>
                       </Dialog>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
@@ -280,59 +285,59 @@ const AddWorkspace = () => {
                   {workspaces?.map(workspace => (
                     <div key={workspace.id} className='flex justify-center items-center hover:cursor-pointer'>
                       <Link href={`/workspace/${workspace?.id}/chat/new`} className='hover:cursor-pointer flex flex-row justify-between w-full items-center px-2' onClick={() => setFolderId(null)}>
-                      <CommandItem
-                        className='flex justify-between w-full hover:cursor-pointer'
-                        value={workspace.name}
-                        onSelect={(currentValue) => {
-                          setValue(workspace)
-                          setOpen(false)
-                        }}
-                      >
-                        {workspace.name}
-                        <Check
-                          className={cn(
-                            "ml-auto h-4 w-4 z-50",
-                            value?.name === workspace?.name ? "opacity-100" : "opacity-0"
-                          )}
-                        />
-                      </CommandItem>
-                      
-                    </Link>
-                    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                                <DialogTrigger asChild onClick={()=> setWorkNewName(workspace.name)}>
-                                  <Edit className="mr-2 h-4 w-4" />
-                                </DialogTrigger>
-                                <DialogContent>
-                                    <DialogHeader className='mb-2'>
-                                        <DialogTitle>
-                                            Update Name
-                                        </DialogTitle>
-                                    </DialogHeader>
-                                    <Label htmlFor='work-name'>New Name</Label>
-                                    <Input
-                                        id='work-name'
-                                        type='text'
-                                        placeholder='new name'
-                                        value={workNewName}
-                                        autoComplete='off'
-                                        className='text-black'
-                                        onChange={(e) => setWorkNewName(e.target.value)}
-                                    />
+                        <CommandItem
+                          className='flex justify-between w-full hover:cursor-pointer'
+                          value={workspace.name}
+                          onSelect={(currentValue) => {
+                            setValue(workspace)
+                            setOpen(false)
+                          }}
+                        >
+                          {workspace.name}
+                          <Check
+                            className={cn(
+                              "ml-auto h-4 w-4 z-50",
+                              value?.name === workspace?.name ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                        </CommandItem>
+
+                      </Link>
+                      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                        <DialogTrigger asChild onClick={() => setWorkNewName(workspace.name)}>
+                          <Edit className="mr-2 h-4 w-4" />
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader className='mb-2'>
+                            <DialogTitle>
+                              Update Name
+                            </DialogTitle>
+                          </DialogHeader>
+                          <Label htmlFor='work-name'>New Name</Label>
+                          <Input
+                            id='work-name'
+                            type='text'
+                            placeholder='new name'
+                            value={workNewName}
+                            autoComplete='off'
+                            className='text-black'
+                            onChange={(e) => setWorkNewName(e.target.value)}
+                          />
 
 
-                                    <DialogFooter className={cn('w-full')}>
-                                        <Button variant={'outline'} className={cn('bg-[#14B8A6] text-[#ffffff] m-auto')} onClick={() => updateWorkName(workNewName, workspace?.id)}>Update</Button>
-                                    </DialogFooter>
+                          <DialogFooter className={cn('w-full')}>
+                            <Button variant={'outline'} className={cn('bg-[#14B8A6] text-[#ffffff] m-auto')} onClick={() => updateWorkName(workNewName, workspace?.id)}>Update</Button>
+                          </DialogFooter>
 
-                                </DialogContent>
+                        </DialogContent>
                       </Dialog>
-                  
+
                     </div>
-                    
+
                   ))}
                 </CommandGroup>
               </Command>
-              
+
             </PopoverContent>
           </Popover>
         </>) : currentUser?.role === 'admin' && <WorkspaceDialog openMenu={openWork} setOpenMenu={setOpenWork} showBtn={true} />}
