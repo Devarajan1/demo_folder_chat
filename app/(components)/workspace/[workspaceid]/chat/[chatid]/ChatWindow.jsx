@@ -50,7 +50,6 @@ const ChatWindow = () => {
     const [inputDocDes, setInputDocDes] = useState('');
     const [selectedDoc, setSelectedDoc] = useState([]);
     const [docSetOpen, setDocSetOpen] = useState(false);
-    const [workSpaceValue, setWorkSpaceValue] = useState(null)
     const [userWorkSpaces, setUserWorkSpaces] = useState([]);
     const [currentUser, setCurrentUser] = useAtom(currentSessionUserAtom);
     const botResponse = useRef('');
@@ -141,8 +140,8 @@ const ChatWindow = () => {
                     "first_message": userMessage
                 })
             });
-            const json = await data.json();
-            setChatTitle(json.new_name)
+            const json = await data?.json();
+            setChatTitle(json?.new_name)
         } catch (error) {
             console.log(error)
         }
@@ -417,9 +416,9 @@ const ChatWindow = () => {
         }
 
         const res = await fetch(`/api/manage/document-set-v2/${folder_id}`)
-        if (res.ok) {
+        if (res?.ok) {
             const data = await res.json();
-            if (data?.length > 0) {
+            if (data?.length > 0 && data[0]?.cc_pair_descriptors?.length > 0) {
                 setDocumentSet(data)
             } else {
                 setDocumentSet([])

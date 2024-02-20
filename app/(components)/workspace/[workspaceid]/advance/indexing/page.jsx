@@ -2,13 +2,6 @@
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image';
 import threeLines from '../../../../../../public/assets/All-B.svg'
-import gDriveIcon from '../../../../../../public/assets/google-B.svg'
-import web from '../../../../../../public/assets/web-B.svg'
-import slackIcon from '../../../../../../public/assets/slack-B.svg'
-import confluenceIcon from '../../../../../../public/assets/confluence-B.svg'
-import gitIcon from '../../../../../../public/assets/github-B.svg';
-import fileIcon from '../../../../../../public/assets/doc-B.svg';
-import check from '../../../../../../public/assets/check-circle.svg';
 import { Dialog, DialogTrigger, DialogContent } from '../../../../../../components/ui/dialog';
 import { iconSelector } from '../../../../../../config/constants'
 import { timeAgo } from '../../../../../../config/time';
@@ -33,7 +26,7 @@ const Indexing = () => {
     const [loading, setLoading] = useState(true)
     const [ccPairId, setCcPairId] = useState(null);
     const [open, setOpen] = useState(ccPairId !== null);
-    const [session, setSession] = useAtom(currentSessionUserAtom);
+    const [currentUser, setCurrentUser] = useAtom(currentSessionUserAtom);
     const [allConnectors, setAllConnectors] = useAtom(userConnectorsAtom);
    
 

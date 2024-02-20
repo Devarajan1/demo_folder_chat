@@ -247,7 +247,7 @@ const FolderCard = ({ fol }) => {
                                     </div>
                                 )
                             })}
-                            {(currentUser.role === 'admin' || currentUser.id === created_by) && <InviteFolderUser folder_id={id} popoverSetOpen={setPopOpen}/>}
+                            {(currentUser?.role === 'admin' || currentUser?.id === created_by) && <InviteFolderUser folder_id={id} popoverSetOpen={setPopOpen}/>}
                             {/* <InviteFolderUser folder_id={id} popoverSetOpen={setPopOpen} /> */}
                             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                                 <DialogTrigger asChild>
@@ -280,7 +280,7 @@ const FolderCard = ({ fol }) => {
 
                                 </DialogContent>
                             </Dialog>
-                            {(currentUser.role === 'admin' || currentUser.id === created_by) && <AlertDialog>
+                            {(currentUser?.role === 'admin' || currentUser?.id === created_by) && <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                     <div className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" >
                                         <Trash2 className="mr-2 h-4 w-4" />
@@ -398,7 +398,7 @@ const FolderCard = ({ fol }) => {
                                 <div key={data?.id} className='border p-1 rounded-sm'>
                                     <div className='flex justify-between items-center h-fit rounded-lg p-2'>
                                         <p className='text-sm font-[600] leading-5 break-all'>{data?.name}</p>
-                                        {(currentUser.role === 'admin' || currentUser.id === created_by) &&<Popover>
+                                        {(currentUser?.role === 'admin' || currentUser?.id === created_by) &&<Popover>
                                             <PopoverTrigger asChild>
                                                 <Image src={threeDot} alt={'options'} className='w-6 h-6 hover:cursor-pointer opacity-70 hover:opacity-100' />
                                             </PopoverTrigger>

@@ -298,7 +298,7 @@ const AddWorkspace = () => {
                       </CommandItem>
                       
                     </Link>
-                    {(currentUser.role === 'admin') && <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                    {(currentUser?.role === 'admin') && <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                                 <DialogTrigger asChild onClick={()=> setWorkNewName(workspace.name)}>
                                   <Edit className="mr-2 h-4 w-4" />
                                 </DialogTrigger>

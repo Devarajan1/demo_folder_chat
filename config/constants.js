@@ -10,7 +10,7 @@ import webIcon from '../public/assets/web.svg';
 import filesIcon from '../public/assets/docD.svg';
 import fileIconB from '../public/assets/doc-B.svg';
 import gDriveIconWhite from '../public/assets/google-white.svg'
-import gDriveIconB from '../public/assets/google-B.svg'
+import gDriveIconB from '../public/assets/google.svg'
 import webB from '../public/assets/web-B.svg'
 import slackIconB from '../public/assets/slack-B.svg'
 import confluenceIconB from '../public/assets/confluence-B.svg'

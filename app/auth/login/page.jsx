@@ -37,7 +37,7 @@ const Page = async (
 
   // if user is already logged in, take them to the main app page
   if (currentUser && currentUser.is_active) {
-    if (authTypeMetadata?.requiresVerification && !currentUser.is_verified) {
+    if (authTypeMetadata?.requiresVerification && !currentUser?.is_verified) {
       return redirect("/auth/waiting-on-verification");
     }
 

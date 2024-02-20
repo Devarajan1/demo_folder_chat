@@ -25,7 +25,7 @@ const Role = ({ user, promoteToAdmin }) => {
 
     return (
         <Popover open={open} onOpenChange={()=> {
-            if(user.id !== currentUser?.id){
+            if(user?.id !== currentUser?.id){
                 setOpen(!open)
             }
         }} className='w-full h-40 overflow-y-scroll'>

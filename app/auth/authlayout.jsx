@@ -22,7 +22,7 @@ export default async function AuthLayout({ children }) {
 
 
   if (currentUser && currentUser.is_active) {
-    if (authTypeMetadata?.requiresVerification && !currentUser.is_verified) {
+    if (authTypeMetadata?.requiresVerification && !currentUser?.is_verified) {
       return redirect("/auth/waiting-on-verification");
     }
 

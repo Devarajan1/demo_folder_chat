@@ -18,19 +18,15 @@ import { useAtom } from 'jotai';
 const EditIndex = ({ cc_pair_id, setOpen }) => {
 
     const { toast } = useToast();
-    const [session, setSession] = useAtom(currentSessionUserAtom)
+    const [currentUser, setCurrentUser] = useAtom(currentSessionUserAtom)
     const [connectorDetails, setConnectorDetails] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [userConnectorId, setUserConnectorId] = useState([]);
-    const [userConnectors, setUserConnectors] = useAtom(userConnectorsAtom);
-    const [documentSet, setDocumentSet] = useState([]);
-    const [folderId, setFolderId] = useAtom(folderIdAtom);
-    const [temp, setTemp] = useAtom(tempAtom)
+    
     const body = useRef(null)
 
     async function connectorStatus(id) {
         try {
-            const data = await fetch(`/api/manage/admin/cc-pair/${id}`);
+            const data = await fetch(`/api/manage/cc-pair/${id}`)
             const json = await data.json();
             setConnectorDetails(json);
             body.current = json
@@ -41,11 +37,11 @@ const EditIndex = ({ cc_pair_id, setOpen }) => {
     };
 
     async function disableConnector(bodyData){
-        console.log(bodyData)
+        
         bodyData.current.connector.disabled = !bodyData.current.connector.disabled
         
         try {
-            const data = await fetch(`/api/manage/admin/connector/${bodyData.current.connector.id}`, {
+            const data = await fetch(`/api/manage/connector-v2/${bodyData.current.connector.id}`, {
                 credentials:'include',
                 method:'PATCH',
                 headers: {
@@ -53,9 +49,9 @@ const EditIndex = ({ cc_pair_id, setOpen }) => {
                 },
                 body:JSON.stringify(bodyData.current.connector)
             });
-            if(data.ok){
+            if(data?.ok){
                 const json = await data.json();
-            const updatedData = {
+                const updatedData = {
                 ...connectorDetails,
                 connector: {
                   ...connectorDetails.connector,
@@ -83,7 +79,7 @@ const EditIndex = ({ cc_pair_id, setOpen }) => {
         if(!bodyData.current.connector.disabled) return null
         setLoading(true)
         try {
-            const data = await fetch(`/api/manage/admin/deletion-attempt`, {
+            const data = await fetch(`${currentUser?.role === 'admin' ? '/api/manage/admin/deletion-attempt': '/api/manage/deletion-attempt-v2'}`, {
                 credentials:'include',
                 method:'POST',
                 headers: {

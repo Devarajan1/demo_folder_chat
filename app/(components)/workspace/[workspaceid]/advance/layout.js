@@ -15,11 +15,17 @@ export default function RootLayout({ children }) {
       
       try {
           const data = await fetch(currentUser?.role === 'admin' ? `/api/manage/admin/connector/indexing-status` : `/api/manage/connector/indexing-status-v2`);
-          if(data.ok){
+          if(data?.ok){
             const json = await data?.json();
             // console.log(json)
             setAllConnectorFromServer(json)
-            setUserConnectors(json)
+            if(currentUser?.role === 'admin'){
+                setUserConnectors(json)
+            }else{
+                const currentUserData = json.filter(item => item.owner === currentUser?.email)
+                setUserConnectors(currentUserData)
+            }
+            
           }else{
             setUserConnectors([])
           }

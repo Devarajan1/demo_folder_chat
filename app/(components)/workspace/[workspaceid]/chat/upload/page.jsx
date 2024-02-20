@@ -444,10 +444,10 @@ const Upload = () => {
       return null
     }
     const res = await fetch(`/api/manage/document-set-v2/${folder_id}`)
-    if (res.ok) {
+    if (res?.ok) {
 
       const data = await res.json();
-      if (data.length > 0) {
+      if (data?.length > 0) {
         setDocumentSet(data)
       } else {
         setDocumentSet([])
@@ -461,16 +461,7 @@ const Upload = () => {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
-  useEffect(() => {
-    // indexingAll()
-    if (folder === null || folder?.length === 0) {
-      // router.push('/chat/new')
-    }
-    // else {
-    //   setLoading(false)
-    // }
 
-  }, [folder]);
 
   useEffect(() => {
     // fetchCurrentUser()
@@ -487,16 +478,8 @@ const Upload = () => {
   useEffect(() => {
 
     if (userConnectors !== null) {
-      // const fileData = userConnectors?.filter((item) => item?.connector?.source === 'file');
-      const conn_ids = userConnectors?.map(conn => { return conn?.connector?.id });
-      // console.log(conn_ids)
+      const conn_ids = userConnectors?.map(item => { return item?.connector?.id })
       setExistConnector(conn_ids);
-
-
-      // if (fileData?.length > 0) {
-      //   const conn_ids = userConnectors?.map(conn => { return conn?.connector?.id });
-      //   setExistConnector(conn_ids);
-      // };
     }
   }, [userConnectors]);
 
@@ -540,7 +523,7 @@ const Upload = () => {
               </div>
             </div> :
             <div className='w-full text-start space-y-2 mb-2'>
-
+              <h2 className='text-sm font-[600] mb-2 opacity-60'>Context name: {documentSet[0]?.name?.split('-')[0]}</h2>
               <Label className='text-start' htmlFor='filename'>File Name</Label>
               <Input type='text' placeholder='Write a name to identify your files' id='filename' value={context.fileName} onChange={(e) => setContext({ ...context, 'fileName': e.target.value })} />
 
@@ -562,44 +545,11 @@ const Upload = () => {
                   {/* <p className='opacity-[50%] text-sm leading-6'>Max Size 1MB</p> */}
                 </div>
               </div>
-              {userConnectors?.length > 0 &&
-                <div className='w-full text-sm leading-5 text-center space-y-2'>
-                  <p className='font-[500]'>OR</p>
-                  <Dialog open={d_open} onOpenChange={() => { setSelectedDoc(documentSet[0]?.cc_pair_descriptors?.length > 0 ? documentSet[0]?.cc_pair_descriptors.map(cc => cc.id) : []); setD_open(!d_open) }} className='fixed max-h-52 overflow-x-scroll no-scrollbar' >
-                    <DialogTrigger asChild>
-                      <p className='font-[600] p-2 border w-[70%] m-auto rounded-sm shadow-sm bg-[#EFF5F5] hover:cursor-pointer' onClick={() => setD_open(true)}>Select From Existing Files</p>
-                    </DialogTrigger>
-                    <DialogContent>
-                      {!dialogLoader ?
-                        <>
-                          <h1 className='font-[600] text-sm leading-5 m-2'>Select Documents</h1>
-                          {documentSet?.length === 0 && <div>
-                            <Label className='text-start' htmlFor='context'>Name of Context</Label>
-                            <Input type='text' placeholder='Name Should Be Unique' id='context' value={context.contextName} onChange={(e) => setContext({ ...context, 'contextName': e.target.value })} />
-                          </div>}
-                          <div className='flex gap-2 flex-wrap'>
-                            {userConnectors?.map((connector) =>
-                              <div className='space-x-2 p-1 border flex items-center rounded-sm hover:bg-slate-100 w-fit break-all' key={connector?.cc_pair_id}>
-                                <input type="checkbox" value={connector?.cc_pair_id} checked={selectedDoc?.includes(connector?.cc_pair_id)} id={connector?.cc_pair_id} className={`px-2 py-1 border rounded hover:cursor-pointer hover:bg-gray-100 `} onChange={(e) => handleDocSetID(e.target.value)} /><label htmlFor={connector?.cc_pair_id} >{connector?.name}</label></div>)
-                            }
-                          </div>
-                          <DialogFooter className={cn('w-full')}>
-                            <Button variant={'outline'} className={cn('bg-[#14B8A6] text-[#ffffff] m-auto')} onClick={() => uploadDocSetFiles()}>Update</Button>
-                          </DialogFooter>
-                        </>
-                        :
-                        <div className='w-full'>
-                          <Loader2 className='animate-spin m-auto' />
-                        </div>
-                      }
-
-                    </DialogContent>
-                  </Dialog>
-                </div>}
+              
             </>
             :
             <div className='w-full text-center space-y-4'>
-              <div className='w-full border flex flex-col gap-1 justify-center items-center min-h-[20vh] max-h-[40vh] bg-[#EFF5F5] rounded-md relative p-4 overflow-y-scroll'>
+              <div className='w-full border flex flex-col gap-1 justify-center items-center min-h-[20vh] max-h-[40vh] bg-[#EFF5F5] rounded-md relative p-4 overflow-y-scroll no-scrollbar'>
 
                 {files?.map(file => <p key={file?.name} className='text-sm leading-6 break-all'>{file?.name}</p>)}
                 <X size={'1rem'} className='self-start absolute top-1 right-1 hover:cursor-pointer' onClick={() => setFiles([])} />
@@ -608,6 +558,40 @@ const Upload = () => {
               <Button className={cn('bg-[#14B8A6] hover:bg-[#14B8A6] hover:opacity-80 ml-auto')} onClick={() => uploadFile(files)}>Upload</Button>
             </div>
           }
+          {/* {userConnectors?.length > 0 &&
+            <div className='w-full text-sm leading-5 text-center space-y-2'>
+              <p className='font-[500]'>OR</p>
+              <Dialog open={d_open} onOpenChange={() => { setSelectedDoc(documentSet[0]?.cc_pair_descriptors?.length > 0 ? documentSet[0]?.cc_pair_descriptors.map(cc => cc.id) : []); setD_open(!d_open) }} className='fixed max-h-52 overflow-x-scroll no-scrollbar' >
+                <DialogTrigger asChild>
+                  <p className='font-[600] p-2 border w-[70%] m-auto rounded-sm shadow-sm bg-[#EFF5F5] hover:cursor-pointer' onClick={() => setD_open(true)}>Select From Existing Files</p>
+                </DialogTrigger>
+                <DialogContent>
+                  {!dialogLoader ?
+                    <>
+                      <h1 className='font-[600] text-sm leading-5 m-2'>Select Documents</h1>
+                      {documentSet?.length === 0 && <div>
+                        <Label className='text-start' htmlFor='context'>Name of Context</Label>
+                        <Input type='text' placeholder='Name Should Be Unique' id='context' value={context.contextName} onChange={(e) => setContext({ ...context, 'contextName': e.target.value })} />
+                      </div>}
+                      <div className='flex gap-2 flex-wrap'>
+                        {userConnectors?.map((connector) =>
+                          <div className='space-x-2 p-1 border flex items-center rounded-sm hover:bg-slate-100 w-fit break-all' key={connector?.cc_pair_id}>
+                            <input type="checkbox" value={connector?.cc_pair_id} checked={selectedDoc?.includes(connector?.cc_pair_id)} id={connector?.cc_pair_id} className={`px-2 py-1 border rounded hover:cursor-pointer hover:bg-gray-100 `} onChange={(e) => handleDocSetID(e.target.value)} /><label htmlFor={connector?.cc_pair_id} >{connector?.name}</label></div>)
+                        }
+                      </div>
+                      <DialogFooter className={cn('w-full')}>
+                        <Button variant={'outline'} className={cn('bg-[#14B8A6] text-[#ffffff] m-auto')} onClick={() => uploadDocSetFiles()}>Update</Button>
+                      </DialogFooter>
+                    </>
+                    :
+                    <div className='w-full'>
+                      <Loader2 className='animate-spin m-auto' />
+                    </div>
+                  }
+
+                </DialogContent>
+              </Dialog>
+            </div>} */}
         </div>
       }
     </div>

@@ -185,11 +185,12 @@ const Files = () => {
                 },
                 body: JSON.stringify({'name': connectorName})
             });
-            const json = await data.json();
-            setLoading(true)
-            await runOnce(connectID, credID);
-            await indexStatus()
-            setUploading(false)
+            
+            if(data?.ok){
+                setLoading(true)
+                await runOnce(connectID, credID);
+                setUploading(false)
+            }
         } catch (error) {
             console.log('error while sendURL:', error);
             
@@ -229,23 +230,11 @@ const Files = () => {
         }
     }
 
-    async function indexStatus(){
-        const res = await fetch(currentUser?.role === 'admin' ? `/api/manage/admin/connector/indexing-status` : `/api/manage/connector/indexing-status-v2`);
-        const json = await res.json();
-        if(json.detail){
-
-        }else{
-            setFiles(json)
-        }
-        
-    }
-
     useEffect(()=> {
-        indexStatus();
+        
         if(userConnectors !== null ){
-            const filData = userConnectors?.filter((item)=> item?.connector?.source === 'file');
+            const filData = userConnectors?.filter( (item) => item?.connector?.source === 'file');
             if(filData.length > 0){
-                // console.log(filData)
                 setFiles(filData);
                 const conn_ids = filData?.map(conn => {return conn?.connector?.id});
                 

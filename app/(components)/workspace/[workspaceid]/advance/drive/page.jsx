@@ -4,7 +4,7 @@ import Image from 'next/image';
 import slackIcon from '../../../../../../public/assets/slack-B.svg'
 import { Input } from '../../../../../../components/ui/input';
 import { Button } from '../../../../../../components/ui/button';
-import gDriveIcon from '../../../../../../public/assets/google-B.svg'
+import gDriveIcon from '../../../../../../public/assets/google-white.svg'
 import webIcon from '../../../../../../public/assets/web-B.svg'
 import confluenceIcon from '../../../../../../public/assets/confluence-B.svg'
 import gitIcon from '../../../../../../public/assets/github-B.svg';
