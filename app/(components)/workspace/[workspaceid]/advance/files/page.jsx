@@ -6,7 +6,7 @@ import fileIcon from '../../../../../../public/assets/doc-B.svg';
 import { useToast } from '../../../../../../components/ui/use-toast';
 import { useDropzone } from 'react-dropzone';
 import { Label } from '../../../../../../components/ui/label';
-import { deleteConnectorFromTable, fetchAllConnector, fetchIndexing, getSess } from '../../../../../../lib/helpers';
+import { deleteConnectorFromTable } from '../../../../../../lib/helpers';
 import { useAtom } from 'jotai';
 import { currentSessionUserAtom, userConnectorsAtom } from '../../../../../store';
 import { Loader, X } from 'lucide-react';
@@ -26,10 +26,11 @@ const Files = () => {
     const [userFiles, setUserFiles] = useState([]);
     const [loading, setLoading] = useState(true)
     const [userConnectors, setUserConnectors] = useAtom(userConnectorsAtom);
-    const [session, setSession] = useAtom(currentSessionUserAtom);
     const [existConnector ,setExistConnector] = useState([]);
     const [uploading, setUploading] = useState(false);
     const [connectorName, setConnectorName] = useState('');
+    const [currentUser, setCurrentUser] = useAtom(currentSessionUserAtom);
+
     const { toast } = useToast();
     
     const onDrop = (acceptedFiles) => {
@@ -229,7 +230,7 @@ const Files = () => {
     }
 
     async function indexStatus(){
-        const res = await fetch(`/api/manage/admin/connector/indexing-status`);
+        const res = await fetch(currentUser?.role === 'admin' ? `/api/manage/admin/connector/indexing-status` : `/api/manage/connector/indexing-status-v2`);
         const json = await res.json();
         if(json.detail){
 

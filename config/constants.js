@@ -1,16 +1,15 @@
 import user from '../public/assets/user.svg';
 import creditCardIcon from '../public/assets/credit-card.svg';
 import settingsIcon from '../public/assets/settings.svg';
-import { CreditCard, Keyboard, Settings, Upload, User, Edit, Trash2, MessagesSquare, UserRoundPlus } from "lucide-react";
+import { CreditCard, Keyboard, Settings, Upload, User,  Trash2, MessagesSquare } from "lucide-react";
 import showAllIcon from '../public/assets/All.svg';
-import threeLines from '../public/assets/All-B.svg'
-import gDriveIcon from '../public/assets/google.svg';
 import slackIcon from '../public/assets/slack.svg';
 import confluenceIcon from '../public/assets/confluence.svg';
 import gitPrsIcon from '../public/assets/github.svg';
 import webIcon from '../public/assets/web.svg';
-import filesIcon from '../public/assets/doc.svg';
+import filesIcon from '../public/assets/docD.svg';
 import fileIconB from '../public/assets/doc-B.svg';
+import gDriveIconWhite from '../public/assets/google-white.svg'
 import gDriveIconB from '../public/assets/google-B.svg'
 import webB from '../public/assets/web-B.svg'
 import slackIconB from '../public/assets/slack-B.svg'
@@ -20,6 +19,7 @@ import pdfIcon from '../public/assets/pdf.svg'
 import docIcon from '../public/assets/doc.svg'
 import xlsIcon from '../public/assets/xls.svg'
 import txtIcon from '../public/assets/txt-file.svg'
+import fileIcon from '../public/assets/doc-B.svg';
 
 
 export const selectOptions = [
@@ -245,7 +245,7 @@ export const advanceOption = [
   {
     id:'drive',
     title:'Google Drive',
-    icon: gDriveIcon,
+    icon: gDriveIconWhite,
     status:'inactive'
   },
   {
@@ -289,8 +289,8 @@ export function iconSelector(icon){
       return gDriveIconB
   }else if(icon === "txt"){
     return txtIcon
-}
+  }else{
+    return fileIcon
+  }
   
 };
-
-

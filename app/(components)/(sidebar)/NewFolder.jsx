@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -113,7 +112,7 @@ const NewFolder = ({ setFolderAdded, openMenu, setOpenMenu, setPopOpen }) => {
                 description: '',
                 function: ''
             });
-            setOpenMenu(false)
+            setOpenMenu && setOpenMenu(false)
             setPopOpen && setPopOpen(false)
         }}>
             <DialogTrigger className='w-full'>

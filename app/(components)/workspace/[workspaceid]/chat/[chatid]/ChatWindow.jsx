@@ -710,8 +710,6 @@ const ChatWindow = () => {
                                                     }
                                                 </div>
                                             ))
-
-
                                         })}
                                         <div className='flex gap-1 max-w-[70%] item-start justify-start'>
                                             <Feedback msgID={msg?.message_id} />

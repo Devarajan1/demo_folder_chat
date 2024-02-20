@@ -9,7 +9,7 @@ import { useParams } from 'next/navigation';
 import { useToast } from '../../../components/ui/use-toast';
 import { currentSessionUserAtom } from '../../store'
 
-import { Dialog, DialogTrigger, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../../../components/ui/dialog';
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from '../../../components/ui/dialog';
 
 import { useAtom } from 'jotai';
 
@@ -31,7 +31,7 @@ function InviteFolderUser({ folder_id, popoverSetOpen }) {
     async function fetchWorkspaceUsers() {
         const apiURL = currentUser?.role === 'admin' ? `/api/workspace/admin/list-workspace-user?workspace_id=${workspaceid}` : `/api/workspace/list-workspace-user-public?workspace_id=${workspaceid}`
         const response = await fetch(apiURL);
-        if (response.ok) {
+        if (response?.ok) {
             const json = await response.json();
             // console.log(json.data, 'current wk users')
             // setExistingUser(json?.data)
@@ -39,12 +39,13 @@ function InviteFolderUser({ folder_id, popoverSetOpen }) {
             return json?.data
         }
     }
+    
     async function fetchFolderUsersList() {
 
         const wkUserList = await fetchWorkspaceUsers()
         const response = await fetch(`/api/workspace/list-folder-user?folder_id=${folder_id}`);
 
-        if (response.ok) {
+        if (response?.ok) {
             const json = await response.json();
             if (json?.data?.length > 0) {
                 setExistingUser(json?.data);
@@ -77,41 +78,41 @@ function InviteFolderUser({ folder_id, popoverSetOpen }) {
     };
 
 
-    async function fetchAllUsers() {
-        setLoader(true)
-        try {
+    // async function fetchAllUsers() {
+    //     setLoader(true)
+    //     try {
 
-            const wkUsers = await fetchWorkspaceUsers();
-            setLoader(false)
-            if (res?.length > 0) {
+    //         const wkUsers = await fetchWorkspaceUsers();
+    //         setLoader(false)
+    //         if (res?.length > 0) {
 
-                const nonAdminUsers = res.filter(user => user?.role !== 'admin');
+    //             const nonAdminUsers = res.filter(user => user?.role !== 'admin');
 
-                let fillterdUsers = [];
+    //             let fillterdUsers = [];
 
 
-                for (let i = 0; i < nonAdminUsers.length; i++) {
-                    let flag = false
-                    for (let j = 0; j < wkUsers.length; j++) {
+    //             for (let i = 0; i < nonAdminUsers.length; i++) {
+    //                 let flag = false
+    //                 for (let j = 0; j < wkUsers.length; j++) {
 
-                        if (wkUsers[j]?.user?.user_id === nonAdminUsers[i].id) {
-                            flag = true
-                        }
-                    };
-                    if (!flag) {
-                        fillterdUsers.push(nonAdminUsers[i])
-                    }
-                };
+    //                     if (wkUsers[j]?.user?.user_id === nonAdminUsers[i].id) {
+    //                         flag = true
+    //                     }
+    //                 };
+    //                 if (!flag) {
+    //                     fillterdUsers.push(nonAdminUsers[i])
+    //                 }
+    //             };
 
-                // setUsers(fillterdUsers)
-            }
+    //             // setUsers(fillterdUsers)
+    //         }
 
-        } catch (error) {
-            console.log(error)
-        } finally {
-            setLoader(false)
-        }
-    };
+    //     } catch (error) {
+    //         console.log(error)
+    //     } finally {
+    //         setLoader(false)
+    //     }
+    // };
 
 
     function handleRemoveUser(userObj) {
@@ -155,6 +156,7 @@ function InviteFolderUser({ folder_id, popoverSetOpen }) {
                     title: "User added!"
                 });
             } else {
+                // if error
                 console.log(response)
             }
         } catch (error) {
@@ -192,6 +194,7 @@ function InviteFolderUser({ folder_id, popoverSetOpen }) {
 
     useEffect(() => {
         // fetchCurrentUser();
+        // fetchAllUsers()
         fetchWorkspaceUsers()
         fetchFolderUsersList();
 
@@ -231,7 +234,7 @@ function InviteFolderUser({ folder_id, popoverSetOpen }) {
                                 onChange={(e) => setUserEmail(e.target.value)}
                                 className='border-none  max-w-full h-full w-[100%] focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
                             />
-                            {selectedUser.length > 0 &&
+                            {selectedUser?.length > 0 &&
                                 selectedUser?.map(user => <p key={user?.id} className='py-1 px-2 border rounded-md hover:cursor-pointer text-sm leading-5 font-[400] flex justify-between items-center gap-1 bg-slate-100 mx-1'>{user?.user?.email} <X size={10} className='' onClick={() => handleRemoveUser(user)} /></p>)
                             }
                         </div>

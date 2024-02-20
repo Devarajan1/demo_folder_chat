@@ -303,7 +303,6 @@ const AdvancePage = () => {
                                 if (e.key === "Enter") {
                                     sendChatMsgs(search)
                                     setSearch('')
-                                    
                                 }
                             }}
                         />

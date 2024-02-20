@@ -2,18 +2,19 @@
 
 import { useEffect } from "react";
 import { useAtom } from 'jotai';
-import { showAdvanceAtom, userConnectorsAtom, allIndexingConnectorAtom } from '../../../../store';
+import { showAdvanceAtom, userConnectorsAtom, allIndexingConnectorAtom, currentSessionUserAtom } from '../../../../store';
 
 export default function RootLayout({ children }) {
     const [showAdvance, setShowAdvance] = useAtom(showAdvanceAtom);
      
     const [allConnectorFromServer, setAllConnectorFromServer] = useAtom(allIndexingConnectorAtom)
     const [userConnectors, setUserConnectors] = useAtom(userConnectorsAtom);
+    const [currentUser, setCurrentUser] = useAtom(currentSessionUserAtom);
    
     async function indexingStatus(){
-      // console.log(ses)
+      
       try {
-          const data = await fetch(`/api/manage/admin/connector/indexing-status`);
+          const data = await fetch(currentUser?.role === 'admin' ? `/api/manage/admin/connector/indexing-status` : `/api/manage/connector/indexing-status-v2`);
           if(data.ok){
             const json = await data?.json();
             // console.log(json)

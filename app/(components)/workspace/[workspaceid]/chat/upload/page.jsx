@@ -6,13 +6,13 @@ import { Label } from '../../../../../../components/ui/label';
 import { Input } from '../../../../../../components/ui/input';
 import Image from 'next/image';
 import { useDropzone } from 'react-dropzone';
-import { folderAtom, folderIdAtom, userConnectorsAtom, currentSessionUserAtom } from '../../../../../store';
+import { folderAtom, folderIdAtom, userConnectorsAtom, currentSessionUserAtom, documentSetAtom } from '../../../../../store';
 import { useToast } from '../../../../../../components/ui/use-toast';
 import { useRouter } from 'next/navigation';
 import { Loader, Loader2, X } from 'lucide-react';
 import { Button } from '../../../../../../components/ui/button';
 import { cn } from '../../../../../../lib/utils';
-import { Dialog, DialogTrigger, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../../../../../../components/ui/dialog'
+import { Dialog, DialogTrigger, DialogContent, DialogFooter } from '../../../../../../components/ui/dialog'
 import { useParams } from 'next/navigation'
 import { getCurrentUser } from '../../../../../../lib/user';
 
@@ -25,7 +25,6 @@ const Upload = () => {
   const [folder, setFolder] = useAtom(folderAtom);
   const [folderId, setFolderId] = useAtom(folderIdAtom);
   const [documentSet, setDocumentSet] = useState([]);
-  // const [documentSet, setDocumentSet] = useAtom(documentSetAtom);
   const [dialogLoader, setDialogLoader] = useState(false);
   const [currentUser, setCurrentUser] = useAtom(currentSessionUserAtom);
   const [currentDOC, setCurrentDoc] = useState([]);
@@ -515,7 +514,7 @@ const Upload = () => {
       {uploading ?
         <div className={`w-[70%] border flex flex-col justify-center items-center bg-[#EFF5F5] h-48 gap-4`}>
           <Loader className='animate-spin' />
-          <p className='font-[500] text-sm leading-5 animate-pulse'>Please wait... We are processing your document.</p>
+          <p className='font-[500] text-sm leading-5 animate-pulse text-center'>Please wait... We are processing your document.</p>
         </div>
         :
         <div className='w-[70%] p-5 flex flex-col justify-center items-center gap-2 rounded-md shadow-black shadow-sm'>
@@ -532,23 +531,23 @@ const Upload = () => {
                 <Input type='text' placeholder='Name should be unique' id='context' value={context.contextName} onChange={(e) => setContext({ ...context, 'contextName': e.target.value })} />
               </div>
               <div>
-                <Label className='text-start' htmlFor='context'>File Name</Label>
-                <Input type='text' placeholder='Write a name to identify your files' id='context' value={context.fileName} onChange={(e) => setContext({ ...context, 'fileName': e.target.value })} />
+                <Label className='text-start' htmlFor='filename'>File Name</Label>
+                <Input type='text' placeholder='Write a name to identify your files' id='filename' value={context.fileName} onChange={(e) => setContext({ ...context, 'fileName': e.target.value })} />
               </div>
               <div>
-                <Label className='text-start' htmlFor='context'>Description</Label>
-                <Input type='text' placeholder='Write a short description' id='context' value={context?.description} onChange={(e) => setContext({ ...context, description: e.target.value })} />
+                <Label className='text-start' htmlFor='description'>Description</Label>
+                <Input type='text' placeholder='Write a short description' id='description' value={context?.description} onChange={(e) => setContext({ ...context, description: e.target.value })} />
               </div>
             </div> :
             <div className='w-full text-start space-y-2 mb-2'>
 
-              <Label className='text-start' htmlFor='context'>File Name</Label>
-              <Input type='text' placeholder='Write a name to identify your files' id='context' value={context.fileName} onChange={(e) => setContext({ ...context, 'fileName': e.target.value })} />
+              <Label className='text-start' htmlFor='filename'>File Name</Label>
+              <Input type='text' placeholder='Write a name to identify your files' id='filename' value={context.fileName} onChange={(e) => setContext({ ...context, 'fileName': e.target.value })} />
 
             </div>
           }
 
-          {files.length === 0 ?
+          {files?.length === 0 ?
             <>
               <div
                 className={`w-full border rounded-md flex flex-col justify-center items-center bg-[#EFF5F5] py-5 ${isDragActive ? 'opacity-50' : ''} shadow-md`}

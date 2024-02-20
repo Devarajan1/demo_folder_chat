@@ -30,9 +30,10 @@ const EditIndex = ({ cc_pair_id, setOpen }) => {
 
     async function connectorStatus(id) {
         try {
-            const data = await fetchConnectorStatus(id);
-            setConnectorDetails(data);
-            body.current = data
+            const data = await fetch(`/api/manage/admin/cc-pair/${id}`);
+            const json = await data.json();
+            setConnectorDetails(json);
+            body.current = json
             
         } catch (error) {
             console.log(error)
@@ -94,11 +95,12 @@ const EditIndex = ({ cc_pair_id, setOpen }) => {
             })
             });
 
-            if(data.ok){
-                return toast({
-                            variant:'default',
-                            description:'Connector deleted successfully!'
-                        })
+            if(data?.ok){
+                toast({
+                    variant:'default',
+                    description:'Connector deleted successfully!'
+                });
+                setOpen(false)
             }
             
         } catch (error) {
