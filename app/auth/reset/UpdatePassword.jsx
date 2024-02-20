@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState } from 'react'
-import supabase from '../../../config/supabse';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { Label } from '../../../components/ui/label';
@@ -9,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import eye_icon from '../../../public/assets/eye_icon.svg'
 import { useAtom } from 'jotai';
-import { darkModeAtom, sessionAtom } from '../../store';
+import { darkModeAtom, currentSessionUserAtom } from '../../store';
 import { Header } from '../../(components)/(common)';
 
 
@@ -19,7 +18,7 @@ const UpdatePassword = () => {
     const [password, setPassword] = useState('');
     const [c_password, setCPassword] = useState('');
     const [darkMode, setDarkMode] = useAtom(darkModeAtom);
-    const [session, setSession] = useAtom(sessionAtom);
+    const [session, setSession] = useAtom(currentSessionUserAtom);
     const router = useRouter();
     const [inputError, setInputError] = useState(false);
     
@@ -34,20 +33,6 @@ const UpdatePassword = () => {
             setInputError('Password and confirm password does not match');
             return null
         };
-
-        try {
-            const { data, error } = await supabase.auth.updateUser({ password: password })
-
-            if (error) {
-                setInputError(error.message);
-                throw error
-            };
-            supabase.auth.signOut();
-            setSession(null)
-            router.push('/auth/login')
-        } catch (error) {
-            console.log(error)
-        }
     };
 
     function showPassword(id) {
@@ -62,7 +47,7 @@ const UpdatePassword = () => {
     };
   return (
     
-    <div className='w-full flex flex-col justify-center items-center'>
+    <div className='w-full h-full flex flex-col justify-center items-center'>
 
     <h1 className={`text-3xl font-Inter space-x-0 text-center font-[600] leading-[48px] tracking-[1.2%] mb-12 ${darkMode ? 'text-black': ''}`}>Update Password</h1>
 

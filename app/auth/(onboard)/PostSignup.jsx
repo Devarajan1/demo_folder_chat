@@ -4,109 +4,30 @@ import { Input } from "../../../components/ui/input"
 import { Label } from "../../../components/ui/label"
 import { Button } from "../../../components/ui/button"
 import temp_icon from '../../../public/assets/temp_icon.jpg'
-import supabase from '../../../config/supabse'
 import Image from "next/image";
-import { darkModeAtom, isPostSignUpCompleteAtom, sessionAtom } from '../../store';
+import { darkModeAtom, } from '../../store';
 import { useAtom } from 'jotai'
 import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useToast } from '../../../components/ui/use-toast';
-import { insertData, isUserExist } from '../../../config/lib'
 
 
 
 const PostSignup = () => {
-    const [darkMode] = useAtom(darkModeAtom);
-    const [isPostSignUpComplete, setIsPostSignUpComplete] = useAtom(isPostSignUpCompleteAtom);
-    const [session, setSession] = useAtom(sessionAtom);
-    const [onBoard, setOnBoard] = useState(false);
-    const [name, setName] = useState('');
-    const [userExist, setUserExist] = useState(false);
-
+    const [darkMode, setDarkMode] = useAtom(darkModeAtom);
     const router = useRouter();
     const {toast} = useToast();
-
+    const [name, setName] = useState('');
 
     async function updateUserName(name) {
-        if (name === '') return toast({
-                    variant: "destructive",
-                    title: "Uh oh! Name cannot be empty.",
-                });
-        
-        try {
-            //await updateUsersTable(name);
-            const { user, error } = await supabase.auth.updateUser({
-                data: { full_name: name }
-            });
-            if (error) {
-                toast({
-                    variant: "destructive",
-                    title: "Uh oh! Something went wrong.",
-                    description: "There was a problem with your request.",
-                  })
-                throw error
-            };
-            setName('');
-            setIsPostSignUpComplete(true);
-            
-        } catch (error) {
-            console.log(error)
-        };
-
+       
     };
 
-    // async function checkIfUserExist(){
-    //     try {
-    //         const id = await isUserExist('users', 'email', 'email', session.user.email);
-    //         if(id.length > 0){
-    //             setUserExist(id[0].email)
-    //         }else{
-    //             setUserExist(false)
-    //         }
-    //         console.log(id)
-    //     } catch (error) {
-    //         console.log(error)
-    //     }
-    // };
-
-    // async function updateUsersTable(name){
-    //     if(userExist == false){
-    //         try {
-    //             const { data, error } = await supabase
-    //             .from('users')
-    //             .insert([
-    //             { name: name, email: session.user.email, email_verified: true },
-    //             ])
-    //             .select()
-    //             console.log(data)
-    //         } catch (error) {
-    //             console.log(error)
-    //         }
-    //     }else{
-    //         try {
-
-    //         const { data, error } = await supabase
-    //         .from('users')
-    //         .update({ name: name })
-    //         .eq('email', userExist)
-    //         .select()
-
-    //         console.log(data)
-    //         } catch (error) {
-    //             console.log(error)
-    //         }
-    //     }
-    // }
+   
     useEffect(() => {
-        // checkIfUserExist()
-        if (session?.user?.user_metadata?.onBoarding) {
-            router.push('/chat')
-        }
-    }, [session]);
+        
+    }, []);
 
-    if (session?.user?.user_metadata?.onBoarding) {
-        return <Loader2 className='animate-spin' />
-    }
     return (
         <div className={`flex flex-col w-[22rem] gap-5 items-center box-border ${darkMode ? '' : 'text-white'}`}>
 

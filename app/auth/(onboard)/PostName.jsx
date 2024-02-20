@@ -4,11 +4,9 @@ import social_role from "../../../public/assets/social_role.svg"
 import illustration from "../../../public/assets/illustration.svg"
 import { Button } from "../../../components/ui/button"
 import { FaCheckCircle } from "react-icons/fa";
-import supabase from '../../../config/supabse'
 import Image from 'next/image'
-import { darkModeAtom, isPostNameCompleteAtom, sessionAtom, isPostOtpCompleteAtom } from '../../store';
+import { darkModeAtom, isPostNameCompleteAtom } from '../../store';
 import { useAtom } from 'jotai'
-import { getUserId, insertData, isUserExist } from '../../../config/lib'
 
 
 const PostName = () => {
@@ -16,24 +14,10 @@ const PostName = () => {
     const [darkMode] = useAtom(darkModeAtom);
     const [selected, setSelected] = useState('');
     const [isPostNameComplete, setIsPostNameComplete] = useAtom(isPostNameCompleteAtom);
-    const [session, setSession] = useAtom(sessionAtom);
 
 
     async function updateProfile(){
-        if(selected === '') return null
-        try {
-            const value = selected === 'personal' ? true : false
-            const { user, error } = await supabase.auth.updateUser({
-                data: { 'is_for_personal': selected === 'personal' ? true : false }
-            });
-            if(error){
-                throw error
-            }
-            setIsPostNameComplete(true);
-            setSelected('')
-        } catch (error) {
-            console.log(error)
-        }
+        
     };
     useEffect(()=> {
         

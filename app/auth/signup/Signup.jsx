@@ -6,13 +6,16 @@ import { Button } from "../../../components/ui/button";
 import Google from "../../../public/assets/google.svg";
 import Image from "next/image";
 import eye_icon from '../../../public/assets/eye_icon.svg';
-import supabase from '../../../config/supabse';
 import { useAtom } from 'jotai';
-import { darkModeAtom, sessionAtom } from '../../store';
+import { darkModeAtom, currentSessionUserAtom } from '../../store';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { signup } from '../../api/auth';
+import axios from 'axios';
+import { requestEmailVerification } from "../../lib";
+import { basicSignup } from "../../../lib/user";
 
-const Signup = () => {
+const Signup = ( { isSignup, shouldVerify } ) => {
 
   const [disabled, setDisabled] = useState(false);
   const [userInput, setUserInput] = useState({
@@ -23,64 +26,41 @@ const Signup = () => {
   const [inputError, setInputError] = useState(false)
 
   const [darkMode, setDarkMode] = useAtom(darkModeAtom);
-  const [session, setSession] = useAtom(sessionAtom)
+  const [session, setSession] = useAtom(currentSessionUserAtom)
   const [emailSent, setEmailSent] = useState(false);
   const [loading, setLoading] = useState(true)
   const router = useRouter();
 
-  async function signUpFunction() {
-    if(userInput.password !== userInput.confirm_password){
-      setInputError('Password and confirm password does not match');
+
+  const signUpFunction = async () => {
+    const emailRegex = /^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$/
+    if(!emailRegex.test(userInput.email)){
+      setInputError("Incorrect email address")
       return null
-    }else{
-      setInputError(false);
     }
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email: userInput.email,
-        password: userInput.password,
-        options: {
-          data: {
-            onBoarding: false,
-          },
-        },
-        });
-        if (error) {
-          setInputError(error.message)
-        }else if (data.user?.identities?.length === 0) {
-          setInputError('User already registered');
+    
+     
+    if (!disabled) {
+        // let isSignup = true
+        const loginResponse = await basicSignup(userInput.email, userInput.password)
+        if (loginResponse.ok) {
+            if (isSignup && shouldVerify) {
+                await requestEmailVerification(userInput.email);
+                router.push("/auth/waiting-on-verification");
+            } else {
+                router.push("/workspace");
+            }
         }
         else {
-        
-        setEmailSent('Check Your Email For Confirmation Mail')
-      }
-      console.log(error)
-    } catch (error) {
-      setInputError(error?.message)
-      console.error('Error logging in:', error?.message);
+            const errorDetail = (await loginResponse.json()).detail;
+            if (errorDetail === "LOGIN_BAD_CREDENTIALS") {
+              setInputError("Invalid email or password")
+              return null
+            }
+            setInputError("Unknown error")
+        }
     }
-  };
-
-
-
-  async function googleSignIn() {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        queryParams: {
-          access_type: 'offline',
-          prompt: 'consent',
-        },
-        redirectTo : `${process.env.NEXT_PUBLIC_URL}/chat/new`
-      },
-    });
-    if (error) {
-      setInputError(error.message);
-    } else {
-      
-    }
-  };
-
+}
 
   function handleOnchange(e){
     setUserInput({
@@ -102,7 +82,6 @@ const Signup = () => {
   useEffect(() => {
     if (userInput.email !== '' && userInput.email.split('@').length > 1 && userInput.password != '' && userInput.confirm_password != '') {
       setDisabled(false)
-      
     } else {
       setDisabled(true)
     }
@@ -113,7 +92,7 @@ const Signup = () => {
 
     if (session) {
       setLoading(false);
-      router.push("/chat");
+      router.push("/workspace");
     } else {
       setLoading(false)
     }
@@ -121,7 +100,8 @@ const Signup = () => {
 
 
   return (
-    <div className={`flex flex-col w-[22rem] gap-3 justify-center items-center box-border ${darkMode ? '' : 'text-white'} px-5 md:px-0`}>
+    <div className={`h-full w-full box-border flex justify-center items-center ${darkMode ? 'bg-[#EFF5F5] text-black' : 'bg-[#115E59] text-white'}`}>
+    <div className={`flex flex-col h-full w-[22rem] gap-3 justify-center items-center box-border ${darkMode ? '' : 'text-white'} px-5 md:px-0`}>
 
       <h1 className='text-5xl w-full text-center font-[800] leading-[48px] tracking-[1.2%] mb-3'>Sign Up</h1>
 
@@ -161,10 +141,11 @@ const Signup = () => {
 
       <hr className='border border-[#CBD5E1] w-full' />
 
-      <Button variant="outline" className='w-full text-black border border-[#CBD5E1] rounded-[6px] leading-[20px] flex items-center justify-center gap-1' onClick={googleSignIn}><Image src={Google} alt="google" priority={false} className='w-7 h-7' /><span className='font-[700] text-sm'>Continue With Google</span></Button>
+      {/* <Button variant="outline" className='w-full text-black border border-[#CBD5E1] rounded-[6px] leading-[20px] flex items-center justify-center gap-1' onClick={googleSignIn}><Image src={Google} alt="google" priority={false} className='w-7 h-7' /><span className='font-[700] text-sm'>Continue With Google</span></Button> */}
 
       <div className='w-full text-sm opacity-75 text-center'>Already have an account &#63; <Link href={'/auth/login'} className='font-[500] hover:underline '>Sign In</Link></div>
 
+    </div>
     </div>
   )
 }

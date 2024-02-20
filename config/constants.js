@@ -1,22 +1,21 @@
 import user from '../public/assets/user.svg';
 import creditCardIcon from '../public/assets/credit-card.svg';
 import settingsIcon from '../public/assets/settings.svg';
-import {CreditCard, Keyboard, Settings, Upload, User, Edit, Trash2, MessagesSquare } from "lucide-react";
-import showAllIcon from '../public/assets/Danswer-All.svg';
-import threeLines from '../public/assets/Danswer-All-B.svg'
-
-import gDriveIcon from '../public/assets/Danswer-google.svg';
-import slackIcon from '../public/assets/Danswer-slack.svg';
-import confluenceIcon from '../public/assets/Danswer-confluence.svg';
-import gitPrsIcon from '../public/assets/Danswer-github.svg';
-import webIcon from '../public/assets/Danswer-web.svg';
-import filesIcon from '../public/assets/Danswer-doc.svg';
-import fileIconB from '../public/assets/Danswer-doc-B.svg';
-import gDriveIconB from '../public/assets/Danswer-google-B.svg'
-import webB from '../public/assets/Danswer-web-B.svg'
-import slackIconB from '../public/assets/Danswer-slack-B.svg'
-import confluenceIconB from '../public/assets/Danswer-confluence-B.svg'
-import gitIconB from '../public/assets/Danswer-github-B.svg';
+import { CreditCard, Keyboard, Settings, Upload, User, Edit, Trash2, MessagesSquare, UserRoundPlus } from "lucide-react";
+import showAllIcon from '../public/assets/All.svg';
+import threeLines from '../public/assets/All-B.svg'
+import gDriveIcon from '../public/assets/google.svg';
+import slackIcon from '../public/assets/slack.svg';
+import confluenceIcon from '../public/assets/confluence.svg';
+import gitPrsIcon from '../public/assets/github.svg';
+import webIcon from '../public/assets/web.svg';
+import filesIcon from '../public/assets/doc.svg';
+import fileIconB from '../public/assets/doc-B.svg';
+import gDriveIconB from '../public/assets/google-B.svg'
+import webB from '../public/assets/web-B.svg'
+import slackIconB from '../public/assets/slack-B.svg'
+import confluenceIconB from '../public/assets/confluence-B.svg'
+import gitIconB from '../public/assets/github-B.svg';
 import pdfIcon from '../public/assets/pdf.svg'
 import docIcon from '../public/assets/doc.svg'
 import xlsIcon from '../public/assets/xls.svg'
@@ -166,7 +165,8 @@ export const sidebarOptions = [
         title: 'Settings',
         icon: settingsIcon,
         id:'settings'
-    }
+    },
+    
 ];
 
 export const plans = [
@@ -208,19 +208,9 @@ export const folderOptions = [
     icon: MessagesSquare
   },
   {
-    id:'edit',
-    title:'Edit',
-    icon: Edit
-  },
-  {
     id:'upload',
     title:'Upload New File',
     icon: Upload
-  },
-  {
-    id:"delete",
-    title:'Delete',
-    icon:Trash2
   }
 ];
 
@@ -237,37 +227,44 @@ export const advanceOption = [
   {
     id:'indexing',
     title:'Indexing',
-    icon: showAllIcon
-  },
-  {
-    id:'drive',
-    title:'Google Drive',
-    icon: gDriveIcon
-  },
-  // {
-  //   id:'slack',
-  //   title:'Slack',
-  //   icon: slackIcon
-  // },
-  {
-    id:'confluence',
-    title:'Confluence',
-    icon: confluenceIcon
-  },
-  {
-    id:'github',
-    title:'Github PRs',
-    icon: gitPrsIcon
+    icon: showAllIcon,
+    status:'active'
   },
   {
     id:'web',
     title:'Web',
-    icon: webIcon
+    icon: webIcon,
+    status:'active'
   },
   {
     id:'files',
     title:'Files',
-    icon: filesIcon
+    icon: filesIcon,
+    status:'active'
+  },
+  {
+    id:'drive',
+    title:'Google Drive',
+    icon: gDriveIcon,
+    status:'inactive'
+  },
+  {
+    id:'slack',
+    title:'Slack',
+    icon: slackIcon,
+    status:'inactive'
+  },
+  {
+    id:'confluence',
+    title:'Confluence',
+    icon: confluenceIcon,
+    status:'inactive'
+  },
+  {
+    id:'github',
+    title:'Github PRs',
+    icon: gitPrsIcon,
+    status:'inactive'
   }
 ];
 

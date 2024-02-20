@@ -6,6 +6,7 @@
 .pnp.js
 .env.local
 .next
+supabase.js
 # testing
 /coverage
 
@@ -40,8 +41,8 @@ hooks.ts
 int.ts
 interfaces.ts
 types.ts
-danswerApi
 sample.json
 testApi
 AdvanceWEB
 default
+package-lock.json

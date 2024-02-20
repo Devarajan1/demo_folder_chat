@@ -1,7 +1,7 @@
 'use client'
 import { useAtom } from 'jotai'
 import React, { useEffect, useState } from 'react'
-import { darkModeAtom, isPostNameCompleteAtom, isPostUserCompleteAtom, selectOptionAtom, sessionAtom } from '../../store'
+import { darkModeAtom, isPostNameCompleteAtom, isPostUserCompleteAtom, selectOptionAtom, currentSessionUserAtom } from '../../store'
 import {
   Select,
   SelectContent,
@@ -14,15 +14,10 @@ import { Label } from '../../../components/ui/label'
 import { Input } from '../../../components/ui/input'
 import { useRouter } from 'next/navigation'
 import { selectOptions } from '../../../config/constants';
-import supabase from '../../../config/supabse'
 import { useToast } from '../../../components/ui/use-toast'
-import { isUserExist } from '../../../config/lib'
-import { getSess } from '../../../lib/helpers'
 
 
 const SelectCard = (props) => {
-  console.log(props)
-  console.log(props?.option?.title)
   const [selectedValue, setSelectedValue] = useState('');
   const [selectValue, setSelectValue] = useAtom(selectOptionAtom);
 
@@ -64,45 +59,16 @@ const SelectCard = (props) => {
 const WorkPlace = () => {
   const [darkMode] = useAtom(darkModeAtom);
   const [workPlaceName, setWorkPlaceName] = useState('');
-  const [session, setSession] = useAtom(sessionAtom);
+  const [session, setSession] = useAtom(currentSessionUserAtom);
 
   const router = useRouter();
 
   async function updateUser(){
-    try {
-      await createWorkPlace(workPlaceName)
-      const { user, error } = await supabase.auth.updateUser({
-        data:{
-          'onBoarding': true,
-        }
-      });
-      if(error){
-        throw error
-      }
-      router.push('/chat')
-    } catch (error) {
-      console.log(error)
-    };
-    
+        
   };
 
   async function createWorkPlace(name){
-    try {
-      const sess_id = await getSess()
-      const { data, error } = await supabase
-      .from('workspaces')
-      .insert([
-        { 'name': name, 'is_active': true, 'created_by':sess_id, 'subscription_active':false },
-      ])
-      .select();
-      if(data){
-        console.log(data)
-      }else{
-        throw error
-      }
-    } catch (error) {
-      console.log(error)
-    }
+
   }
 
   return (
@@ -129,57 +95,14 @@ const UserDetails = () => {
   const [isPostNameComplete, setIsPostNameComplete] = useAtom(isPostNameCompleteAtom);
   const [selectValue, setSelectValue] = useAtom(selectOptionAtom);
 
-  const [session, setSession] = useAtom(sessionAtom);
+  const [session, setSession] = useAtom(currentSessionUserAtom);
 
   const {toast} = useToast();
 
 
   async function updateProfile(){
-    
-    
-    try {
 
-        const checkIfUser = await isUserExist('profile', 'id', 'user_id', session.user.id);
-        //console.log(checkIfUser)
-        if(checkIfUser.length === 0){
-          const { data, error } = await supabase
-        .from('profile')
-        .insert([
-        { 'is_for_personal': session?.user?.user_metadata?.is_for_personal, 
-          'user_id': session?.user?.id,
-          'department':selectValue[0].value,
-          'designation':selectValue[1].value,
-          'purpose':selectValue[3].value,
-          'team_size':selectValue[2].value
-        },
-        ])
-        .select();
-        console.log(data)
-        if(data){
-          setIsPostUserComplete(true);
-        }
-        }else{
-          const { data, error } = await supabase
-        .from('profile')
-        .update([
-        { 'is_for_personal': session?.user?.user_metadata?.is_for_personal, 
-          'user_id': session.user.id,
-          'department':selectValue[0].value,
-          'designation':selectValue[1].value,
-          'purpose':selectValue[3].value
-        },
-        ])
-        .eq('id', checkIfUser[0].id)
-        .select();
-        console.log(data)
-        if(data){
-          setIsPostUserComplete(true);
-        }
-        }
-    } catch (error) {
-        console.log(error)
-    }
-};
+  };
 
   async function submitOption(){
     const search = selectValue.filter(item => item.value === '');
@@ -197,16 +120,8 @@ const UserDetails = () => {
     }
   };
 
-  async function getSess() {
-    await supabase.auth.getSession().then(({ data: { session } }) => {
-      if(session){
-        setSession(session);
-      }
-      
-    });
-  };
+  
 useEffect(()=> {
-  getSess()
 }, [])
   return (
     <>

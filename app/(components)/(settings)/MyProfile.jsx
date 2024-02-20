@@ -1,8 +1,6 @@
 import React, { useState } from 'react'
 import { Label } from '../../../components/ui/label'
 import { Input } from '../../../components/ui/input'
-import { useAtom } from 'jotai'
-import { sessionAtom } from '../../store'
 import { Button } from '../../../components/ui/button'
 import { Switch } from '../../../components/ui/switch'
 import { Dialog, DialogTrigger, DialogContent, DialogFooter } from '../../../components/ui/dialog'
@@ -10,7 +8,6 @@ import rightArrow from '../../../public/assets/secondary icon.svg';
 import Image from 'next/image'
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '../../../components/ui/alert-dialog'
 import eye_icon from '../../../public/assets/eye_icon.svg'
-import supabase from '../../../config/supabse';
 import { useToast } from '../../../components/ui/use-toast';
 
 
@@ -18,7 +15,6 @@ import { useToast } from '../../../components/ui/use-toast';
 
 
 const MyProfile = () => {
-    const [session, setSession] = useAtom(sessionAtom);
     const [preName, setPreName] = useState('');
     const [newEmail, setNewEmail] = useState('');
     const [newPassword, setNewPassword] = useState('');
@@ -45,138 +41,8 @@ const MyProfile = () => {
         }
     };
 
-
-    async function updateUserName(name) {
-        if (name === '') return null
-        try {
-            const { user, error } = await supabase.auth.updateUser({
-                data: { full_name: name }
-            });
-            if (error) {
-                throw error
-            };
-            await getSess();
-            setPreName('');
-            setNameDialogOpen(false);
-            toast({
-                title: "Name Updated Successfully !"
-              })
-        } catch (error) {
-            console.log(error)
-        };
-
-    };
-    async function updateUser(id, dataToBeUpdate) {
-        var obj = {}
-        if(id === 'pwd'){
-            if (dataToBeUpdate === '') {
-                setInputError('Password Cannot Be Empty.');
-                return null;
-            } else if (dataToBeUpdate !== confirmNewPassword) {
-                setInputError('Password and confirm password does not match');
-                return null;
-            };
-            obj = {
-                password: dataToBeUpdate
-            }
-        }else{
-            
-            obj = {
-                email: dataToBeUpdate
-            }
-        }
-        try {
-            const { user, error } = await supabase.auth.updateUser( obj );
-            if (error) {
-                setInputError(error.message)
-                throw error
-            };
-            // getSess();
-            setInputError(false);
-            setNewPassword('');
-            toast({
-                title: "Password Updated Successfully !"
-              })
-            setPwdDialogOpen(false);
-        } catch (error) {
-            console.log(error);
-            toast({
-                title: "Some Error Occured !"
-              })
-        };
-
-    };
-    async function sendOtp(email) {
-        if(email === '' || email.split('@').length !== 2){
-            setErrorMsg('Write a Valid Email!');
-            return null
-        }
-        try {
-            const { data, error } = await supabase.auth.signInWithOtp({
-                email: email,
-                options: {
-                    shouldCreateUser: false,
-                },
-            });
-            if (error) {
-                throw error
-            }
-            setOtpResponse('Check your email for otp verification');
-            setOtpSent(true);
-        } catch (error) {
-            setErrorMsg(error.message)
-        }
-    };
-    const OtpValidationForm = async () => {
-        if(otp === null || otp === '') {
-            setErrorMsg('OTP cannot be null or empty!');
-            return null
-        }
-        try {
-    
-          const { data, error } = await supabase.auth.verifyOtp({ email:newEmail, token: otp, type: 'email' })
-    
-          if (error) {
-            console.log('Error verifying OTP:', error);
-            setErrorMsg('Token has expired or is invalid');
-            throw error
-          }
-          if (!error) {
-            setOtpVerified(true);
-            setError(false)
-            updateUser('email', newEmail)
-          }
-    
-        } catch (error) {
-          console.error('Error verifying OTP:', error);
-        }
-    };
-
-    async function getSess() {
-        await supabase.auth.getSession().then(({ data: { session } }) => {
-          if (session) {
-            setSession(session);
-          }
-    
-        });
-    };
-
-    async function signOut() {
-        const { error } = await supabase.auth.signOut({ scope: 'others' });
-        if (error) {
-            console.log(error)
-        } else {
-            toast({
-                title: "Successfully Logged out from other Devices!"
-              })
-        }
-    };
-
-    async function deleteUser(){
+    async function deleteUser() {
         return null
-        await supabase.auth.admin.deleteUser(session?.user?.id);
-        // setSession(null)
-
     }
 
     return (
@@ -184,7 +50,7 @@ const MyProfile = () => {
             <div className='w-full flex justify-between items-center pr-5'>
                 <div>
                     <Label className='font-[500] text-xs leading-5'>Preferred Name</Label>
-                    <p className='font-[500] text-sm leading-6'>{session?.user?.user_metadata?.full_name}</p>
+                    <p className='font-[500] text-sm leading-6'>{ }</p>
                 </div>
 
                 <Dialog open={nameDialogOpen} onOpenChange={setNameDialogOpen}>
@@ -204,7 +70,6 @@ const MyProfile = () => {
                                     value={preName}
                                     onChange={(e) => setPreName(e.target.value)}
                                     autoComplete='off'
-
                                 />
                             </div>
                         </div>
@@ -220,7 +85,7 @@ const MyProfile = () => {
                 <div className='w-full flex justify-between items-center pr-5'>
                     <div className='font-[400] text-sm leading-6'>
                         <p className='opacity-[70%]'>Email</p>
-                        <p className='font-[500]'>{session?.user?.email}</p>
+                        <p className='font-[500]'>{ }</p>
                     </div>
                     <Dialog>
                         <DialogTrigger>
@@ -283,10 +148,10 @@ const MyProfile = () => {
                                             value={newPassword}
                                             onChange={(e) => { setNewPassword(e.target.value); setInputError(false) }}
                                         />
-                                        {newPassword !== '' && 
-                                        <div className="absolute top-5 right-2 transform -translate-y-1/2 px-2 py-1" onClick={() => showPassword('password')}>
-                                            <Image src={eye_icon} alt='show-password' title='Show Password' />
-                                        </div>}
+                                        {newPassword !== '' &&
+                                            <div className="absolute top-5 right-2 transform -translate-y-1/2 px-2 py-1" onClick={() => showPassword('password')}>
+                                                <Image src={eye_icon} alt='show-password' title='Show Password' />
+                                            </div>}
                                     </div>
                                     <div className='w-full relative'>
                                         <Input
@@ -329,7 +194,6 @@ const MyProfile = () => {
                         <AlertDialogTrigger asChild>
                             <Image src={rightArrow} alt='open' className='hover:cursor-pointer' />
                         </AlertDialogTrigger>
-
                         <AlertDialogContent>
                             <AlertDialogHeader>
                                 <AlertDialogTitle>
@@ -343,7 +207,6 @@ const MyProfile = () => {
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                                 <AlertDialogAction className='bg-[#14B8A6] hover:bg-[#14B8A6] hover:opacity-75' onClick={signOut}>Continue</AlertDialogAction>
                             </AlertDialogFooter>
-
                         </AlertDialogContent>
                     </AlertDialog>
                 </div>
@@ -356,7 +219,6 @@ const MyProfile = () => {
                         <AlertDialogTrigger asChild>
                             <Image src={rightArrow} alt='open' className='hover:cursor-pointer' />
                         </AlertDialogTrigger>
-
                         <AlertDialogContent>
                             <AlertDialogHeader>
                                 <AlertDialogTitle>
@@ -369,13 +231,11 @@ const MyProfile = () => {
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction className='bg-[#14B8A6] hover:bg-[#14B8A6] hover:opacity-75' onClick={()=> deleteUser()}>Continue</AlertDialogAction>
+                                <AlertDialogAction className='bg-[#14B8A6] hover:bg-[#14B8A6] hover:opacity-75' onClick={() => deleteUser()}>Continue</AlertDialogAction>
                             </AlertDialogFooter>
-
                         </AlertDialogContent>
                     </AlertDialog>
                 </div>
-
             </div>
         </div>
     )
