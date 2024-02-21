@@ -38,16 +38,20 @@ const SideBar = () => {
 
 
     async function getWorkSpace(user) {
-        const url = user?.role === "admin" ? '/api/workspace/admin/list-workspace' : '/api/workspace/list-workspace-public'
-        const res = await fetch(url, {
-            method: 'GET',
-            credentials: 'include'
-        });
-        if (res.ok) {
-            const json = await res.json()
-            setUserWorkSpaces(json.data)
-        } else {
-            setUserWorkSpaces([])
+        try {
+            const url = user?.role === "admin" ? '/api/workspace/admin/list-workspace' : '/api/workspace/list-workspace-public'
+            const res = await fetch(url, {
+                method: 'GET',
+                credentials: 'include'
+            });
+            if (res.ok) {
+                const json = await res.json()
+                setUserWorkSpaces(json.data)
+            } else {
+                setUserWorkSpaces([])
+            }
+        } catch (error) {
+            console.log(error)
         }
     }
     async function getFolders() {
@@ -55,24 +59,28 @@ const SideBar = () => {
         if (!workspaceid) {
             return null
         }
-        const res = await fetch(`/api/workspace/list-folder?workspace_id=${workspaceid}`);
-        if (res.ok) {
-            const json = await res.json()
+        try {
+            const res = await fetch(`/api/workspace/list-folder?workspace_id=${workspaceid}`);
+            if (res?.ok) {
+                const json = await res.json()
 
-            if (json.data.length > 0) {
-                setFolder(json?.data);
-                if(localStorage.getItem('lastFolderId')){
-                    setFolderId(localStorage.getItem('lastFolderId'))
-                }else{
-                    setFolderId(json?.data[json?.data.length - 1]?.id)
+                if (json?.data?.length > 0) {
+                    setFolder(json?.data);
+                    if(localStorage.getItem('lastFolderId')){
+                        setFolderId(localStorage.getItem('lastFolderId'))
+                    }else{
+                        setFolderId(json?.data[json?.data.length - 1]?.id)
+                    }
+                    
+                } else {
+                    setFolder([])
+                    setFolderId(null)
                 }
-                
             } else {
                 setFolder([])
-                setFolderId(null)
             }
-        } else {
-            setFolder([])
+        } catch (error) {
+            console.log(error)
         }
     }
 
@@ -143,12 +151,11 @@ const SideBar = () => {
                             </AccordionContent>
                         </AccordionItem>
                     </Accordion>
-
                 </div>}
 
             <AddWorkspace />
             {!showAdvance ?
-                workSpaces?.length > 0 && <Link href={`/workspace/${workspaceid}/advance`} className='w-full flex justify-between items-center bg-[#DEEAEA] p-3 rounded-md hover:cursor-pointer' onClick={() => { setShowAdvance(!showAdvance) }}>
+                workSpaces?.length > 0 && <Link href={`/workspace/${workspaceid}/advance`} className='w-full flex justify-between items-center bg-[#DEEAEA] p-3 rounded-md hover:cursor-pointer'>
                     <h1 className='font-[600] text-sm leading-5'>Advanced</h1>
                     <Image src={rightArrow} alt='open' />
                 </Link>

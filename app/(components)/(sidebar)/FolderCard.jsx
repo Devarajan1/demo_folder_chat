@@ -193,20 +193,20 @@ const FolderCard = ({ fol }) => {
         if (!folder_id) {
             return null
         }
+        try {
+            const res = await fetch(`/api/manage/document-set-v2/${folder_id}`)
+            if (res?.ok) {
+                const data = await res.json();
+                if (data?.length > 0) {
+                    setDocumentSet(data)
+                } else {
+                    setDocumentSet([])
+                }
 
-        const res = await fetch(`/api/manage/document-set-v2/${folder_id}`)
-        if (res?.ok) {
-            const data = await res.json();
-
-            if (data?.length > 0) {
-                setDocumentSet(data)
-            } else {
-                setDocumentSet([])
             }
-
+        } catch (error) {
+            console.log(error)
         }
-
-
     };
 
     // async function fetchWkUsers() {

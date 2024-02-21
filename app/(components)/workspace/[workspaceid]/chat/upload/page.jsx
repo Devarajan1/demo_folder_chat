@@ -234,22 +234,23 @@ const Upload = () => {
 
   async function setDocumentSetInServer(ccID, set_name) {
     
-    const data = await fetch(currentUser?.role === 'admin' ? `/api/manage/admin/connector/indexing-status` : `/api/manage/connector/indexing-status-v2`);
-    const json = await data.json();
-
-    const docSetid = []
-
-    for (const pair_id of json) {
-      if (pair_id?.connector?.id === ccID) {
-        docSetid.push(pair_id?.cc_pair_id);
-
-      }
-    };
-    if (docSetid.length === 0) {
-      return null
-    }
+    
 
     try {
+      const data = await fetch(currentUser?.role === 'admin' ? `/api/manage/admin/connector/indexing-status` : `/api/manage/connector/indexing-status-v2`);
+      const json = await data.json();
+
+      const docSetid = []
+
+      for (const pair_id of json) {
+        if (pair_id?.connector?.id === ccID) {
+          docSetid.push(pair_id?.cc_pair_id);
+
+        }
+      };
+      if (docSetid.length === 0) {
+        return null
+      }
       const apiURL = currentUser?.role === 'admin' ? `/api/manage/admin/document-set` : `/api/manage/document-set-v2`
       const res = await fetch(apiURL, {
         method: 'POST',
@@ -293,18 +294,19 @@ const Upload = () => {
 
   async function updateDocumentSetInServer(db_id, ccID, con) {
     
-    const data = await fetch(currentUser?.role === 'admin' ? `/api/manage/admin/connector/indexing-status` : `/api/manage/connector/indexing-status-v2`);
-    const json = await data.json();
-
-    const docSetid = documentSet[0].cc_pair_descriptors.map(item => item.id)
-    for (const pair_id of json) {
-      if (pair_id?.connector?.id === ccID) {
-        docSetid.push(pair_id?.cc_pair_id);
-      }
-    };
+    
     
 
     try {
+      const data = await fetch(currentUser?.role === 'admin' ? `/api/manage/admin/connector/indexing-status` : `/api/manage/connector/indexing-status-v2`);
+      const json = await data.json();
+
+      const docSetid = documentSet[0].cc_pair_descriptors.map(item => item.id)
+      for (const pair_id of json) {
+        if (pair_id?.connector?.id === ccID) {
+          docSetid.push(pair_id?.cc_pair_id);
+        }
+      };
       const apiURL = currentUser?.role === 'admin' ? `/api/manage/admin/document-set` : `/api/manage/document-set-v2`
       const res = await fetch(apiURL, {
         method: 'PATCH',
@@ -443,18 +445,21 @@ const Upload = () => {
       setLoading(false);
       return null
     }
-    const res = await fetch(`/api/manage/document-set-v2/${folder_id}`)
-    if (res?.ok) {
-
-      const data = await res.json();
-      if (data?.length > 0) {
-        setDocumentSet(data)
-      } else {
-        setDocumentSet([])
-        // router.push(`/workspace/${workspaceid}/chat/upload`)
-      }
-      setLoading(false)
-    };
+    try {
+      const res = await fetch(`/api/manage/document-set-v2/${folder_id}`)
+      if (res?.ok) {
+        const data = await res.json();
+        if (data?.length > 0) {
+          setDocumentSet(data)
+        } else {
+          setDocumentSet([])
+          // router.push(`/workspace/${workspaceid}/chat/upload`)
+        }
+        setLoading(false)
+      };
+    } catch (error) {
+      
+    }
 
   };
 

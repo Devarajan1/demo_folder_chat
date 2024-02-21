@@ -41,18 +41,24 @@ function OpenAi() {
     };
 
     async function getkey(){
-        const res = await fetchApiKey();
-        const json = await res.json()
-        if(json?.api_key){
-            setExistingKey(json?.api_key)
-        }else{
-            toast({
-                variant: 'destructive',
-                title: json?.detail
-            });
+        try {
+            const res = await fetchApiKey();
+            const json = await res.json()
+            if(json?.api_key){
+                setExistingKey(json?.api_key)
+            }else{
+                toast({
+                    variant: 'destructive',
+                    title: json?.detail
+                });
+            }
+            setLoader(false)
+        } catch (error) {
+            console.log(error)
         }
-        setLoader(false)
     }
+
+
     useEffect(()=> {
         getkey();
     }, [])

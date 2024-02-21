@@ -29,45 +29,52 @@ function InviteFolderUser({ folder_id, popoverSetOpen }) {
     const containerRef = useRef(null);
 
     async function fetchWorkspaceUsers() {
-        const apiURL = currentUser?.role === 'admin' ? `/api/workspace/admin/list-workspace-user?workspace_id=${workspaceid}` : `/api/workspace/list-workspace-user-public?workspace_id=${workspaceid}`
-        const response = await fetch(apiURL);
-        if (response?.ok) {
-            const json = await response.json();
-            // console.log(json.data, 'current wk users')
-            // setExistingUser(json?.data)
-            // setUsers(json?.data)
-            return json?.data
+        try {
+            const apiURL = currentUser?.role === 'admin' ? `/api/workspace/admin/list-workspace-user?workspace_id=${workspaceid}` : `/api/workspace/list-workspace-user-public?workspace_id=${workspaceid}`
+            const response = await fetch(apiURL);
+            if (response?.ok) {
+                const json = await response.json();
+                // console.log(json.data, 'current wk users')
+                // setExistingUser(json?.data)
+                // setUsers(json?.data)
+                return json?.data
+            }
+        } catch (error) {
+            console.log(error)
         }
     }
     
     async function fetchFolderUsersList() {
-
-        const wkUserList = await fetchWorkspaceUsers()
-        const response = await fetch(`/api/workspace/list-folder-user?folder_id=${folder_id}`);
-
-        if (response?.ok) {
-            const json = await response.json();
-            if (json?.data?.length > 0) {
-                setExistingUser(json?.data);
-                let fillterdUsers = [];
-                for (let i = 0; i < wkUserList.length; i++) {
-                    let flag = false
-                    for (let j = 0; j < json?.data?.length; j++) {
-
-                        if (wkUserList[i]?.user?.user_id === json?.data[j].user?.user_id) {
-                            flag = true
+        try {
+            const wkUserList = await fetchWorkspaceUsers()
+            const response = await fetch(`/api/workspace/list-folder-user?folder_id=${folder_id}`);
+    
+            if (response?.ok) {
+                const json = await response.json();
+                if (json?.data?.length > 0) {
+                    setExistingUser(json?.data);
+                    let fillterdUsers = [];
+                    for (let i = 0; i < wkUserList.length; i++) {
+                        let flag = false
+                        for (let j = 0; j < json?.data?.length; j++) {
+    
+                            if (wkUserList[i]?.user?.user_id === json?.data[j].user?.user_id) {
+                                flag = true
+                            }
+                        };
+                        if (!flag) {
+                            fillterdUsers.push(wkUserList[i])
                         }
                     };
-                    if (!flag) {
-                        fillterdUsers.push(wkUserList[i])
-                    }
-                };
-
-                setUsers(fillterdUsers)
-            } else {
-                setUsers(wkUserList)
-                setExistingUser([])
+    
+                    setUsers(fillterdUsers)
+                } else {
+                    setUsers(wkUserList)
+                    setExistingUser([])
+                }
             }
+        } catch (error) {
+            console.log(error)
         }
     }
 
@@ -134,7 +141,6 @@ function InviteFolderUser({ folder_id, popoverSetOpen }) {
 
         try {
             const userIDS = userData.map(user => user?.user?.user_id);
-
 
             const response = await fetch(`/api/workspace/create-folder-user-bulk`, {
                 credentials: 'include',

@@ -48,13 +48,14 @@ export async function test(){
 
 
   export const getCurrentUser = async () => {
-    const response = await fetch("/api/manage/me")
-    // if (!response.ok) {
-    //     console.log(response)
-    //   return null;
-    // }
-    const user = await response.json();
-    console.log(user)
-    return user;
+    try {
+        const response = await fetch("/api/manage/me")
+    
+        const user = await response.json();
+        
+        return user;
+    } catch (error) {
+        throw error
+    }
   };
   

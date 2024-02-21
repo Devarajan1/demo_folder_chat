@@ -9,13 +9,12 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "../../../../../../components/ui/tooltip"
-import { fetchConnectorStatus } from '../../../../../../lib/helpers';
 import { useToast } from '../../../../../../components/ui/use-toast';
 import { currentSessionUserAtom, userConnectorsAtom, folderIdAtom, tempAtom } from '../../../../../store';
 import { useAtom } from 'jotai';
 
 
-const EditIndex = ({ cc_pair_id, setOpen }) => {
+const EditIndex = ({ cc_pair_id, setOpen, getAllExistingConnector }) => {
 
     const { toast } = useToast();
     const [currentUser, setCurrentUser] = useAtom(currentSessionUserAtom)

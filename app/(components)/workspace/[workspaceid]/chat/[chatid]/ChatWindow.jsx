@@ -415,24 +415,28 @@ const ChatWindow = () => {
             return null
         }
 
-        const res = await fetch(`/api/manage/document-set-v2/${folder_id}`)
-        if (res?.ok) {
-            const data = await res.json();
-            if (data?.length > 0 && data[0]?.cc_pair_descriptors?.length > 0) {
-                setDocumentSet(data)
+        try {
+            const res = await fetch(`/api/manage/document-set-v2/${folder_id}`)
+            if (res?.ok) {
+                const data = await res.json();
+                if (data?.length > 0 && data[0]?.cc_pair_descriptors?.length > 0) {
+                    setDocumentSet(data)
+                } else {
+                    setDocumentSet([])
+                    if (folder !== null) {
+                        router.push(`/workspace/${workspaceid}/chat/upload`)
+                    }
+                }
             } else {
-                setDocumentSet([])
                 if (folder !== null) {
                     router.push(`/workspace/${workspaceid}/chat/upload`)
                 }
             }
-        } else {
-            if (folder !== null) {
-                router.push(`/workspace/${workspaceid}/chat/upload`)
+            if (loading) {
+                setLoading(false)
             }
-        }
-        if (loading) {
-            setLoading(false)
+        } catch (error) {
+            console.log(error)
         }
 
     };
@@ -607,7 +611,7 @@ const ChatWindow = () => {
                                             }
 
                                         </div>}
-                                        {/* {responseObj?.length > 0 &&  
+                                    {/* {responseObj?.length > 0 &&  
                                         (<div className='font-[400] text-sm leading-6 self-start float-left max-w-[70%] bg-transparent text-justify break-words'>
                                                     <h1 className='font-[600] text-sm leading-6'>Source:</h1>
                                                     {responseObj[0]?.source_type !== 'file' ?
@@ -698,7 +702,7 @@ const ChatWindow = () => {
                                         {msg?.citations && msg?.context_docs?.top_documents?.map((doc) => {
 
                                             const key = Object.keys(msg?.citations);
-                                            
+
                                             return (doc?.db_doc_id === msg?.citations[key[0]] && (
                                                 <div className='font-[400] text-sm leading-6 self-start float-left max-w-[70%] bg-transparent text-justify break-words'>
                                                     <h1 className='font-[600] text-sm leading-6'>Source:</h1>

@@ -4,10 +4,9 @@ import Image from 'next/image';
 import { Input } from '../../../../../../components/ui/input';
 import { Button } from '../../../../../../components/ui/button';
 import gitIcon from '../../../../../../public/assets/github-B.svg';
-import check from '../../../../../../public/assets/check-circle.svg';
 import trash from '../../../../../../public/assets/trash-2.svg';
 import { useToast } from '../../../../../../components/ui/use-toast';
-import { deleteAdminCredentails, fetchAllCredentials, fetchCredentialID, generateConnectorId, addNewInstance, fetchAllConnector } from '../../../../../../lib/helpers';
+import { statusBackGround } from '../../../../../../config/constants';
 import { Dialog, DialogTrigger, DialogContent } from '../../../../../../components/ui/dialog';
 import EditIndex from '../(component)/EditIndex';
 import { useAtom } from 'jotai';
@@ -25,20 +24,16 @@ import {
 
 
 const GitPrs = () => {
-    const [git_token, setGitToken] = useState('');
+    
     const [tokenValue, setTokenValue] = useState('');
     const [repos, setRepos] = useState([]);
     const [repoOwner, setRepoOwner] = useState('');
     const [repoName, setRepoName] = useState('');
     const [tokenStatus, setTokenStatus] = useState(false);
-    const [connectorId, setConnectorId] = useState(null);
-    const [credentialID, setCredentialID] = useState(null);
     const [adminCredential, setAdminCredential] = useState(null);
     const [isAdminLoad, setIsAdminLoad] = useState(true)
-    const [existingCredentials, setExistingCredentials] = useState([])
-    const [ccPairId ,setCCPairId] = useState(null);
     const [loading, setLoading] = useState(true);
-    
+    const [currentUser, setCurrentUser] = useAtom(currentSessionUserAtom);
     const [allConnectors, setAllConnectors] = useAtom(userConnectorsAtom);
 
     const { toast } = useToast();
@@ -46,40 +41,48 @@ const GitPrs = () => {
 
     async function getAdminCredentials(){
         try {
-            const json = await fetchAllCredentials();
-            
-            const currentUserToken = json.filter((res) => { if(allCred?.includes(res?.id)) return res});
-            
-            const currentToken = currentUserToken.filter(res => res?.credential_json?.github_access_token !== undefined);
-            
-            if(currentToken.length > 0){
-                setAdminCredential(currentToken[0]);
+            const data = await fetch(`/api/manage/credential`);
+            if(data?.ok){
+                const json = await data.json();
+                const currentUserTokens = json?.filter(res => res?.user_id === currentUser?.id)
+                const currentGitToken = currentUserTokens?.filter(item => item?.credential_json?.github_access_token !== undefined)
                 
-                setTokenStatus(true)
-            }else{
-                setAdminCredential(null);
+                if(currentGitToken?.length > 0){
+                    setAdminCredential(currentGitToken[0]);
+                    setTokenStatus(true)
+                }else{
+                    setAdminCredential(null);
+                }
+                setIsAdminLoad(false)
             }
-            setIsAdminLoad(false)
             
-        } catch (error) {
-            setIsAdminLoad(false)
-            console.log(error)
-        }
+            } catch (error) {
+                setIsAdminLoad(false)
+                console.log(error)
+            }
     }
 
 
     async function getCredentials(token) {
         try {
-            const body = {
-                "credential_json": {
-                    "github_access_token": token
+            const data = await fetch(`/api/manage/credential`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
                 },
-                "admin_public": false
-            };
-            const data = await fetchCredentialID(body);
-            await getAdminCredentials()
-            setCredentialID(data);
-            setTokenStatus(true)
+                body: JSON.stringify({
+                    "credential_json": {
+                        "github_access_token": token
+                    },
+                    "admin_public": true
+                })
+            });
+            if(data?.ok){
+                
+                await getAdminCredentials()
+                setTokenStatus(true)
+            }
+            
         } catch (error) {
             console.log('error while getting credentails:', error)
         }
@@ -87,41 +90,42 @@ const GitPrs = () => {
 
     async function getConnectorId(owner_name, repo_name) {
         try {
-            
-            const isRepoExist = repos.filter(conn => conn?.connector_specific_config?.repo_name === repo_name);
+            const full_name = `${owner_name}/${repo_name}`
+            const isRepoExist = repos.filter(item => item?.name === full_name);
             if(isRepoExist.length > 0){
                 return toast({
                     variant:'destructive',
                     description:'Connector already exist.'
                 })
             }
-            const full_name = `${owner_name}/${repo_name}`
-            // await checkExistingConnector(repo_name);
 
-            const body = {
-                "name": `GithubConnector-${owner_name}/${repo_name}`,
-                "source": "github",
-                "input_type": "poll",
-                "connector_specific_config": {
-                    "repo_owner": `${owner_name}`,
-                    "repo_name": `${repo_name}`,
-                    "include_prs": true,
-                    "include_issues": true
+            const data = await fetch(currentUser?.role === 'admin' ? `/api/manage/admin/connector` : `/api/manage/connector-v2`,{
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
                 },
-                "refresh_freq": 600,
-                "disabled": false
-            }
-
-            const json = await generateConnectorId(body);
-            if(json.detail){
+                body: JSON.stringify({
+                    "name": `GithubConnector-${owner_name}/${repo_name}`,
+                    "source": "github",
+                    "input_type": "poll",
+                    "connector_specific_config": {
+                        "repo_owner": `${owner_name}`,
+                        "repo_name": `${repo_name}`,
+                        "include_prs": true,
+                        "include_issues": true
+                    },
+                    "refresh_freq": 600,
+                    "disabled": false
+                })
+            });
+            const json = await data.json();
+            if(json?.detail){
                 return toast({
                     variant:'destructive',
                     description:json.detail
                 })
             }
-            // console.log(json.id)
-            setConnectorId(json.id);
-            addNewRepo(json.id, adminCredential.id, full_name);
+            addNewRepo(json?.id, adminCredential?.id, full_name);
 
         } catch (error) {
             console.log('error while getting credentails:', error)
@@ -130,10 +134,20 @@ const GitPrs = () => {
 
     async function addNewRepo(conId, credId, name){
         try {
-            
-            const json = await addNewInstance(conId, credId, name);
-            await getAllExistingConnector();
-            setTokenStatus(true)
+            const data = await fetch(`/api/manage/connector/${conId}/credential/${credId}`,{
+                method: 'PUT',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: name
+            })
+            });
+
+            if(data?.ok){
+                await getAllExistingConnector();
+                setTokenStatus(true)
+            }
             // console.log(json)
         } catch (error) {
             console.log(error)
@@ -142,11 +156,10 @@ const GitPrs = () => {
 
     async function getAllExistingConnector() {
         try {
-            const data = await fetchAllConnector();
-            const currentConnector = data.filter(conn => conn.source === 'github');
-            if(currentConnector.length > 0){
-                setRepos(currentConnector)
-            };
+            const currentConnector = allConnectors?.filter(item => item?.connector?.source === 'github');
+                if(currentConnector?.length > 0){
+                    setRepos(currentConnector)
+                };
             // console.log(currentConnector);
             setLoading(false)
         } catch (error) {
@@ -169,12 +182,10 @@ const GitPrs = () => {
 
             if (response.status === 200) {
                 setTokenStatus(true);
-                setTokenValue('') 
-                setGitToken(accessToken);
+                setTokenValue('');
                 await getCredentials(accessToken)
 
             } else {
-                setGitToken('')
                 toast({
                     variant: 'destructive',
                     title: 'Token validation failed.'
@@ -211,14 +222,24 @@ const GitPrs = () => {
     };
 
     async function handleRemoveToken(id){
-        try {
-            const data = await deleteAdminCredentails(id);
-            await getAdminCredentials();
-            setTokenValue('');
+        if(repos?.length > 0){
             return toast({
-                variant:"default",
-                description:'Credentials deleted !'
+                variant:"destructive",
+                description:'Must delete all github connector before delete credentials'
             })
+        }
+        try {
+            const data = await fetch(currentUser?.role === 'admin' ? `/api/manage/admin/credential/${id}` : `/api/manage/credential/${id}`, {
+                method:'DELETE'
+            });
+            if(data?.ok){
+                await getAdminCredentials();
+                setTokenValue('');
+                return toast({
+                    variant:"default",
+                    description:'Credentials deleted !'
+                })
+            }
         } catch (error) {
             console.log(error)
             return toast({
@@ -227,12 +248,14 @@ const GitPrs = () => {
             })
         }
     };
+    
+    useEffect(()=> {
+        getAllExistingConnector();
+    }, [allConnectors]);
 
     useEffect(()=> {
-        // readData();
         getAdminCredentials();
-        getAllExistingConnector();
-    }, []);
+    }, [])
 
     if(isAdminLoad){
         return (
@@ -242,7 +265,7 @@ const GitPrs = () => {
         )
     }
     return (
-        <div className='w-full sticky top-0 self-start h-screen flex flex-col rounded-[6px] gap-5 items-center  box-border text-[#64748B] '>
+        <div className='w-full min-h-screen flex flex-col rounded-[6px] gap-5 items-center  box-border text-[#64748B] '>
              <div className='w-[80%] rounded-[6px] flex flex-col box-border space-y-2 gap-2 overflow-scroll no-scrollbar h-full px-4 py-10'>
                 <div className='flex justify-start items-center gap-2'>
                     <Image src={gitIcon} alt='github' className='w-5 h-5' />
@@ -255,7 +278,7 @@ const GitPrs = () => {
                     {adminCredential !== null ? 
                         <span className='font-[400] inline-flex items-center'>
                             Existing Access Token: {adminCredential?.credential_json?.github_access_token} 
-                            <Image src={trash} alt='remove' className='w-4 h-4 inline hover:cursor-pointer' onClick={() => handleRemoveToken(adminCredential.id)} />
+                            <Image src={trash} alt='remove' className='w-4 h-4 inline hover:cursor-pointer' onClick={() => handleRemoveToken(adminCredential?.id)} />
                         </span>
                         :
                         <div className='w-full space-y-2 text-start bg-slate-100 shadow-md p-4 rounded-md'>
@@ -287,7 +310,7 @@ const GitPrs = () => {
 
                 <Table className='w-full text-sm'>
                     <TableHeader className='p-2 w-full'>
-                        <TableRow className='border-b p-2'>
+                        <TableRow className='border-b p-2 hover:bg-transparent'>
                             <TableHead className="text-left p-2">Repository</TableHead>
                             <TableHead className='text-center'>Status</TableHead>
                             <TableHead className='text-center'>Credential</TableHead>
@@ -296,24 +319,25 @@ const GitPrs = () => {
                     </TableHeader>
                     {loading && <TableRow><TableCell colSpan={3} className='w-full text-start p-2'>Loading...</TableCell></TableRow>}
                     <TableBody className='w-full'>
-                        {repos.map((item, idx) => {
+                        {repos.map((item) => {
                             
                             return (
-                                <TableRow className='border-b hover:cursor-pointer w-full' key={item.id} onClick={()=> setCCPairId(item.id)}>
-                                    <TableCell className="font-medium text-left justify-start p-2 py-3 text-ellipsis break-all line-clamp-1 text-emphasis">{item?.connector_specific_config?.repo_owner}/{item?.connector_specific_config?.repo_name}</TableCell>
+                                <TableRow className='border-b hover:cursor-pointer w-full' key={item.cc_pair_id}>
+                                    <TableCell className="font-medium w-[80%] text-left p-2 py-3 text-ellipsis break-all text-emphasis overflow-hidden">{item?.name}</TableCell>
                                     <TableCell className=''>
-                                        <div className='flex justify-center items-center gap-1 text-[#22C55E]'>
-                                            <Image src={check} alt='checked' className='w-4 h-4' />Enabled
+                                    <div className={`flex justify-center items-center gap-1 ${statusBackGround(item)} p-1 rounded-full `}>
+                                        
+                                            {`${!item?.connector?.disabled ? item?.latest_index_attempt?.status || 'Processsing' : 'Disabled'}`}
                                         </div>
                                     </TableCell>
-                                    <TableCell className=''>{adminCredential?.credential_json?.github_access_token}</TableCell>
+                                    <TableCell className=''>{item?.credential?.credential_json?.github_access_token}</TableCell>
                                     <TableCell>
-                                        <Dialog>
+                                        <Dialog onOpenChange={getAllExistingConnector}>
                                             <DialogTrigger asChild>
-                                                <Image src={trash} alt='remove' className='m-auto hover:cursor-pointer' />
+                                                <Image src={trash} alt='remove' className='m-auto hover:cursor-pointer'/>
                                             </DialogTrigger>
                                             <DialogContent>
-                                                <EditIndex cc_pair_id={ccPairId}/>
+                                                <EditIndex cc_pair_id={item.cc_pair_id} />
                                             </DialogContent>
                                         </Dialog>
                                     </TableCell>

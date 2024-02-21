@@ -6,19 +6,17 @@ import fileIcon from '../../../../../../public/assets/doc-B.svg';
 import { useToast } from '../../../../../../components/ui/use-toast';
 import { useDropzone } from 'react-dropzone';
 import { Label } from '../../../../../../components/ui/label';
-import { deleteConnectorFromTable } from '../../../../../../lib/helpers';
 import { useAtom } from 'jotai';
+import { statusBackGround } from '../../../../../../config/constants';
 import { currentSessionUserAtom, userConnectorsAtom } from '../../../../../store';
 import { Loader, X } from 'lucide-react';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-  } from "../../../../../../components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../../components/ui/table";
+import trash from '../../../../../../public/assets/trash-2.svg';
+import { Dialog, DialogTrigger, DialogContent } from '../../../../../../components/ui/dialog';
+import EditIndex from '../(component)/EditIndex';
 import { Input } from '../../../../../../components/ui/input';
+
+
 
 const Files = () => {
 
@@ -26,7 +24,6 @@ const Files = () => {
     const [userFiles, setUserFiles] = useState([]);
     const [loading, setLoading] = useState(true)
     const [userConnectors, setUserConnectors] = useAtom(userConnectorsAtom);
-    const [existConnector ,setExistConnector] = useState([]);
     const [uploading, setUploading] = useState(false);
     const [connectorName, setConnectorName] = useState('');
     const [currentUser, setCurrentUser] = useAtom(currentSessionUserAtom);
@@ -63,7 +60,7 @@ const Files = () => {
               isZip = true
               return toast({
                 variant: 'destructive',
-                title: "Zip File Not Allowed"
+                title: "Zip file not allowed"
               });
             }
             formData.append("files", file);
@@ -206,7 +203,10 @@ const Files = () => {
                 "connector_id": id1,
     		    "credential_id": id2
             };
-            const res = await deleteConnectorFromTable(body)
+            const data = await fetch(`/api/manage/admin/deletion-attempt`, {
+                method:'POST',
+                body:JSON.stringify(body)
+            });
         } catch (error) {
             console.log(error)
         }
@@ -216,29 +216,12 @@ const Files = () => {
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
 
-    function statusBackGround(status){
-        if(status?.connector?.disabled){
-            return ('text-yellow-500')
-        }else if(status?.latest_index_attempt?.status === "success"){
-            return ('text-[#22C55E]')
-        }else if(status?.latest_index_attempt?.status === "failed"){
-            return ('text-[#eb3838]')
-        }else if(status?.latest_index_attempt?.status === "not_started"){
-            return ('text-[#FF5737]')
-        }else{
-            return ('text-yellow-500')
-        }
-    }
-
     useEffect(()=> {
         
         if(userConnectors !== null ){
-            const filData = userConnectors?.filter( (item) => item?.connector?.source === 'file');
-            if(filData.length > 0){
-                setFiles(filData);
-                const conn_ids = filData?.map(conn => {return conn?.connector?.id});
-                
-                setExistConnector(conn_ids)
+            const fileData = userConnectors?.filter( (item) => item?.connector?.source === 'file');
+            if(fileData?.length > 0){
+                setFiles(fileData);
             };
             
         }
@@ -298,7 +281,7 @@ const Files = () => {
                         <TableRow className='border-b p-2 hover:bg-transparent'>
                             <TableHead className="w-96 text-left p-2">File Name</TableHead>
                             <TableHead className='text-center'>Status</TableHead>
-                            {/* <TableHead className="text-center">Remove</TableHead> */}
+                            <TableHead className="text-center">Remove</TableHead>
                         </TableRow>
                     </TableHeader>    
                     <TableBody>
@@ -314,7 +297,17 @@ const Files = () => {
                                             {`${!item?.connector?.disabled ? item?.latest_index_attempt?.status || 'Processsing' : 'Disabled'}`}
                                         </div>
                                     </TableCell>
-                                    {/* <TableCell><Image src={trash} alt='remove' className='m-auto hover:cursor-pointer'/></TableCell> */}
+                                    <TableCell>
+                                        <Dialog>
+                                            <DialogTrigger asChild>
+                                                <Image src={trash} alt='remove' className='m-auto hover:cursor-pointer'/>
+                                            </DialogTrigger>
+                                            <DialogContent>
+                                                <EditIndex cc_pair_id={item?.cc_pair_id} />
+                                            </DialogContent>
+                                        </Dialog>
+                                    </TableCell>
+                                    
                                 </TableRow>
                             )
                         })}

@@ -11,7 +11,6 @@ import trash from '../../../../../../public/assets/trash-2.svg';
 
 import { Label } from '../../../../../../components/ui/label';
 import { useToast } from '../../../../../../components/ui/use-toast';
-import { deleteConnectorFromTable, fetchAllConnector, getSess } from '../../../../../../lib/helpers';
 import { useAtom } from 'jotai';
 import { userConnectorsAtom } from '../../../../../store';
 import {
@@ -149,7 +148,10 @@ const Web = () => {
                 "connector_id": id1,
     		    "credential_id": id2
             };
-            const res = await deleteConnectorFromTable(body)
+            const data = await fetch(`/api/manage/admin/deletion-attempt`, {
+                method:'POST',
+                body:JSON.stringify(body)
+            });
         } catch (error) {
             console.log(error)
         }

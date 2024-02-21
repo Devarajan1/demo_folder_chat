@@ -34,8 +34,8 @@ export default async function AdminAuth({ children }) {
         if (!user) {
             return redirect("/auth/login");
         }
-        if (user.role !== "admin") {
-            return redirect("/chat/new");
+        if (user?.role !== "admin") {
+            return redirect("/workspace");
         }
         if (!user.is_verified && requiresVerification) {
             return redirect("/auth/waiting-on-verification");

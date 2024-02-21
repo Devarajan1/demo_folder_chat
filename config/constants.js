@@ -243,6 +243,18 @@ export const advanceOption = [
     status:'active'
   },
   {
+    id:'github',
+    title:'Github',
+    icon: gitPrsIcon,
+    status:'active'
+  },
+  {
+    id:'confluence',
+    title:'Confluence',
+    icon: confluenceIcon,
+    status:'active'
+  },
+  {
     id:'drive',
     title:'Google Drive',
     icon: gDriveIconWhite,
@@ -252,18 +264,6 @@ export const advanceOption = [
     id:'slack',
     title:'Slack',
     icon: slackIcon,
-    status:'inactive'
-  },
-  {
-    id:'confluence',
-    title:'Confluence',
-    icon: confluenceIcon,
-    status:'inactive'
-  },
-  {
-    id:'github',
-    title:'Github PRs',
-    icon: gitPrsIcon,
     status:'inactive'
   }
 ];
@@ -294,3 +294,17 @@ export function iconSelector(icon){
   }
   
 };
+
+export function statusBackGround(status){
+  if(status?.connector?.disabled){
+      return ('text-yellow-500')
+  }else if(status?.latest_index_attempt?.status === "success"){
+      return ('text-[#22C55E]')
+  }else if(status?.latest_index_attempt?.status === "failed"){
+      return ('text-[#eb3838]')
+  }else if(status?.latest_index_attempt?.status === "not_started"){
+      return ('text-[#FF5737]')
+  }else{
+      return ('text-yellow-500')
+  }
+}

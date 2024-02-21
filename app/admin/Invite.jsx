@@ -76,18 +76,22 @@ function Invite({ setPopOpen }) {
     };
 
     async function fetchWorkspaceUsers() {
-        const response = await fetch(`/api/workspace/admin/list-workspace-user?workspace_id=${workspaceid}`);
-        if (response.ok) {
-            const json = await response.json();
-            // console.log(json.data, 'current wk users')
-            if (json?.data !== null) {
-                setExistingUser(json?.data)
-                return json?.data
-            } else {
-                setExistingUser([])
-                return []
-            }
+        try {
+            const response = await fetch(`/api/workspace/admin/list-workspace-user?workspace_id=${workspaceid}`);
+            if (response.ok) {
+                const json = await response.json();
+                // console.log(json.data, 'current wk users')
+                if (json?.data !== null) {
+                    setExistingUser(json?.data)
+                    return json?.data
+                } else {
+                    setExistingUser([])
+                    return []
+                }
 
+            }
+        } catch (error) {
+            console.log(error)
         }
     }
 
