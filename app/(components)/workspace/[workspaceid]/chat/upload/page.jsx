@@ -233,9 +233,6 @@ const Upload = () => {
   };
 
   async function setDocumentSetInServer(ccID, set_name) {
-    
-    
-
     try {
       const data = await fetch(currentUser?.role === 'admin' ? `/api/manage/admin/connector/indexing-status` : `/api/manage/connector/indexing-status-v2`);
       const json = await data.json();
@@ -293,10 +290,6 @@ const Upload = () => {
   }
 
   async function updateDocumentSetInServer(db_id, ccID, con) {
-    
-    
-    
-
     try {
       const data = await fetch(currentUser?.role === 'admin' ? `/api/manage/admin/connector/indexing-status` : `/api/manage/connector/indexing-status-v2`);
       const json = await data.json();
@@ -563,7 +556,7 @@ const Upload = () => {
               <Button className={cn('bg-[#14B8A6] hover:bg-[#14B8A6] hover:opacity-80 ml-auto')} onClick={() => uploadFile(files)}>Upload</Button>
             </div>
           }
-          {/* {userConnectors?.length > 0 &&
+          {userConnectors?.length > 0 &&
             <div className='w-full text-sm leading-5 text-center space-y-2'>
               <p className='font-[500]'>OR</p>
               <Dialog open={d_open} onOpenChange={() => { setSelectedDoc(documentSet[0]?.cc_pair_descriptors?.length > 0 ? documentSet[0]?.cc_pair_descriptors.map(cc => cc.id) : []); setD_open(!d_open) }} className='fixed max-h-52 overflow-x-scroll no-scrollbar' >
@@ -596,7 +589,7 @@ const Upload = () => {
 
                 </DialogContent>
               </Dialog>
-            </div>} */}
+            </div>}
         </div>
       }
     </div>

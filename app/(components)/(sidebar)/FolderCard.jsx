@@ -186,7 +186,6 @@ const FolderCard = ({ fol }) => {
             router.push(`/workspace/${workspaceid}/chat/upload`)
         }
         await getDocSetDetails(id)
-
     }
 
     async function getDocSetDetails(folder_id) {
@@ -208,18 +207,7 @@ const FolderCard = ({ fol }) => {
             console.log(error)
         }
     };
-
-    // async function fetchWkUsers() {
-    //     const response = await fetch(`/api/workspace/admin/list-workspace-user?workspace_id=${workspaceid}`);
-    //     if (response?.ok) {
-    //         const json = await response.json();
-    //         setWorkSpaceUsers(json?.data)
-    //     }
-    // }
-    useEffect(() => {
-        // fetchCurrentUser();
-        // fetchWkUsers()
-    }, []);
+    
 
     useEffect(() => {
         getDocSetDetails(id);
@@ -229,7 +217,7 @@ const FolderCard = ({ fol }) => {
     return (
 
         <Accordion type="single" collapsible defaultValue={parseInt(folderId)}>
-            <AccordionItem value={id} className='rounded-lg bg-[#ffffff] py-3 px-2 gap-2 flex flex-col' >
+            <AccordionItem value={parseInt(id)} className='rounded-lg bg-[#ffffff] py-3 px-2 gap-2 flex flex-col' >
                 <div className='w-full flex justify-between'>
                     <AccordionTrigger className='flex-row-reverse items-center gap-2 w-full'>
                         <h2 className='text-sm leading-5 font-[600] break-all'>{name}</h2>
@@ -239,16 +227,16 @@ const FolderCard = ({ fol }) => {
                             <Image src={threeDot} alt={'options'} className='w-6 h-6 hover:cursor-pointer opacity-70 hover:opacity-100' />
                         </PopoverTrigger>
                         <PopoverContent className="w-full flex flex-col p-1 gap-[2px]">
-                            {folderOptions.map((option) => {
+                            {folderOptions?.map((option) => {
                                 return (
-                                    <div key={option.id} className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" onClick={() => { handleOptionsOnclick(option.id, id, workspace_id) }}>
+                                    <div key={option?.id} className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" onClick={() => { handleOptionsOnclick(option?.id, id, workspace_id) }}>
                                         <option.icon className="mr-2 h-4 w-4" />
-                                        <span>{option.title}</span>
+                                        <span>{option?.title}</span>
                                     </div>
                                 )
                             })}
                             {(currentUser?.role === 'admin' || currentUser?.id === created_by) && <InviteFolderUser folder_id={id} popoverSetOpen={setPopOpen}/>}
-                            {/* <InviteFolderUser folder_id={id} popoverSetOpen={setPopOpen} /> */}
+                            
                             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                                 <DialogTrigger asChild>
                                     <div className="inline-flex p-2 items-center font-[400] text-sm leading-5 hover:bg-[#F1F5F9] rounded-md hover:cursor-pointer" onClick={() => { setFolNewName(name); setDialogOpen(true); }}>
@@ -287,7 +275,6 @@ const FolderCard = ({ fol }) => {
                                         <span>Delete</span>
                                     </div>
                                 </AlertDialogTrigger>
-
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
                                         <AlertDialogTitle>
@@ -312,20 +299,18 @@ const FolderCard = ({ fol }) => {
                         files?.length === 0 ?
                             <Link href={`/workspace/${workspace_id}/chat/new`} className='flex justify-between bg-[#EFF5F5] hover:cursor-pointer hover:bg-slate-200 p-2 rounded-lg' onClick={() => { setFolderId(id); localStorage.setItem('lastFolderId', id) }}>
                                 <span className='text-sm font-[500] leading-5 '>Create First Chat</span>
-
                             </Link>
                             :
                             files?.map((data) => {
-
                                 return (
-                                    <Link href={`/chat/${data?.session_id}`} key={data?.id} className={`flex justify-between items-center h-fit rounded-lg p-2 hover:cursor-pointer hover:bg-slate-100 ${chatid === data.session_id ? 'bg-slate-200' : ''}`} onClick={() => handleFilesOnclick(data)}>
+                                    <Link href={`/chat/${data?.session_id}`} key={data?.id} className={`flex justify-between items-center h-fit rounded-lg p-2 hover:cursor-pointer hover:bg-slate-100 ${chatid === data?.session_id ? 'bg-slate-200' : ''}`} onClick={() => handleFilesOnclick(data)}>
                                         <div className='inline-flex gap-1 items-center'>
                                             <div>
                                                 <MessageSquare color='#14B8A6' size={'1rem'} className='hover:cursor-pointer' />
                                             </div>
-                                            <span className={`w-full font-[500] text-sm leading-5 text-ellipsis break-all line-clamp-1 mr-3 text-emphasis ${isRenamingChat && chatid === data.session_id ? 'hidden' : ''} `} >{data?.chat_title || 'New Chat'}</span>
+                                            <span className={`w-full font-[500] text-sm leading-5 text-ellipsis break-all line-clamp-1 mr-3 text-emphasis ${isRenamingChat && chatid === data?.session_id ? 'hidden' : ''} `} >{data?.chat_title || 'New Chat'}</span>
                                             {isRenamingChat ?
-                                                chatid === data.session_id && <input type='text' value={inputChatName} onChange={(e) => setInputChatName(e.target.value)} className='rounded-md px-1 w-[90%]' />
+                                                chatid === data?.session_id && <input type='text' value={inputChatName} onChange={(e) => setInputChatName(e.target.value)} className='rounded-md px-1 w-[90%]' />
                                                 : null
                                             }
                                         </div>

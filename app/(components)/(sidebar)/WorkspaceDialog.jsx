@@ -71,19 +71,9 @@ const WorkspaceDialog = ({ openMenu, setOpenMenu, showBtn, setPopOpen }) => {
     };
 
 
-    // async function fetchCurrentUser() {
-    //     const user = await getCurrentUser();
-    //     setCurrentUser(user)
-    // };
-
-    useEffect(() => {
-        // fetchCurrentUser();
-    }, []);
-
-
     return (
         <Dialog open={openMenu} onOpenChange={() => {
-            // (workspaceid !== '0' || !openMenu) && setOpenMenu(!openMenu);
+            
             setPopOpen && setPopOpen(false)
             setOpenMenu(!openMenu)
             setInputError(false); 

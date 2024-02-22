@@ -48,12 +48,13 @@ const Login= ( { shouldVerify } ) => {
         const emailRegex = /^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$/
         if(!emailRegex.test(email)){
             setError("Incorrect email address")
-        return null
+            return null
         }
+        localStorage.removeItem('lastFolderId')
         if (!disabled) {
             let isSignup = false
             const loginResponse = await basicLogin(email, password)
-            if (loginResponse.ok) {
+            if (loginResponse?.ok) {
                 if (isSignup && shouldVerify) {
                     await requestEmailVerification(email);
                     router.push("/auth/waiting-on-verification");

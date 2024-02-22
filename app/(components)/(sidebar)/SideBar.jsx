@@ -18,12 +18,9 @@ const SideBar = () => {
 
     const [folder, setFolder] = useAtom(folderAtom);
     const [showAdvance, setShowAdvance] = useAtom(showAdvanceAtom);
-    const [open, setOpen] = useState(false);
-    const [item, setItem] = useState('profile')
     const [currentUser, setCurrentUser] = useAtom(currentSessionUserAtom);
     const [folderAdded, setFolderAdded] = useAtom(folderAddedAtom);
     const [folderId, setFolderId] = useAtom(folderIdAtom);
-    // const [workSpaces, setUserWorkSpaces] = useState([])
     const [workSpaceAdded, setWorkSpaceAdded] = useAtom(workAddedAtom);
     const [workSpaces, setUserWorkSpaces] = useAtom(workSpacesAtom);
     const router = useRouter()
@@ -44,9 +41,9 @@ const SideBar = () => {
                 method: 'GET',
                 credentials: 'include'
             });
-            if (res.ok) {
-                const json = await res.json()
-                setUserWorkSpaces(json.data)
+            if (res?.ok) {
+                const json = await res?.json()
+                setUserWorkSpaces(json?.data)
             } else {
                 setUserWorkSpaces([])
             }
@@ -67,9 +64,11 @@ const SideBar = () => {
                 if (json?.data?.length > 0) {
                     setFolder(json?.data);
                     if(localStorage.getItem('lastFolderId')){
+                        console.log(localStorage.getItem('lastFolderId'))
                         setFolderId(localStorage.getItem('lastFolderId'))
                     }else{
-                        setFolderId(json?.data[json?.data.length - 1]?.id)
+                        setFolderId(json?.data[json?.data?.length - 1]?.id)
+                        console.log(json?.data[json?.data?.length - 1]?.id)
                     }
                     
                 } else {
@@ -98,31 +97,7 @@ const SideBar = () => {
 
             {currentUser?.email &&
                 <div className='flex flex-col gap-2 w-full p-2'>
-                    {/* <div className='flex flex-col gap-2 w-full'>
-
-                    {sidebarOptions.map(option => {
-                        return (
-                            option.id !== 'settings' ?
-                                <div key={option.id} className='inline-flex gap-2 hover:cursor-pointer hover:bg-[#d9dada] w-full p-2 rounded-md' onClick={() => { setItem(option.id); setOpen(true); }}>
-                                    <Image src={option.icon} alt={option.title} />
-                                    <span className='text-sm leading-5 font-[500]'>{option.title}</span>
-                                </div>
-                                :
-                                <Dialog open={open} onOpenChange={() => { setOpen(!open); setItem(option.id) }} key={option.id}>
-
-                                    <DialogTrigger asChild className='self-start'>
-
-                                        <div key={option.title} className='inline-flex gap-2 hover:cursor-pointer hover:bg-[#d9dada] w-full p-2 rounded-md' >
-                                            <Image src={option.icon} alt={option.title} />
-                                            <span className='text-sm leading-5 font-[500]'>{option.title}</span>
-                                        </div>
-
-                                    </DialogTrigger>
-                                    <Setting item={item} setItem={setItem} />
-                                </Dialog>
-                        )
-                    })}
-                </div> */}
+                    
                     <Accordion type="single" defaultValue='profile' collapsible className='w-full'>
                         <AccordionItem value="profile" className='p-2 gap-2 flex flex-col w-full'>
                             <AccordionTrigger className='flex-row-reverse justify-between items-center gap-2'>
@@ -139,7 +114,7 @@ const SideBar = () => {
 
                                 <div className='flex items-center gap-2 hover:cursor-pointer hover:bg-[#d9dada] w-full p-2 rounded-md' onClick={async () => {
                                     const res = await logout();
-                                    if (res.ok) {
+                                    if (res?.ok) {
                                         setFolderId(null);
                                         setCurrentUser(null)
                                         router.push('/auth/login')

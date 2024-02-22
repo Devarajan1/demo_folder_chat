@@ -3,18 +3,40 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import { getCurrentUser } from '../../../lib/user';
 import { useAtom } from 'jotai';
-import { currentSessionUserAtom, workSpacesAtom, workAddedAtom, folderIdAtom } from '../../store'
+import { currentSessionUserAtom, workSpacesAtom, workAddedAtom, folderIdAtom, userConnectorsAtom } from '../../store'
 import { useParams } from 'next/navigation';
 
 export default function RootLayout({ children }) {
 
   const [currentUser, setCurrentUser] = useAtom(currentSessionUserAtom);
   const [userWorkSpaces, setUserWorkSpaces] = useAtom(workSpacesAtom);
-  const [workAdded, setWorkAdded] = useAtom(workAddedAtom)
-  const [folderId, setFolderId] = useAtom(folderIdAtom)
+  const [workAdded, setWorkAdded] = useAtom(workAddedAtom);
+  const [folderId, setFolderId] = useAtom(folderIdAtom);
+  const [userConnectors, setUserConnectors] = useAtom(userConnectorsAtom);
   const { workspaceid, chatid } = useParams();
 
   const router = useRouter();
+  
+  async function indexingStatus(){
+    try {
+        const data = await fetch(currentUser?.role === 'admin' ? `/api/manage/admin/connector/indexing-status` : `/api/manage/connector/indexing-status-v2`);
+        if(data?.ok){
+          const json = await data?.json();
+          if(currentUser?.role === 'admin'){
+              setUserConnectors(json)
+          }else{
+              const currentUserData = json.filter(item => item.owner === currentUser?.email)
+              setUserConnectors(currentUserData)
+          }
+          
+        }else{
+          setUserConnectors([])
+        }
+    } catch (error) {
+        setUserConnectors([])
+        console.log(error)
+    }
+  };
 
   async function getWork(user) {
 
@@ -70,8 +92,19 @@ export default function RootLayout({ children }) {
 
   useEffect(() => {
     fetchCurrentUser()
-
   }, [workAdded])
+
+  useEffect(()=> {
+    indexingStatus()
+    const int = setInterval(()=> {
+    indexingStatus()
+  }, 5000);
+
+  return ()=> {
+    clearInterval(int)
+  }
+    
+  }, [])
   
   return (
     children
